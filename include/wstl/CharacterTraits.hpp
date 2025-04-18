@@ -1,3 +1,11 @@
+// Part of WardenSTL - https://github.com/WardenHD/WardenSTL
+// Copyright (c) 2025 Artem Bezruchko (WardenHD)
+//
+// This file is inspired by the Embedded Template Library (ETL)'s character traits implementation,
+// but it has been re-implemented with custom logic for WardenSTL.
+//
+// Licensed under the MIT License. See LICENSE file for full details.
+
 #ifndef __WSTL_CHARACTERTRAITS_HPP__
 #define __WSTL_CHARACTERTRAITS_HPP__
 
@@ -7,92 +15,95 @@
 #include "NullPointer.hpp"
 #include "Algorithm.hpp"
 
+
 namespace wstl {
-    template<typename T> 
-    class CharacterTraitsTypes;
+    namespace __private {
+        template<typename T> 
+        class __CharacterTraitsTypes;
 
-    template<> 
-    class CharacterTraitsTypes<char> {
-    public:
-        typedef char CharacterType;
-        typedef int IntegerType;
-        typedef long long OffsetType;
-        typedef size_t PositionType;
-        typedef char StateType;
-    };
+        template<> 
+        class __CharacterTraitsTypes<char> {
+        public:
+            typedef char CharacterType;
+            typedef int IntegerType;
+            typedef long long OffsetType;
+            typedef size_t PositionType;
+            typedef char StateType;
+        };
 
-    template<> 
-    class CharacterTraitsTypes<signed char> {
-    public:
-        typedef signed char CharacterType;
-        typedef int IntegerType;
-        typedef long long OffsetType;
-        typedef size_t PositionType;
-        typedef signed char StateType;
-    };
+        template<> 
+        class __CharacterTraitsTypes<signed char> {
+        public:
+            typedef signed char CharacterType;
+            typedef int IntegerType;
+            typedef long long OffsetType;
+            typedef size_t PositionType;
+            typedef signed char StateType;
+        };
 
-    template<> 
-    class CharacterTraitsTypes<unsigned char> {
-    public:
-        typedef unsigned char CharacterType;
-        typedef int IntegerType;
-        typedef long long OffsetType;
-        typedef size_t PositionType;
-        typedef unsigned char StateType;
-    };
+        template<> 
+        class __CharacterTraitsTypes<unsigned char> {
+        public:
+            typedef unsigned char CharacterType;
+            typedef int IntegerType;
+            typedef long long OffsetType;
+            typedef size_t PositionType;
+            typedef unsigned char StateType;
+        };
 
-    template<> 
-    class CharacterTraitsTypes<wchar_t> {
-    public:
-        typedef wchar_t CharacterType;
-        typedef uint_least16_t IntegerType;
-        typedef long long OffsetType;
-        typedef size_t PositionType;
-        typedef char StateType;
-    };
+        template<> 
+        class __CharacterTraitsTypes<wchar_t> {
+        public:
+            typedef wchar_t CharacterType;
+            typedef uint_least16_t IntegerType;
+            typedef long long OffsetType;
+            typedef size_t PositionType;
+            typedef char StateType;
+        };
 
-    #ifdef __WSTL_CXX20__
-    template<>
-    class CharacterTraitsTypes<char8_t> {
-    public:
-        typedef char8_t CharacterType;
-        typedef unsigned int IntegerType;
-        typedef long long OffsetType;
-        typedef size_t PositionType;
-        typedef char StateType;
-    };
-    #endif
+        #ifdef __WSTL_CXX20__
+        template<>
+        class __CharacterTraitsTypes<char8_t> {
+        public:
+            typedef char8_t CharacterType;
+            typedef unsigned int IntegerType;
+            typedef long long OffsetType;
+            typedef size_t PositionType;
+            typedef char StateType;
+        };
+        #endif
 
-    #ifdef __WSTL_CXX11__
-    template<>
-    class CharacterTraitsTypes<char16_t> {
-    public:
-        typedef char16_t CharacterType;
-        typedef uint_least16_t IntegerType;
-        typedef long long OffsetType;
-        typedef size_t PositionType;
-        typedef char StateType;
-    };
+        #ifdef __WSTL_CXX11__
+        template<>
+        class __CharacterTraitsTypes<char16_t> {
+        public:
+            typedef char16_t CharacterType;
+            typedef uint_least16_t IntegerType;
+            typedef long long OffsetType;
+            typedef size_t PositionType;
+            typedef char StateType;
+        };
 
-    template<>
-    class CharacterTraitsTypes<char32_t> {
-    public:
-        typedef char32_t CharacterType;
-        typedef uint_least32_t IntegerType;
-        typedef long long OffsetType;
-        typedef size_t PositionType;
-        typedef char StateType;
-    };
-    #endif
+        template<>
+        class __CharacterTraitsTypes<char32_t> {
+        public:
+            typedef char32_t CharacterType;
+            typedef uint_least32_t IntegerType;
+            typedef long long OffsetType;
+            typedef size_t PositionType;
+            typedef char StateType;
+        };
+        #endif
+    }
 
     template<typename T>
-    class CharacterTraits : public CharacterTraitsTypes<T> {
+    class CharacterTraits : public __private::__CharacterTraitsTypes<T> {
     public:
-        typedef typename CharacterTraitsTypes<T>::CharacterType CharacterType;
-        typedef typename CharacterTraitsTypes<T>::IntegerType IntegerType;
-        typedef typename CharacterTraitsTypes<T>::OffsetType OffsetType;
-        typedef typename CharacterTraitsTypes<T>::PositionType PositionType;
-        typedef typename CharacterTraitsTypes<T>::StateType StateType;
+        typedef typename __CharacterTraitsTypes<T>::CharacterType CharacterType;
+        typedef typename __CharacterTraitsTypes<T>::IntegerType IntegerType;
+        typedef typename __CharacterTraitsTypes<T>::OffsetType OffsetType;
+        typedef typename __CharacterTraitsTypes<T>::PositionType PositionType;
+        typedef typename __CharacterTraitsTypes<T>::StateType StateType;
 
         static __WSTL_CONSTEXPR__ bool Equal(CharacterType a, CharacterType b) {
             return a == b;

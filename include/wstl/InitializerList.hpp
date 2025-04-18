@@ -1,9 +1,15 @@
+// Part of WardenSTL - https://github.com/WardenHD/WardenSTL
+// Copyright (c) 2025 Artem Bezruchko (WardenHD)
+//
+// Licensed under the MIT License. See LICENSE file for details.
+
 #ifndef __WSTL_INITIALIZERLIST_HPP__
 #define __WSTL_INITIALIZERLIST_HPP__
 
 #include "private/Platform.hpp"
 #include "NullPointer.hpp"
 #include <stddef.h>
+
 
 #if defined(__WSTL_CXX11__) && !defined(__WSTL_NO_INITIALIZERLIST__)
 namespace std {

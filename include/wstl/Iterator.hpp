@@ -1,3 +1,13 @@
+// Part of WardenSTL - https://github.com/WardenHD/WardenSTL
+// Copyright (c) 2025 Artem Bezruchko (WardenHD)
+//
+// This file is based on the Embedded Template Library (ETL)'s iterator utilities,
+// which are licensed under the MIT License.
+//
+// It has been restructured and adapted for WardenSTL.
+//
+// Licensed under the MIT License. See LICENSE file for details.
+
 #ifndef __WSTL_ITERATOR_HPP__
 #define __WSTL_ITERATOR_HPP__
 

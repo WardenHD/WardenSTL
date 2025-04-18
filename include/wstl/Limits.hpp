@@ -1,3 +1,11 @@
+// Part of WardenSTL - https://github.com/WardenHD/WardenSTL
+// Copyright (c) 2025 Artem Bezruchko (WardenHD)
+//
+// This file is inspired by the Embedded Template Library (ETL)'s limits utilities,
+// and some concepts and functions have been adapted for WardenSTL.
+//
+// Licensed under the MIT License. See LICENSE file for full details.
+
 #ifndef __WSTL_LIMITS_HPP__
 #define __WSTL_LIMITS_HPP__
 

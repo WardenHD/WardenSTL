@@ -1,3 +1,13 @@
+// Part of WardenSTL - https://github.com/WardenHD/WardenSTL
+// Copyright (c) 2025 Artem Bezruchko (WardenHD)
+//
+// This file is based on the Embedded Template Library (ETL)'s utility.h
+// from https://github.com/ETLCPP/etl, licensed under the MIT License.
+//
+// It has been modified by Artem Bezruchko (WardenHD) for WardenSTL.
+//
+// Licensed under the MIT License. See LICENSE file for details.
+
 #ifndef __WSTL_UTILITY_HPP__
 #define __WSTL_UTILITY_HPP__
 
@@ -88,7 +98,6 @@ namespace wstl {
         typedef T1 FirstType;
         /// @brief Type alias for the second object
         typedef T2 SecondType;
-
 
         FirstType First;
         SecondType Second;

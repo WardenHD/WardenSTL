@@ -1,3 +1,11 @@
+// Part of WardenSTL - https://github.com/WardenHD/WardenSTL
+// Copyright (c) 2025 Artem Bezruchko (WardenHD)
+//
+// This file is inspired by the Embedded Template Library (ETL)'s math utilities,
+// and several custom functions have been added for WardenSTL.
+//
+// Licensed under the MIT License. See LICENSE file for full details.
+
 #ifndef __WSTL_MATH_HPP__
 #define __WSTL_MATH_HPP__
 

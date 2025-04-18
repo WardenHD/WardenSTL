@@ -1,3 +1,11 @@
+// Part of WardenSTL - https://github.com/WardenHD/WardenSTL
+// Copyright (c) 2025 Artem Bezruchko (WardenHD)
+//
+// This file is based on the Embedded Template Library (ETL)'s ratio utilities,
+// with modifications made for WardenSTL.
+//
+// Licensed under the MIT License. See LICENSE file for full details.
+
 #ifndef __WSTL_RATIO_HPP__
 #define __WSTL_RATIO_HPP__
 
