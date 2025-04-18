@@ -19,3 +19,6 @@ There is nothing special. Just copy or clone the GitHub project into appropriate
 
 ## Generating documentation
 You should have [SCons](https://scons.org/) installed. Issue the `scons` command to generate documentation. To clean everything, just execute `scons -c` command.
+
+## Acknowledgments
+This library was inspired by the [Embedded Template Library (ETL)](https://github.com/ETLCPP/etl), and some parts of the code were adapted from it.
