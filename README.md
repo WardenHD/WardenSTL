@@ -5,14 +5,14 @@ in it. It aims to support C++98/03 and bring some functions from newer versions,
 ## Main Features
  - No dynamic memory allocation
  - No RTTI
- - Fixed size containers
+ - Fixed size containers (will be added soon)
  - CRC calculations
- - Checksum & hash functions
+ - Checksum & hash functions (will be added soon)
  - Error handling
- - Templates for buffers, streams
+ - Templates for buffers, streams (will be added soon)
  - Very small usage of virtual functions. They are used only if they are really needed
  - Doxygen generated documentation
- - Simple threading
+ - Simple threading (will be added soon)
  - Header-only implementation
 
 ## Installation
