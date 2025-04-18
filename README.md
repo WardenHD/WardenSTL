@@ -13,6 +13,7 @@ in it. It aims to support C++98/03 and bring some functions from newer versions,
  - Very small usage of virtual functions. They are used only if they are really needed
  - Doxygen generated documentation
  - Simple threading
+ - Header-only implementation
 
 ## Installation
 There is nothing special. Just copy or clone the GitHub project into appropriate directory. All headers are located in `include` folder.
