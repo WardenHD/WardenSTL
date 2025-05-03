@@ -99,7 +99,7 @@ namespace wstl {
 
             return *this;
         }
-
+        
         /// @brief Templated assignment operator - assigns with potentially different types
         /// @param other Tuple to assign from
         template<typename UHead, typename... UTail, typename = EnableIfType<
@@ -188,6 +188,13 @@ namespace wstl {
         Tuple<Tail...> m_Tail;
     };
 
+    // Template deduction guide
+
+    #ifdef __WSTL_CXX17__
+    template<typename... T>
+    Tuple(T...) -> Tuple<T...>;
+    #endif
+
     // Swap specialization
 
     template<typename... Types>
@@ -204,21 +211,17 @@ namespace wstl {
     // Tuple element specialization
 
     template<typename Head, typename... Tail>
-    class TupleElement<0, Tuple<Head, Tail...>> {
-    public:
-        typedef Head Type;
-    };
+    struct TupleElement<0, Tuple<Head, Tail...>> { typedef Head Type; };
 
     template<size_t Index, typename Head, typename... Tail>
-    class TupleElement<Index, Tuple<Head, Tail...>> {
-    public:
+    struct TupleElement<Index, Tuple<Head, Tail...>> {
         typedef typename TupleElement<Index - 1, Tuple<Tail...>>::Type Type;
     };
 
     // Tuple size specialization
 
     template<typename... Types>
-    class TupleSize<Tuple<Types...>> : public IntegralConstant<size_t, sizeof...(Types)> {};
+    struct TupleSize<Tuple<Types...>> : IntegralConstant<size_t, sizeof...(Types)> {};
 
     // Get specialization
 
@@ -230,26 +233,54 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/utility/tuple/get
     template<size_t Index, typename Head, typename... Tail>
     __WSTL_CONSTEXPR14__
-    inline EnableIfType<(Index > 0), TupleElementType<Index, Tuple<Head, Tail...>>> Get(Tuple<Head, Tail...>& tuple) {
+    inline EnableIfType<(Index > 0), TupleElementType<Index, Tuple<Head, Tail...>>> Get(Tuple<Head, Tail...>& tuple) __WSTL_NOEXCEPT__ {
+        StaticAssert(Index < sizeof...(Tail) + 1, "Index out of bounds");
         return Get<Index - 1>(tuple.__GetTail());
     }
 
     template<size_t Index, typename Head, typename... Tail>
     __WSTL_CONSTEXPR14__
-    inline EnableIfType<(Index == 0), Head> Get(Tuple<Head, Tail...>& tuple) {
+    inline EnableIfType<(Index == 0), Head> Get(Tuple<Head, Tail...>& tuple) __WSTL_NOEXCEPT__ {
         return tuple.__GetHead();
     }
 
     template<size_t Index, typename Head, typename... Tail>
     __WSTL_CONSTEXPR14__
-    inline EnableIfType<(Index > 0), const TupleElementType<Index, Tuple<Head, Tail...>>> Get(const Tuple<Head, Tail...>& tuple) {
+    inline EnableIfType<(Index > 0), const TupleElementType<Index, Tuple<Head, Tail...>>> Get(const Tuple<Head, Tail...>& tuple) __WSTL_NOEXCEPT__ {
+        StaticAssert(Index < sizeof...(Tail) + 1, "Index out of bounds");
         return Get<Index - 1>(tuple.__GetTail());
     }
 
     template<size_t Index, typename Head, typename... Tail>
     __WSTL_CONSTEXPR14__
-    inline EnableIfType<(Index == 0), const Head> Get(const Tuple<Head, Tail...>& tuple) {
+    inline EnableIfType<(Index == 0), const Head> Get(const Tuple<Head, Tail...>& tuple) __WSTL_NOEXCEPT__ {
         return tuple.__GetHead();
+    }
+
+    template<size_t Index, typename Head, typename... Tail>
+    __WSTL_CONSTEXPR14__
+    inline EnableIfType<(Index > 0), TupleElementType<Index, Tuple<Head, Tail...>>&&> Get(Tuple<Head, Tail...>&& tuple) __WSTL_NOEXCEPT__ {
+        StaticAssert(Index < sizeof...(Tail) + 1, "Index out of bounds");
+        return Get<Index - 1>(Move(tuple.__GetTail()));
+    }
+
+    template<size_t Index, typename Head, typename... Tail>
+    __WSTL_CONSTEXPR14__
+    inline EnableIfType<(Index == 0), TupleElementType<Index, Tuple<Head, Tail...>>&&> Get(Tuple<Head, Tail...>&& tuple) __WSTL_NOEXCEPT__ {
+        return Move(tuple.__GetHead());
+    }
+
+    template<size_t Index, typename Head, typename... Tail>
+    __WSTL_CONSTEXPR14__
+    inline EnableIfType<(Index > 0), const TupleElementType<Index, Tuple<Head, Tail...>>&&> Get(const Tuple<Head, Tail...>&& tuple) __WSTL_NOEXCEPT__ {
+        StaticAssert(Index < sizeof...(Tail) + 1, "Index out of bounds");
+        return Get<Index - 1>(Move(tuple.__GetTail()));
+    }
+
+    template<size_t Index, typename Head, typename... Tail>
+    __WSTL_CONSTEXPR14__
+    inline EnableIfType<(Index == 0), const TupleElementType<Index, Tuple<Head, Tail...>>&&> Get(const Tuple<Head, Tail...>&& tuple) __WSTL_NOEXCEPT__ {
+        return Move(tuple.__GetHead());
     }
 
     // Comparison operators
@@ -345,8 +376,7 @@ namespace wstl {
     // Ignore
 
     namespace __private {
-        class __IgnoreType {
-        public:
+        struct __IgnoreType {
             template<typename T>
             __WSTL_CONSTEXPR14__ const __IgnoreType& operator=(const T&) const __WSTL_NOEXCEPT__ {
                 return *this;

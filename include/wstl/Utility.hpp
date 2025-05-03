@@ -92,8 +92,7 @@ namespace wstl {
     /// @ingroup utility
     /// @see https://en.cppreference.com/w/cpp/utility/pair
     template<typename T1, typename T2>
-    class Pair {
-    public:
+    struct Pair {
         /// @brief Type alias for the first object
         typedef T1 FirstType;
         /// @brief Type alias for the second object
@@ -193,69 +192,93 @@ namespace wstl {
         #endif
     };
 
+    // Template deduction guide
+
+    #ifdef __WSTL_CXX17__
+    template<typename T1, typename T2>
+    Pair(T1, T2) -> Pair<T1, T2>;
+    #endif
+
     // Tuple size specialization
 
     template<typename T1, typename T2>
-    class TupleSize<Pair<T1, T2> > : public IntegralConstant<size_t, 2> {};
+    struct TupleSize<Pair<T1, T2> > : IntegralConstant<size_t, 2> {};
 
     // Tuple element specialization
 
     template<size_t Index, typename T1, typename T2>
-    class TupleElement<Index, Pair<T1, T2> > {
-    public:
+    struct TupleElement<Index, Pair<T1, T2> > {
         StaticAssert(Index < 2, "wstl::Pair has only 2 elements!");
     };
 
     template<typename T1, typename T2>
-    class TupleElement<0, Pair<T1, T2> > {
-    public:
-        typedef T1 Type;
-    };
+    struct TupleElement<0, Pair<T1, T2> > { typedef T1 Type; };
 
     template<typename T1, typename T2>
-    class TupleElement<1, Pair<T1, T2> > {
-    public:
-        typedef T2 Type;
-    };
+    struct TupleElement<1, Pair<T1, T2> > { typedef T2 Type; };
 
     // Get (for Pair)
 
-    template<size_t Index, typename T1, typename T2>
-    __WSTL_CONSTEXPR14__ 
     /// @brief Gets an element from pair
     /// @tparam Index Index of element
     /// @param p Pair from which to get the element
     /// @return The element at the specified index
     /// @ingroup utility
     /// @see https://en.cppreference.com/w/cpp/utility/pair/get
-    inline typename TupleElement<Index, Pair<T1, T2> >::Type& Get(Pair<T1, T2>& p) __WSTL_NOEXCEPT__ {
-        if(Index == 0) return p.First;
-        else return p.Second;
+    template<size_t Index, typename T1, typename T2>
+    __WSTL_CONSTEXPR14__ 
+    inline typename EnableIf<(Index == 0), typename TupleElement<Index, Pair<T1, T2> >::Type&>::Type Get(Pair<T1, T2>& pair) __WSTL_NOEXCEPT__ {
+        return pair.First;
     }
 
-    template<size_t Index, typename T1, typename T2>
-    __WSTL_CONSTEXPR14__
     /// @copydoc Get(Pair<T1, T2>&)
-    inline const typename TupleElement<Index, Pair<T1, T2> >::Type& Get(const Pair<T1, T2>& p) __WSTL_NOEXCEPT__ {
-        if(Index == 0) return p.First;
-        else return p.Second;
+    template<size_t Index, typename T1, typename T2>
+    __WSTL_CONSTEXPR14__ 
+    inline typename EnableIf<(Index == 1), typename TupleElement<Index, Pair<T1, T2> >::Type&>::Type Get(Pair<T1, T2>& pair) __WSTL_NOEXCEPT__ {
+        return pair.Second;
+    }
+
+    /// @copydoc Get(Pair<T1, T2>&)
+    template<size_t Index, typename T1, typename T2>
+    __WSTL_CONSTEXPR14__ 
+    inline typename EnableIf<(Index == 0), const typename TupleElement<Index, Pair<T1, T2> >::Type&>::Type Get(const Pair<T1, T2>& pair) __WSTL_NOEXCEPT__ {
+        return pair.First;
+    }
+
+    /// @copydoc Get(Pair<T1, T2>&)
+    template<size_t Index, typename T1, typename T2>
+    __WSTL_CONSTEXPR14__ 
+    inline typename EnableIf<(Index == 1), const typename TupleElement<Index, Pair<T1, T2> >::Type&>::Type Get(const Pair<T1, T2>& pair) __WSTL_NOEXCEPT__ {
+        return pair.Second;
     }
 
     #ifdef __WSTL_CXX11__
+    /// @copydoc Get(Pair<T1, T2>&)
     template<size_t Index, typename T1, typename T2>
     __WSTL_CONSTEXPR14__
-    /// @copydoc Get(Pair<T1, T2>&)
-    inline typename TupleElement<Index, Pair<T1, T2>>::Type&& Get(Pair<T1, T2>&& p) __WSTL_NOEXCEPT__ {
-        if(Index == 0) return Move(p.First);
-        else return Move(p.Second);
+    inline EnableIfType<(Index == 0), TupleElementType<Index, Pair<T1, T2>>&&> Get(Pair<T1, T2>&& pair) __WSTL_NOEXCEPT__ {
+        return Move(pair.First);
     }
 
+    /// @copydoc Get(Pair<T1, T2>&)
     template<size_t Index, typename T1, typename T2>
     __WSTL_CONSTEXPR14__
+    inline EnableIfType<(Index == 1), TupleElementType<Index, Pair<T1, T2>>&&> Get(Pair<T1, T2>&& pair) __WSTL_NOEXCEPT__ {
+        return Move(pair.Second);
+    }
+
     /// @copydoc Get(Pair<T1, T2>&)
-    inline const typename TupleElement<Index, Pair<T1, T2>>::Type&& Get(const Pair<T1, T2>&& p) __WSTL_NOEXCEPT__ {
-        if(Index == 0) return Move(p.Second);
-        else return Move(p.Second);
+    template<size_t Index, typename T1, typename T2>
+    __WSTL_CONSTEXPR14__
+    inline EnableIfType<(Index == 0), const TupleElementType<Index, Pair<T1, T2>>&&> Get(const Pair<T1, T2>&& pair) __WSTL_NOEXCEPT__ {
+        return Move(pair.First);
+    }
+
+    /// @copydoc Get(Pair<T1, T2>&)
+    template<size_t Index, typename T1, typename T2>
+    __WSTL_CONSTEXPR14__
+    inline EnableIfType<(Index == 1), const TupleElementType<Index, Pair<T1, T2>>&&> Get(const Pair<T1, T2>&& pair) __WSTL_NOEXCEPT__ {
+        return Move(pair.Second);
     }
     #endif
 
@@ -347,8 +370,7 @@ namespace wstl {
     /// @since C++11
     /// @see https://en.cppreference.com/w/cpp/utility/integer_sequence
     template<typename T, T... Integers>
-    class IntegerSequence {
-    public:
+    struct IntegerSequence {
         StaticAssert(IsIntegral<T>::Value, "Integral types only!");
 
         typedef T ValueType;
@@ -367,14 +389,12 @@ namespace wstl {
 
     namespace __private {
         template<size_t N, size_t... Indices>
-        class __MakeIndexSequence {
-        public:
+        struct __MakeIndexSequence {
             typedef typename __MakeIndexSequence<N - 1, N - 1, Indices...>::Type Type;
         };
 
         template<size_t... Indices>
-        class __MakeIndexSequence<0, Indices...> {
-        public:
+        struct __MakeIndexSequence<0, Indices...> {
             typedef IndexSequence<Indices...> Type;
         };
 
@@ -403,6 +423,53 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/utility/integer_sequence
     template<typename... T>
     using IndexSequenceFor = MakeIndexSequence<sizeof...(T)>;
+    #endif
+
+    // In place
+
+    /// @brief Tag type for in-place construction
+    /// @ingroup utility
+    /// @see https://en.cppreference.com/w/cpp/utility/in_place
+    struct InPlaceType {
+        explicit __WSTL_CONSTEXPR__ InPlaceType() {};
+    };
+
+    #ifdef __WSTL_CXX17__
+    /// @copydoc InPlaceType
+    /// @since C++17
+    inline constexpr InPlaceType InPlace {};
+    #endif
+
+    /// @brief Tag type for in-place construction with type
+    /// @tparam T Type to use
+    /// @ingroup utility
+    /// @see https://en.cppreference.com/w/cpp/utility/in_place
+    template<typename T>
+    struct InPlaceForTypeType {
+        explicit __WSTL_CONSTEXPR__ InPlaceForTypeType() {};
+    };
+
+    #ifdef __WSTL_CXX17__
+    /// @copydoc InPlaceForTypeType
+    /// @since C++17
+    template<typename T>
+    inline constexpr InPlaceForTypeType<T> InPlaceForType {};
+    #endif
+
+    /// @brief Tag type for in-place construction with index
+    /// @tparam I Index to use
+    /// @ingroup utility
+    /// @see https://en.cppreference.com/w/cpp/utility/in_place
+    template<size_t Index>
+    struct InPlaceForIndexType {
+        explicit __WSTL_CONSTEXPR__ InPlaceForIndexType() {};
+    };
+
+    #ifdef __WSTL_CXX17__
+    /// @copydoc InPlaceForIndexType
+    /// @since C++17
+    template<size_t Index>
+    inline constexpr InPlaceForIndexType<Index> InPlaceForIndex {};
     #endif
 }
 
