@@ -21,23 +21,20 @@ namespace wstl {
     /// @ingroup tuple
     /// @see https://en.cppreference.com/w/cpp/utility/tuple_element
     template<size_t Index, typename T>
-    class TupleElement;
+    struct TupleElement;
 
     template<size_t Index, typename T>
-    class TupleElement<Index, const T> {
-    public:
+    struct TupleElement<Index, const T> {
         typedef typename AddConst<typename TupleElement<Index, T>::Type>::Type Type;
     };
 
     template<size_t Index, typename T>
-    class TupleElement<Index, volatile T> {
-    public:
+    struct TupleElement<Index, volatile T> {
         typedef typename AddVolatile<typename TupleElement<Index, T>::Type>::Type Type;
     };
 
     template<size_t Index, typename T>
-    class TupleElement<Index, const volatile T> {
-    public:
+    struct TupleElement<Index, const volatile T> {
         typedef typename AddCV<typename TupleElement<Index, T>::Type>::Type Type;
     };
 
@@ -55,16 +52,16 @@ namespace wstl {
     /// @ingroup tuple
     /// @see https://en.cppreference.com/w/cpp/utility/tuple_size
     template<typename T>
-    class TupleSize;
+    struct TupleSize;
 
     template<typename T>
-    class TupleSize<const T> : public IntegralConstant<size_t, TupleSize<T>::Value> {};
+    struct TupleSize<const T> : IntegralConstant<size_t, TupleSize<T>::Value> {};
 
     template<typename T>
-    class TupleSize<volatile T> : public IntegralConstant<size_t, TupleSize<T>::Value> {};
+    struct TupleSize<volatile T> : IntegralConstant<size_t, TupleSize<T>::Value> {};
 
     template<typename T>
-    class TupleSize<const volatile T> : public IntegralConstant<size_t, TupleSize<T>::Value> {};
+    struct TupleSize<const volatile T> : IntegralConstant<size_t, TupleSize<T>::Value> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc TupleSize

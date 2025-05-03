@@ -385,22 +385,15 @@ namespace wstl {
     namespace __private {
         namespace __compile {
             template<typename T, T A, T B, bool = (B == 0)>
-            class __GCD;
+            struct __GCD;
 
             template<typename T, T A, T B>
-            class __GCD<T, A, B, true> {
-            public: 
+            struct __GCD<T, A, B, true> {
                 static const __WSTL_CONSTEXPR__ T Value = (A < 0) ? -A : A;
             };
 
             template<typename T, T A, T B>
-            class __GCD<T, A, B, false> {
-            public: 
-                static const __WSTL_CONSTEXPR__ T Value = __GCD<T, B, A % B>::Value;
-            };
-
-            template<typename T, T A, T B>
-            const __WSTL_CONSTEXPR__ T __GCD<T, A, B, false>::Value;
+            struct __GCD<T, A, B, false> : __GCD<T, B, A % B> {};
         }
     }
 
@@ -421,21 +414,14 @@ namespace wstl {
         /// @ingroup numeric
         template<typename T, T A, T B>
         #endif
-        class GCD;
+        struct GCD;
 
         template<typename T, T A, T B>
-        class GCD<T, A, B> {
-        public:
-            static const __WSTL_CONSTEXPR__ T Value = __private::__compile::__GCD<T, A, B>::Value;
-        };
-
-        template<typename T, T A, T B>
-        const __WSTL_CONSTEXPR__ T GCD<T, A, B>::Value;
+        struct GCD<T, A, B> : __private::__compile::__GCD<T, A, B> {};
 
         #ifdef __WSTL_CXX11__
         template<typename T, T A, T B, T... Rest>
-        class GCD {
-        public:
+        struct GCD {
             static constexpr T Value = GCD<T, GCD<T, A, B>::Value, Rest...>::Value;
         };
         #endif
@@ -466,9 +452,9 @@ namespace wstl {
 
         template<typename T, T A, T B>
         #ifdef __WSTL_CXX11__
-        class LCM<T, A, B> {
+        struct LCM<T, A, B> {
         #else
-        class LCM {
+        struct LCM {
         #endif
         private:
             static const __WSTL_CONSTEXPR__ T Product = ((A * B) < 0) ? -(A * B) : (A * B);
@@ -482,8 +468,7 @@ namespace wstl {
 
         #ifdef __WSTL_CXX11__
         template<typename T, T A, T B, T... Rest>
-        class LCM {
-        public: 
+        struct LCM {
             static constexpr T Value = LCM<T, LCM<T, A, B>::Value, Rest...>::Value;
         };
         #endif
@@ -501,8 +486,7 @@ namespace wstl {
         /// @tparam B Second number
         /// @ingroup numeric
         template<typename T, T A, T B>
-        class Midpoint {
-        public:
+        struct Midpoint {
             static const __WSTL_CONSTEXPR__ T Value = (A / 2) + (B / 2) + ((A % 2 + B % 2) / 2);
         };
 

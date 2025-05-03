@@ -15,7 +15,7 @@
 /// A set of utility templates
 /// @ingroup wstl
 
-/// @defgroup container Container
+/// @defgroup containers Containers
 /// @ingroup wstl
 
 /// @defgroup maths Maths

@@ -110,7 +110,7 @@ namespace wstl {
     /// This class provides a simple way to access a read-only array of elements,
     /// typically used for initializing containers or handling brace-enclosed lists.
     /// @tparam T Type of elements in the array
-    /// @ingroup container
+    /// @ingroup containers
     /// @note Can be disabled by defining `__WSTL_NO_INITIALIZERLIST__`
     /// @since C++11
     /// @see https://en.cppreference.com/w/cpp/utility/initializer_list
@@ -122,7 +122,7 @@ namespace wstl {
     /// @brief Returns a const pointer to the beginning of the initializer list
     /// @param x The initializer list whose beginning is returned
     /// @return A const pointer to the beginning of the initializer list
-    /// @ingroup container
+    /// @ingroup containers
     /// @since C++11
     /// @see https://en.cppreference.com/w/cpp/utility/initializer_list/begin2
     template<typename T>
@@ -133,7 +133,7 @@ namespace wstl {
     /// @brief Returns a const pointer to the end of the initializer list
     /// @param x The initializer list whose end is returned
     /// @return A const pointer to the end of the initializer list
-    /// @ingroup container
+    /// @ingroup containers
     /// @since C++11
     /// @see https://en.cppreference.com/w/cpp/utility/initializer_list/end2
     template<typename T>
@@ -144,7 +144,7 @@ namespace wstl {
     /// @brief Checks if an initializer list is empty
     /// @param x The initializer list to check
     /// @return True if the initializer list is empty, false otherwise
-    /// @ingroup container
+    /// @ingroup containers
     /// @since C++11
     /// @see https://en.cppreference.com/w/cpp/iterator/empty
     template<typename T>
@@ -155,7 +155,7 @@ namespace wstl {
     /// @brief Retrieves a const pointer to the underlying data of an initializer list
     /// @param x The initializer list whose underlying data is retrieved
     /// @return Const pointer to the underlying data storage of the initializer list
-    /// @ingroup container
+    /// @ingroup containers
     /// @since C++11
     /// @see https://en.cppreference.com/w/cpp/iterator/data
     template<typename T>

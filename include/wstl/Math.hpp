@@ -170,8 +170,7 @@ namespace wstl {
     /// @note Only positive exponents are supported
     /// @ingroup maths
     template<size_t N, size_t POWER, typename UT = uint64_t>
-    class Power {
-    public:
+    struct Power {
         static const __WSTL_CONSTEXPR__ UT Value = N * Power<N, POWER - 1, UT>::Value;
     };
 
@@ -181,8 +180,7 @@ namespace wstl {
     /// @note Only positive exponents are supported
     /// @ingroup maths
     template<size_t N, typename UT>
-    class Power<N, 0, UT> {
-    public: 
+    struct Power<N, 0, UT> {
         static const __WSTL_CONSTEXPR__ UT Value = 1;
     };
 
@@ -236,7 +234,7 @@ namespace wstl {
     /// @tparam N Number to compute the square root of
     /// @ingroup maths
     template<size_t N, size_t I = 1>
-    class SquareRoot : public NthRoot<N, 2, I> {};
+    struct SquareRoot : NthRoot<N, 2, I> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc SquareRoot
@@ -252,8 +250,7 @@ namespace wstl {
     /// @tparam BASE Base of the logarithm
     /// @ingroup maths
     template<size_t N, size_t BASE>
-    class Logarithm {
-    public:
+    struct Logarithm {
         #ifdef __WSTL_CXX11__
         static constexpr size_t Value = (N >= BASE) ? 1 + Logarithm<N / BASE, BASE>::Value : 0;
         #else
@@ -267,8 +264,7 @@ namespace wstl {
     /// @tparam BASE Base of the logarithm
     /// @ingroup maths
     template<size_t BASE>
-    class Logarithm<1, BASE> {
-    public:
+    struct Logarithm<1, BASE> {
         #ifdef __WSTL_CXX11__
         static constexpr size_t Value = 0;
         #else
@@ -282,8 +278,7 @@ namespace wstl {
     /// @tparam BASE Base of the logarithm
     /// @ingroup maths
     template<size_t BASE>
-    class Logarithm<0, BASE> {
-    public:
+    struct Logarithm<0, BASE> {
         #ifdef __WSTL_CXX11__
         static constexpr size_t Value = 0;
         #else
@@ -309,7 +304,7 @@ namespace wstl {
     /// @tparam N Number to compute the logarithm of
     /// @ingroup maths
     template<size_t N>
-    class Logarithm2 : public Logarithm<N, 2> {};
+    struct Logarithm2 : Logarithm<N, 2> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc Logarithm2
@@ -322,7 +317,7 @@ namespace wstl {
     /// @tparam N Number to compute the logarithm of
     /// @ingroup maths
     template<size_t N>
-    class Logarithm10 : public Logarithm<N, 10> {};
+    struct Logarithm10 : Logarithm<N, 10> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc Logarithm10
@@ -337,16 +332,14 @@ namespace wstl {
     /// @tparam N Number to compute the factorial of
     /// @ingroup maths
     template<size_t N>
-    class Factorial {
-    public:
+    struct Factorial {
         static const __WSTL_CONSTEXPR__ size_t Value = N * Factorial<N - 1>::Value;
     };
 
     /// @brief Computes factorial of a number of integral type - specialization for N = 0
     /// @ingroup maths
     template<>
-    class Factorial<0> {
-    public:
+    struct Factorial<0> {
         static const __WSTL_CONSTEXPR__ size_t Value = 1;
     };
 
@@ -366,24 +359,21 @@ namespace wstl {
     /// @tparam N Nth number in the Fibonacci sequence
     /// @ingroup maths
     template<size_t N>
-    class Fibonacci {
-    public:
+    struct Fibonacci {
         static const __WSTL_CONSTEXPR__ size_t Value = Fibonacci<N - 1>::Value + Fibonacci<N - 2>::Value;
     };
 
     /// @brief Computes Fibonacci sequence for nth number - specialization for N = 1
     /// @ingroup maths
     template<>
-    class Fibonacci<1> {
-    public:
+    struct Fibonacci<1> {
         static const __WSTL_CONSTEXPR__ size_t Value = 1;
     };
 
     /// @brief Computes Fibonacci sequence for nth number - specialization for N = 0
     /// @ingroup maths
     template<>
-    class Fibonacci<0> {
-    public:
+    struct Fibonacci<0> {
         static const __WSTL_CONSTEXPR__ size_t Value = 0;
     };
 
@@ -404,8 +394,7 @@ namespace wstl {
     /// @tparam R Number of elements selected
     /// @ingroup maths
     template<size_t N, size_t R>
-    class Permutations {
-    public:
+    struct Permutations {
         static const __WSTL_CONSTEXPR__ size_t Value = N * Permutations<N - 1, R - 1>::Value;
     };
 
@@ -416,8 +405,7 @@ namespace wstl {
     /// @tparam N Total number of elements
     /// @ingroup maths
     template<size_t N>
-    class Permutations<N, 0> {
-    public:
+    struct Permutations<N, 0> {
         static const __WSTL_CONSTEXPR__ size_t Value = 1;
     };
 
@@ -436,8 +424,7 @@ namespace wstl {
     /// @brief Computes combinations of N taken R at a time
     /// @ingroup maths
     template<size_t N, size_t R>
-    class Combinations {
-    public:
+    struct Combinations {
         static const __WSTL_CONSTEXPR__ size_t Value = Permutations<N, R>::Value / Factorial<R>::Value;
     };
 
@@ -570,8 +557,7 @@ namespace wstl {
 
     namespace __private {
         template<typename T = void>
-        class __MathConstants {
-        public:
+        struct __MathConstants {
             static const __WSTL_CONSTEXPR__ double PI = 3.14159265358979;
             static const __WSTL_CONSTEXPR__ double PI_RECIRPOCAL = 0.31830988618379;
             static const __WSTL_CONSTEXPR__ double PI_SQUARED = 9.86960440108936;
@@ -617,7 +603,7 @@ namespace wstl {
 
     /// @brief Class that defines various mathematical constants
     /// @ingroup maths
-    class MathConstants : public __private::__MathConstants<> {};
+    struct MathConstants : __private::__MathConstants<> {};
 }   
 
 #endif

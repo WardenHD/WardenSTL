@@ -30,14 +30,14 @@ namespace wstl {
     /// sequential input operations, such as reading values from a sequence.
     /// @ingroup iterator
     /// @see https://en.cppreference.com/w/cpp/iterator/iterator_tags
-    class InputIteratorTag {};
+    struct InputIteratorTag {};
 
     /// @brief A tag class used to identify output iterators.
     /// Output iterators are iterators that can only be used for single-pass 
     /// sequential output operations, such as writing values to a sequence.
     /// @ingroup iterator
     /// @see https://en.cppreference.com/w/cpp/iterator/iterator_tags
-    class OutputIteratorTag {};
+    struct OutputIteratorTag {};
 
     /// @brief A tag class used to identify forward iterators.
     /// Forward iterators support single-pass sequential traversal and allow 
@@ -45,21 +45,21 @@ namespace wstl {
     /// be incremented multiple times without losing access to previously visited elements.
     /// @ingroup iterator
     /// @see https://en.cppreference.com/w/cpp/iterator/iterator_tags
-    class ForwardIteratorTag : public InputIteratorTag {};
+    struct ForwardIteratorTag : InputIteratorTag {};
 
     /// @brief A tag class used to identify bidirectional iterators.
     /// Bidirectional iterators extend forward iterators by allowing both 
     /// forward and backward traversal of a sequence.
     /// @ingroup iterator
     /// @see https://en.cppreference.com/w/cpp/iterator/iterator_tags
-    class BidirectionalIteratorTag : public ForwardIteratorTag {};
+    struct BidirectionalIteratorTag : ForwardIteratorTag {};
 
     /// @brief A tag class used to identify random-access iterators.
     /// Random-access iterators extend bidirectional iterators by supporting 
     /// constant-time access to any element in the sequence, using arithmetic operators.
     /// @ingroup iterator
     /// @see https://en.cppreference.com/w/cpp/iterator/iterator_tags
-    class RandomAccessIteratorTag : public BidirectionalIteratorTag {};
+    struct RandomAccessIteratorTag : BidirectionalIteratorTag {};
 
     /// @brief A tag class used to identify contiguous iterators.
     /// Contiguous iterators extend random-access iterators by guaranteeing 
@@ -79,8 +79,7 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/iterator/iterator
     template<typename Category, typename T, typename Distance = ptrdiff_t, 
         typename Pointer = T*, typename Reference = T&>
-    class Iterator {
-    public:
+    struct Iterator {
         typedef Category IteratorCategory;
         typedef T ValueType;
         typedef Distance DifferenceType;
@@ -95,8 +94,7 @@ namespace wstl {
     /// @ingroup iterator
     /// @see https://en.cppreference.com/w/cpp/iterator/iterator_traits
     template<typename Iterator>
-    class IteratorTraits {
-    public:
+    struct IteratorTraits {
         /// @brief The category of the iterator (e.g. Input, Forward, Bidirectional)
         typedef typename Iterator::IteratorCategory IteratorCategory;
         /// @brief The type of the element pointed by the iterator
@@ -114,8 +112,7 @@ namespace wstl {
     /// @ingroup iterator
     /// @see https://en.cppreference.com/w/cpp/iterator/iterator_traits
     template<typename T>
-    class IteratorTraits<T*> {
-    public:
+    struct IteratorTraits<T*> {
         /// @brief The category of the iterator for raw pointers is `RandomAccessIteratorTag`
         typedef RandomAccessIteratorTag IteratorCategory;
         /// @brief The type of the element pointed by the pointer
@@ -133,8 +130,7 @@ namespace wstl {
     /// @ingroup iterator
     /// @see https://en.cppreference.com/w/cpp/iterator/iterator_traits
     template<typename T>
-    class IteratorTraits<const T*> {
-    public:
+    struct IteratorTraits<const T*> {
         /// @brief The category of the iterator for const pointers is `RandomAccessIteratorTag`
         typedef RandomAccessIteratorTag IteratorCategory;
         /// @brief The type of the element pointed by the const pointer
@@ -199,7 +195,7 @@ namespace wstl {
         }   
 
         template<typename Iterator>
-        __WSTL_CONSTEXPR14__ typename IteratorTraits<Iterator>::DifferenceType 
+        __WSTL_CONSTEXPR14__ inline typename IteratorTraits<Iterator>::DifferenceType 
         __Distance(Iterator first, Iterator last, RandomAccessIteratorTag) {
             return last - first;
         }
@@ -252,42 +248,42 @@ namespace wstl {
     /// @brief Checks if a given type is a forward iterator or its derival
     /// @tparam T Type to check
     template<typename T>
-    class IsForwardIterator : public IsBaseOf<ForwardIteratorTag, typename IteratorTraits<T>::IteratorCategory> {};
+    struct IsForwardIterator : IsBaseOf<ForwardIteratorTag, typename IteratorTraits<T>::IteratorCategory> {};
 
     // Is input iterator
 
     /// @brief Checks if a given type is an input iterator or its derival
     /// @tparam T Type to check
     template<typename T>
-    class IsInputIterator : public IsBaseOf<InputIteratorTag, typename IteratorTraits<T>::IteratorCategory> {};
+    struct IsInputIterator : IsBaseOf<InputIteratorTag, typename IteratorTraits<T>::IteratorCategory> {};
 
     // Is output iterator
 
     /// @brief Checks if a given type is an output iterator or its derival
     /// @tparam T Type to check
     template<typename T>
-    class IsOutputIterator : public IsBaseOf<OutputIteratorTag, typename IteratorTraits<T>::IteratorCategory> {};
+    struct IsOutputIterator : IsBaseOf<OutputIteratorTag, typename IteratorTraits<T>::IteratorCategory> {};
 
     // Is bidirectional iterator
 
     /// @brief Checks if a given type is an bidirectional iterator or its derival
     /// @tparam T Type to check
     template<typename T>
-    class IsBidirectionalIterator : public IsBaseOf<BidirectionalIteratorTag, typename IteratorTraits<T>::IteratorCategory> {};
+    struct IsBidirectionalIterator : IsBaseOf<BidirectionalIteratorTag, typename IteratorTraits<T>::IteratorCategory> {};
 
     // Is random access iterator
 
     /// @brief Checks if a given type is a random access iterator or its derival
     /// @tparam T Type to check
     template<typename T>
-    class IsRandomAccessIterator : public IsBaseOf<RandomAccessIteratorTag, typename IteratorTraits<T>::IteratorCategory> {};
+    struct IsRandomAccessIterator : IsBaseOf<RandomAccessIteratorTag, typename IteratorTraits<T>::IteratorCategory> {};
 
     // Is contiguous iterator
 
     // /// @brief Checks if a given type is a contiguous iterator or its derival
     // /// @tparam T Type to check
     // template<typename T>
-    // class IsContiguousIterator : public IsBaseOf<ContiguousIteratorTag, typename IteratorTraits<T>::IteratorCategory> {};
+    // struct IsContiguousIterator : IsBaseOf<ContiguousIteratorTag, typename IteratorTraits<T>::IteratorCategory> {};
 
     // Reverse iterator
 
@@ -456,7 +452,7 @@ namespace wstl {
         return y.Base() - x.Base();
     }
 
-    template<typename T, class Difference>
+    template<typename T, typename Difference>
     __WSTL_CONSTEXPR14__ ReverseIterator<T> operator+(Difference n, const ReverseIterator<T>& iterator) {
         return iterator.operator+(n);
     }
@@ -643,7 +639,7 @@ namespace wstl {
         return x.Base() - y.Base();
     }
 
-    template<typename T, class Difference>
+    template<typename T, typename Difference>
     __WSTL_CONSTEXPR14__ MoveIterator<T> operator+(Difference n, const MoveIterator<T>& iterator) {
         return iterator + n;
     }
@@ -867,7 +863,7 @@ namespace wstl {
     /// @return A `BackInsertIterator` associated with the given container
     /// @ingroup iterator
     /// @see https://en.cppreference.com/w/cpp/iterator/back_inserter
-    template<class Container>
+    template<typename Container>
     __WSTL_CONSTEXPR14__ BackInsertIterator<Container> BackInserter(Container& container) {
         return BackInsertIterator<Container>(container);
     }
@@ -877,7 +873,7 @@ namespace wstl {
     /// @brief Returns an iterator to the beginning of the container
     /// @param container The container whose beginning iterator is returned
     /// @return An iterator pointing to the first element of the container
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/begin
     template<typename Container>
     __WSTL_CONSTEXPR__ inline typename Container::Iterator Begin(Container& container) {
@@ -887,7 +883,7 @@ namespace wstl {
     /// @brief Returns a const iterator to the beginning of the container
     /// @param container The container whose beginning iterator is returned
     /// @return A const iterator pointing to the first element of the container
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/begin
     template<typename Container>
     __WSTL_CONSTEXPR__ inline typename Container::ConstIterator Begin(const Container& container) {
@@ -897,7 +893,7 @@ namespace wstl {
     /// @brief Returns a const iterator to the beginning of the container
     /// @param container The container whose beginning iterator is returned
     /// @return A const iterator pointing to the first element of the container
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/begin
     template<typename Container>
     __WSTL_CONSTEXPR__ inline typename Container::ConstIterator ConstBegin(const Container& container) {
@@ -907,7 +903,7 @@ namespace wstl {
     /// @brief Returns an iterator to the end of the container
     /// @param container The container whose end iterator is returned
     /// @return An iterator pointing to the last element of the container
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/end
     template<typename Container>
     __WSTL_CONSTEXPR__ inline typename Container::Iterator End(Container& container) {
@@ -917,7 +913,7 @@ namespace wstl {
     /// @brief Returns a const iterator to the end of the container
     /// @param container The container whose end iterator is returned
     /// @return A const iterator pointing to the last element of the container
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/end
     template<typename Container>
     __WSTL_CONSTEXPR__ inline typename Container::ConstIterator End(const Container& container) {
@@ -927,7 +923,7 @@ namespace wstl {
     /// @brief Returns a const iterator to the end of the container
     /// @param container The container whose end iterator is returned
     /// @return A const iterator pointing to the last element of the container
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/end
     template<typename Container>
     __WSTL_CONSTEXPR__ inline typename Container::ConstIterator ConstEnd(const Container& container) {
@@ -937,7 +933,7 @@ namespace wstl {
     /// @brief Returns a pointer to the beginning of a raw array
     /// @param array The array whose beginning is returned
     /// @return A pointer to the first element of the array
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/begin
     template<typename T, size_t N>
     __WSTL_CONSTEXPR__ inline T* Begin(T (&array)[N]) {
@@ -947,7 +943,7 @@ namespace wstl {
     /// @brief Returns a const pointer to the beginning of a raw array
     /// @param array The array whose beginning is returned
     /// @return A const pointer to the first element of the array
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/begin
     template<typename T, size_t N>
     __WSTL_CONSTEXPR__ inline const T* Begin(const T (&array)[N]) {
@@ -957,7 +953,7 @@ namespace wstl {
     /// @brief Returns a const pointer to the beginning of a raw array
     /// @param array The array whose beginning is returned
     /// @return A const pointer to the first element of the array
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/begin
     template<typename T, size_t N>
     __WSTL_CONSTEXPR__ inline const T* ConstBegin(const T (&array)[N]) {
@@ -967,7 +963,7 @@ namespace wstl {
     /// @brief Returns a pointer to the end of a raw array
     /// @param array The array whose beginning is returned
     /// @return A pointer to the last element of the array
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/end
     template<typename T, size_t N>
     __WSTL_CONSTEXPR__ inline T* End(T (&array)[N]) {
@@ -977,7 +973,7 @@ namespace wstl {
     /// @brief Returns a const pointer to the end of a raw array
     /// @param array The array whose beginning is returned
     /// @return A const pointer to the last element of the array
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/end
     template<typename T, size_t N>
     __WSTL_CONSTEXPR__ inline const T* End(const T (&array)[N]) {
@@ -987,7 +983,7 @@ namespace wstl {
     /// @brief Returns a const pointer to the end of a raw array
     /// @param array The array whose beginning is returned
     /// @return A const pointer to the last element of the array
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/end
     template<typename T, size_t N>
     __WSTL_CONSTEXPR__ inline const T* ConstEnd(const T (&array)[N]) {
@@ -999,7 +995,7 @@ namespace wstl {
     /// @brief Returns a reverse iterator to the beginning (last element) of the container
     /// @param container The container whose reverse beginning iterator is returned
     /// @return A reverse iterator pointing to the last element of the container
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/rbegin
     template<typename Container>
     __WSTL_CONSTEXPR__ inline typename Container::ReverseIterator ReverseBegin(Container& container) {
@@ -1009,7 +1005,7 @@ namespace wstl {
     /// @brief Returns a const reverse iterator to the beginning (last element) of the container
     /// @param container The container whose reverse beginning iterator is returned
     /// @return A const reverse iterator pointing to the last element of the container
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/rbegin
     template<typename Container>
     __WSTL_CONSTEXPR__ inline typename Container::ConstReverseIterator ReverseBegin(const Container& container) {
@@ -1019,7 +1015,7 @@ namespace wstl {
     /// @brief Returns a const reverse iterator to the beginning (last element) of the container
     /// @param container The container whose reverse beginning iterator is returned
     /// @return A const reverse iterator pointing to the last element of the container
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/rbegin
     template<typename Container>
     __WSTL_CONSTEXPR__ inline typename Container::ConstReverseIterator ConstReverseBegin(const Container& container) {
@@ -1029,7 +1025,7 @@ namespace wstl {
     /// @brief Returns a reverse iterator to the end (before first element) of the container
     /// @param container The container whose reverse end iterator is returned
     /// @return A reverse iterator pointing past the first element of the container
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/rend
     template<typename Container>
     __WSTL_CONSTEXPR__ inline typename Container::ReverseIterator ReverseEnd(Container& container) {
@@ -1039,7 +1035,7 @@ namespace wstl {
     /// @brief Returns a const reverse iterator to the end (before first element) of the container
     /// @param container The container whose reverse end iterator is returned
     /// @return A const reverse iterator pointing past the first element of the container
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/rend
     template<typename Container>
     __WSTL_CONSTEXPR__ inline typename Container::ConstReverseIterator ReverseEnd(const Container& container) {
@@ -1049,7 +1045,7 @@ namespace wstl {
     /// @brief Returns a const reverse iterator to the end (before first element) of the container
     /// @param container The container whose reverse end iterator is returned
     /// @return A const reverse iterator pointing past the first element of the container
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/rend
     template<typename Container>
     __WSTL_CONSTEXPR__ inline typename Container::ConstReverseIterator ConstReverseEnd(const Container& container) {
@@ -1059,7 +1055,7 @@ namespace wstl {
     /// @brief Returns a reverse iterator to the beginning (last element) of a raw array
     /// @param array The array whose reverse beginning is returned
     /// @return A reverse iterator pointing to the last element of the array
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/rbegin
     template<typename T, size_t N>
     __WSTL_CONSTEXPR__ inline ReverseIterator<T*> ReverseBegin(T (&array)[N]) {
@@ -1069,7 +1065,7 @@ namespace wstl {
     /// @brief Returns a const reverse iterator to the beginning (last element) of a raw array
     /// @param array The array whose reverse beginning is returned
     /// @return A const reverse iterator pointing to the last element of the array
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/rbegin
     template<typename T, size_t N>
     __WSTL_CONSTEXPR__ inline ReverseIterator<const T*> ConstReverseBegin(const T (&array)[N]) {
@@ -1079,7 +1075,7 @@ namespace wstl {
     /// @brief Returns a reverse iterator to the end (before first element) of a raw array
     /// @param array The array whose reverse end is returned
     /// @return A reverse iterator pointing before the first element of the array
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/rend
     template<typename T, size_t N>
     __WSTL_CONSTEXPR__ inline ReverseIterator<T*> ReverseEnd(T (&array)[N]) {
@@ -1089,7 +1085,7 @@ namespace wstl {
     /// @brief Returns a const reverse iterator to the end (before first element) of a raw array
     /// @param array The array whose reverse end is returned
     /// @return A const reverse iterator pointing before the first element of the array
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/rend
     template<typename T, size_t N>
     __WSTL_CONSTEXPR__ inline ReverseIterator<const T*> ConstReverseEnd(const T (&array)[N]) {
@@ -1101,7 +1097,7 @@ namespace wstl {
     /// @brief A compile-time function that returns the size of an array
     /// @param array A reference to the array
     /// @return A reference to a character array of size `N`, allowing compile-time size deduction
-    /// @ingroup container
+    /// @ingroup containers
     template<typename T, size_t N>
     char(&ArraySize(T(&array)[N]))[N];
 
@@ -1110,7 +1106,7 @@ namespace wstl {
     /// @brief Returns the number of elements in a raw array
     /// @param array A reference to the array
     /// @return The number of elements in the array
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/size
     template<typename T, size_t N>
     __WSTL_CONSTEXPR__ inline size_t Size(T (&array)[N]) {
@@ -1120,7 +1116,7 @@ namespace wstl {
     /// @brief Returns the number of elements in a container
     /// @param container The container whose size is to be retrieved
     /// @return The number of elements in the container
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/size
     template<typename Container>
     __WSTL_CONSTEXPR__ inline typename Container::SizeType Size(const Container& container) {
@@ -1133,7 +1129,7 @@ namespace wstl {
     /// @brief Checks if a container is empty
     /// @param container The container to check
     /// @return True if the container is empty, false otherwise
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/empty
     __WSTL_CONSTEXPR__ inline bool Empty(const Container& container) {
         return container.Empty();
@@ -1143,7 +1139,7 @@ namespace wstl {
     /// @brief Checks if a fixed-size array is empty
     /// @param array The array to check
     /// @return Always false, as fixed-size arrays are never empty
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/empty
     __WSTL_CONSTEXPR__ inline bool Empty(T (&array)[N]) {
         return false;
@@ -1154,7 +1150,7 @@ namespace wstl {
     /// @brief Retrieves a pointer to the underlying data of the given container
     /// @param container Reference to the container
     /// @return Pointer to the underlying data storage of the container
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/data
     template<typename Container>
     __WSTL_CONSTEXPR__ inline typename Container::ValueType* Data(Container& container) {
@@ -1165,7 +1161,7 @@ namespace wstl {
     /// @tparam Container Type of the container
     /// @param container Reference to the container
     /// @return Const pointer to the underlying data storage of the container
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/data
     template<typename Container>
     __WSTL_CONSTEXPR__ inline const typename Container::ValueType* Data(const Container& container) {
@@ -1176,7 +1172,7 @@ namespace wstl {
     /// @brief Retrieves a pointer to the first element of a raw array
     /// @param array Reference to the array
     /// @return Pointer to the first element of the array
-    /// @ingroup container
+    /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/data
     __WSTL_CONSTEXPR__ inline T* Data(T (&array)[N]) __WSTL_NOEXCEPT__ {
         return array;

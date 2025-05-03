@@ -25,8 +25,7 @@ namespace wstl {
     /// @ingroup ratio
     /// @see https://en.cppreference.com/w/cpp/numeric/ratio/ratio
     template<intmax_t NUMERATOR, intmax_t DENOMINATOR = 1>
-    class Ratio {
-    public:
+    struct Ratio {
         static const __WSTL_CONSTEXPR__ intmax_t Numerator = NUMERATOR;
         static const __WSTL_CONSTEXPR__ intmax_t Denominator = DENOMINATOR;
 
@@ -103,8 +102,7 @@ namespace wstl {
         };
 
         template<typename R1, typename R2>
-        class __RatioSubtract {
-        public:
+        struct __RatioSubtract {
             typedef typename __RatioAdd<R1, Ratio<-R2::Numerator, R2::Denominator>>::Type Type;
         };
 
@@ -119,8 +117,7 @@ namespace wstl {
         };
 
         template<typename R1, typename R2>
-        class __RatioDivide {
-        public:
+        struct __RatioDivide {
             typedef typename __RatioMultiply<R1, Ratio<R2::Denominator, R2::Numerator>>::Type Type;
         };
     }
@@ -165,7 +162,7 @@ namespace wstl {
     /// @ingroup ratio
     /// @see https://en.cppreference.com/w/cpp/numeric/ratio/ratio_add
     template<typename R1, typename R2>
-    class RatioAdd : public __private::__RatioAdd<R1, R2> {};
+    struct RatioAdd : __private::__RatioAdd<R1, R2> {};
 
     /// @brief Subtracts two ratios
     /// @tparam R1 First ratio
@@ -173,7 +170,7 @@ namespace wstl {
     /// @ingroup ratio
     /// @see https://en.cppreference.com/w/cpp/numeric/ratio/ratio_subtract
     template<typename R1, typename R2>
-    class RatioSubtract : public __private::__RatioSubtract<R1, R2> {};
+    struct RatioSubtract : __private::__RatioSubtract<R1, R2> {};
 
     /// @brief Multiplies two ratios
     /// @tparam R1 First ratio
@@ -181,7 +178,7 @@ namespace wstl {
     /// @ingroup ratio
     /// @see https://en.cppreference.com/w/cpp/numeric/ratio/ratio_multiply
     template<typename R1, typename R2>
-    class RatioMultiply : public __private::__RatioMultiply<R1, R2> {};
+    struct RatioMultiply : __private::__RatioMultiply<R1, R2> {};
 
     /// @brief Divides two ratios
     /// @tparam R1 First ratio
@@ -189,7 +186,7 @@ namespace wstl {
     /// @ingroup ratio
     /// @see https://en.cppreference.com/w/cpp/numeric/ratio/ratio_divide
     template<typename R1, typename R2>
-    class RatioDivide : public __private::__RatioDivide<R1, R2> {};
+    struct RatioDivide : __private::__RatioDivide<R1, R2> {};
     #endif
 
     /// @brief Checks whether two ratios are equal
@@ -198,7 +195,7 @@ namespace wstl {
     /// @ingroup ratio
     /// @see https://en.cppreference.com/w/cpp/numeric/ratio/ratio_equal
     template<typename R1, typename R2>
-    class RatioEqual : public BoolConstant<(R1::Numerator == R2::Numerator && R1::Denominator == R2::Denominator)> {};
+    struct RatioEqual : BoolConstant<(R1::Numerator == R2::Numerator && R1::Denominator == R2::Denominator)> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc RatioEqual
@@ -213,7 +210,7 @@ namespace wstl {
     /// @ingroup ratio
     /// @see https://en.cppreference.com/w/cpp/numeric/ratio/ratio_not_equal
     template<typename R1, typename R2>
-    class RatioNotEqual : public BoolConstant<(R1::Numerator != R2::Numerator || R1::Denominator != R2::Denominator)> {};
+    struct RatioNotEqual : BoolConstant<(R1::Numerator != R2::Numerator || R1::Denominator != R2::Denominator)> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc RatioNotEqual
@@ -228,7 +225,7 @@ namespace wstl {
     /// @ingroup ratio
     /// @see https://en.cppreference.com/w/cpp/numeric/ratio/ratio_less
     template<typename R1, typename R2>
-    class RatioLess : public BoolConstant<(R1::Numerator * R2::Denominator < R1::Denominator * R2::Numerator)> {};
+    struct RatioLess : BoolConstant<(R1::Numerator * R2::Denominator < R1::Denominator * R2::Numerator)> {};
     
     #ifdef __WSTL_CXX17__
     /// @copydoc RatioLess
@@ -243,7 +240,7 @@ namespace wstl {
     /// @ingroup ratio
     /// @see https://en.cppreference.com/w/cpp/numeric/ratio/ratio_less_equal
     template<typename R1, typename R2>
-    class RatioLessEqual : public BoolConstant<(R1::Numerator * R2::Denominator <= R1::Denominator * R2::Numerator)> {};
+    struct RatioLessEqual : BoolConstant<(R1::Numerator * R2::Denominator <= R1::Denominator * R2::Numerator)> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc RatioLessEqual
@@ -258,7 +255,7 @@ namespace wstl {
     /// @ingroup ratio
     /// @see https://en.cppreference.com/w/cpp/numeric/ratio/ratio_greater
     template<typename R1, typename R2>
-    class RatioGreater : public BoolConstant<(R1::Numerator * R2::Denominator > R1::Denominator * R2::Numerator)> {};
+    struct RatioGreater : BoolConstant<(R1::Numerator * R2::Denominator > R1::Denominator * R2::Numerator)> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc RatioGreater
@@ -273,7 +270,7 @@ namespace wstl {
     /// @ingroup ratio
     /// @see https://en.cppreference.com/w/cpp/numeric/ratio/ratio_greater_equal
     template<typename R1, typename R2>
-    class RatioGreaterEqual : public BoolConstant<(R1::Numerator * R2::Denominator >= R1::Denominator * R2::Numerator)> {};
+    struct RatioGreaterEqual : BoolConstant<(R1::Numerator * R2::Denominator >= R1::Denominator * R2::Numerator)> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc RatioGreaterEqual

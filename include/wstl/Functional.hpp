@@ -52,8 +52,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/unary_function
     template<typename Arg, typename Return>
-    class UnaryFunction {
-    public:
+    struct UnaryFunction {
         typedef Return ResultType;
         typedef Arg ArgumentType;
     };
@@ -68,8 +67,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/binary_function
     template<typename Arg1, typename Arg2, typename Return>
-    class BinaryFunction {
-    public:
+    struct BinaryFunction {
         typedef Return ResultType;
         typedef Arg1 FirstArgumentType;
         typedef Arg2 SecondArgumentType;
@@ -82,48 +80,48 @@ namespace wstl {
     /// @note In C++98 it supports maximum two arguments
     /// @ingroup functional
     template<typename Signature>
-    class FunctionBase;
+    class IFunction;
 
     #ifdef __WSTL_CXX11__
     template<typename Signature>
-    class FunctionBase;
+    class IFunction;
 
     template<typename Return, typename... Args>
-    class FunctionBase<Return(Args...)> {
+    class IFunction<Return(Args...)> {
     public:
         typedef Return ResultType;
 
-        virtual ~FunctionBase() {}
+        virtual ~IFunction() {}
 
         virtual Return operator()(Args...) const = 0;
     };
     #else
     template<typename Return, typename Arg1, typename Arg2>
-    class FunctionBase<Return(Arg1, Arg2)> {
+    class IFunction<Return(Arg1, Arg2)> {
     public:
         typedef Return ResultType;
 
-        virtual ~FunctionBase() {}
+        virtual ~IFunction() {}
 
         virtual Return operator()(Arg1, Arg2) const = 0;
     };
 
     template<typename Return, typename Arg>
-    class FunctionBase<Return(Arg)> {
+    class IFunction<Return(Arg)> {
     public:
         typedef Return ResultType;
 
-        virtual ~FunctionBase() {}
+        virtual ~IFunction() {}
 
         virtual Return operator()(Arg) const = 0;
     };
 
     template<typename Return>
-    class FunctionBase<Return()> {
+    class IFunction<Return()> {
     public:
         typedef Return ResultType;
 
-        virtual ~FunctionBase() {}
+        virtual ~IFunction() {}
 
         virtual Return operator()() const = 0;
     };
@@ -144,7 +142,7 @@ namespace wstl {
     // Function (many parameters)
     
     template<typename Return, typename... Args>
-    class Function<Return(Args...)> : public FunctionBase<Return(Args...)> {
+    class Function<Return(Args...)> : public IFunction<Return(Args...)> {
     public:
         __WSTL_CONSTEXPR14__ Function() __WSTL_NOEXCEPT__ : m_Function(nullptr) {}
 
@@ -199,7 +197,7 @@ namespace wstl {
     // Member
 
     template<typename Object, typename Return, typename... Args>
-    class Function<Return(Args...), Object> : public FunctionBase<Return(Args...)> {
+    class Function<Return(Args...), Object> : public IFunction<Return(Args...)> {
     public:
         typedef Object ObjectType;
         
@@ -272,7 +270,7 @@ namespace wstl {
     // Const member
 
     template<typename Object, typename Return, typename... Args>
-    class Function<Return(Args...), const Object> : public FunctionBase<Return(Args...)> {
+    class Function<Return(Args...), const Object> : public IFunction<Return(Args...)> {
     public:
         typedef const Object ObjectType;
 
@@ -408,7 +406,7 @@ namespace wstl {
 
     #else
     template<typename Return, typename Arg1, typename Arg2>
-    class Function<Return(Arg1, Arg2)> : public FunctionBase<Return(Arg1, Arg2)> {
+    class Function<Return(Arg1, Arg2)> : public IFunction<Return(Arg1, Arg2)> {
     public:
         Function() __WSTL_NOEXCEPT__ : m_Function(NullPointer) {}
 
@@ -451,7 +449,7 @@ namespace wstl {
     // Member 
 
     template<typename Object, typename Return, typename Arg1, typename Arg2>
-    class Function<Return(Arg1, Arg2), Object> : public FunctionBase<Return(Arg1, Arg2)> {
+    class Function<Return(Arg1, Arg2), Object> : public IFunction<Return(Arg1, Arg2)> {
     public:
         typedef Object ObjectType;
 
@@ -503,7 +501,7 @@ namespace wstl {
     // Const member
 
     template<typename Object, typename Return, typename Arg1, typename Arg2>
-    class Function<Return(Arg1, Arg2), const Object> : public FunctionBase<Return(Arg1, Arg2)> {
+    class Function<Return(Arg1, Arg2), const Object> : public IFunction<Return(Arg1, Arg2)> {
     public:
         typedef const Object ObjectType;
 
@@ -610,7 +608,7 @@ namespace wstl {
     // Function (1 argument)
 
     template<typename Return, typename Arg>
-    class Function<Return(Arg)> : public FunctionBase<Return(Arg)> {
+    class Function<Return(Arg)> : public IFunction<Return(Arg)> {
     public:
         Function() __WSTL_NOEXCEPT__ : m_Function(NullPointer) {}
 
@@ -653,7 +651,7 @@ namespace wstl {
     // Member
 
     template<typename Object, typename Return, typename Arg>
-    class Function<Return(Arg), Object> : public FunctionBase<Return(Arg)> {
+    class Function<Return(Arg), Object> : public IFunction<Return(Arg)> {
     public:
         typedef Object ObjectType;
 
@@ -706,7 +704,7 @@ namespace wstl {
     // Const member
 
     template<typename Object, typename Return, typename Arg>
-    class Function<Return(Arg), const Object> : public FunctionBase<Return(Arg)> {
+    class Function<Return(Arg), const Object> : public IFunction<Return(Arg)> {
     public:
         typedef const Object ObjectType;
 
@@ -814,7 +812,7 @@ namespace wstl {
     // Function (no arguments)
 
     template<typename Return>
-    class Function<Return()> : public FunctionBase<Return()> {
+    class Function<Return()> : public IFunction<Return()> {
     public:
         Function() __WSTL_NOEXCEPT__ : m_Function(NullPointer) {}
 
@@ -857,7 +855,7 @@ namespace wstl {
     // Member
 
     template<typename Object, typename Return>
-    class Function<Return(), Object> : public FunctionBase<Return()> {
+    class Function<Return(), Object> : public IFunction<Return()> {
     public:
         typedef Object ObjectType;
 
@@ -910,7 +908,7 @@ namespace wstl {
     // Const member
 
     template<typename Object, typename Return>
-    class Function<Return(), const Object> : public FunctionBase<Return()> {
+    class Function<Return(), const Object> : public IFunction<Return()> {
     public:
         typedef const Object ObjectType;
 
@@ -1336,19 +1334,16 @@ namespace wstl {
     // UnwrapReference specialization
 
     template<typename T>
-    class UnwrapReference<ReferenceWrapper<T> > {
-    public:
-        typedef T& Type;
-    };
+    struct UnwrapReference<ReferenceWrapper<T> > { typedef T& Type; };
 
     // Plus
 
     #ifdef __WSTL_CXX11__
     template<typename T = void>
-    class Plus;
+    struct Plus;
     #else
     template<typename T>
-    class Plus;
+    struct Plus;
     #endif
 
     /// @brief Functor that represents addition for two objects
@@ -1356,8 +1351,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/plus
     template<typename T>
-    class Plus : public BinaryFunction<T, T, T> {
-    public:
+    struct Plus : BinaryFunction<T, T, T> {
         /// @brief Applies the functor to two arguments
         /// @param a Value of the first argument
         /// @param b Value of the second argument
@@ -1374,8 +1368,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/plus_void
     template<>
-    class Plus<void> : public BinaryFunction<void, void, void> {
-    public:
+    struct Plus<void> : BinaryFunction<void, void, void> {
         /// @brief Type definition indicating the functor is transparent
         typedef int IsTransparent;
 
@@ -1394,10 +1387,10 @@ namespace wstl {
 
     #ifdef __WSTL_CXX11__
     template<typename T = void>
-    class Minus;
+    struct Minus;
     #else
     template<typename T>
-    class Minus;
+    struct Minus;
     #endif
 
     /// @brief Functor that represents subtraction for two objects
@@ -1405,8 +1398,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/minus
     template<typename T>
-    class Minus : public BinaryFunction<T, T, T> {
-    public:
+    struct Minus : BinaryFunction<T, T, T> {
         /// @brief Applies the functor to two arguments
         /// @param a Value of the first argument
         /// @param b Value of the second argument
@@ -1423,8 +1415,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/minus_void
     template<>
-    class Minus<void> : public BinaryFunction<void, void, void> {
-    public:
+    struct Minus<void> : BinaryFunction<void, void, void> {
         /// @brief Type definition indicating the functor is transparent
         typedef int IsTransparent;
 
@@ -1443,10 +1434,10 @@ namespace wstl {
 
     #ifdef __WSTL_CXX11__
     template<typename T = void>
-    class Multiplies;
+    struct Multiplies;
     #else
     template<typename T>
-    class Multiplies;
+    struct Multiplies;
     #endif
 
     /// @brief Functor that represents multiplication for two objects
@@ -1454,8 +1445,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/multiplies
     template<typename T>
-    class Multiplies : public BinaryFunction<T, T, T> {
-    public:
+    struct Multiplies : BinaryFunction<T, T, T> {
         /// @brief Applies the functor to two arguments
         /// @param a Value of the first argument
         /// @param b Value of the second argument
@@ -1472,8 +1462,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/multiplies_void
     template<>
-    class Multiplies<void> : public BinaryFunction<void, void, void> {
-    public:
+    struct Multiplies<void> : BinaryFunction<void, void, void> {
         /// @brief Type definition indicating the functor is transparent
         typedef int IsTransparent;
 
@@ -1492,10 +1481,10 @@ namespace wstl {
 
     #ifdef __WSTL_CXX11__
     template<typename T = void>
-    class Divides;
+    struct Divides;
     #else
     template<typename T>
-    class Divides;
+    struct Divides;
     #endif
 
     /// @brief Functor that represents division for two objects
@@ -1503,8 +1492,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/divides
     template<typename T>
-    class Divides : public BinaryFunction<T, T, T> {
-    public:
+    struct Divides : BinaryFunction<T, T, T> {
         /// @brief Applies the functor to two arguments
         /// @param a Value of the first argument
         /// @param b Value of the second argument
@@ -1521,8 +1509,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/divides_void
     template<>
-    class Divides<void> : public BinaryFunction<void, void, void> {
-    public:
+    struct Divides<void> : BinaryFunction<void, void, void> {
         /// @brief Type definition indicating the functor is transparent
         typedef int IsTransparent;
 
@@ -1541,10 +1528,10 @@ namespace wstl {
 
     #ifdef __WSTL_CXX11__
     template<typename T = void>
-    class Modulus;
+    struct Modulus;
     #else
     template<typename T>
-    class Modulus;
+    struct Modulus;
     #endif
 
     /// @brief Functor that represents the modulus operation for two objects
@@ -1552,8 +1539,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/modulus
     template<typename T>
-    class Modulus : public BinaryFunction<T, T, T> {
-    public:
+    struct Modulus : BinaryFunction<T, T, T> {
         /// @brief Applies the functor to two arguments
         /// @param a Value of the first argument
         /// @param b Value of the second argument
@@ -1570,8 +1556,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/modulus_void
     template<>
-    class Modulus<void> : public BinaryFunction<void, void, void> {
-    public:
+    struct Modulus<void> : BinaryFunction<void, void, void> {
         /// @brief Type definition indicating the functor is transparent
         typedef int IsTransparent;
 
@@ -1590,10 +1575,10 @@ namespace wstl {
 
     #ifdef __WSTL_CXX11__
     template<typename T = void>
-    class Negate;
+    struct Negate;
     #else
     template<typename T>
-    class Negate;
+    struct Negate;
     #endif
 
     /// @brief Functor that represents the negation operation for an object
@@ -1601,8 +1586,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/negate
     template<typename T>
-    class Negate : public UnaryFunction<T, T> {
-    public:
+    struct Negate : UnaryFunction<T, T> {
         /// @brief Applies the functor to an argument
         /// @param x Value of the argument
         /// @return The negation of the argument
@@ -1618,8 +1602,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/negate_void
     template<>
-    class Negate<void> : public UnaryFunction<void, void> {
-    public:
+    struct Negate<void> : UnaryFunction<void, void> {
         /// @brief Type definition indicating the functor is transparent
         typedef int IsTransparent;
 
@@ -1637,10 +1620,10 @@ namespace wstl {
 
     #ifdef __WSTL_CXX11__
     template<typename T = void>
-    class EqualTo;
+    struct EqualTo;
     #else
     template<typename T>
-    class EqualTo;
+    struct EqualTo;
     #endif
     
     /// @brief Functor that represents equality comparison between two objects
@@ -1648,8 +1631,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/equal_to
     template<typename T>
-    class EqualTo : public BinaryFunction<T, T, bool> {
-    public:
+    struct EqualTo : BinaryFunction<T, T, bool> {
         /// @brief Applies the functor to two arguments
         /// @param a Value of the first argument
         /// @param b Value of the second argument
@@ -1666,8 +1648,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/equal_to_void
     template<>
-    class EqualTo<void> : public BinaryFunction<void, void, void> {
-    public:
+    struct EqualTo<void> : BinaryFunction<void, void, void> {
         /// @brief Type definition indicating the functor is transparent
         typedef int IsTransparent;
 
@@ -1686,10 +1667,10 @@ namespace wstl {
 
     #ifdef __WSTL_CXX11__
     template<typename T = void>
-    class NotEqualTo;
+    struct NotEqualTo;
     #else
     template<typename T>
-    class NotEqualTo;
+    struct NotEqualTo;
     #endif
 
     /// @brief Functor that represents inequality comparison between two objects
@@ -1697,8 +1678,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/not_equal_to
     template<typename T>
-    class NotEqualTo : public BinaryFunction<T, T, bool> {
-    public:
+    struct NotEqualTo : BinaryFunction<T, T, bool> {
         /// @brief Applies the functor to two arguments
         /// @param a Value of the first argument
         /// @param b Value of the second argument
@@ -1715,8 +1695,7 @@ namespace wstl {
     /// @ingroup
     /// @see https://en.cppreference.com/w/cpp/utility/functional/not_equal_to_void
     template<>
-    class NotEqualTo<void> : public BinaryFunction<void, void, void> {
-    public:
+    struct NotEqualTo<void> : BinaryFunction<void, void, void> {
         /// @brief Type definition indicating the functor is transparent
         typedef int IsTransparent;
     
@@ -1735,10 +1714,10 @@ namespace wstl {
 
     #ifdef __WSTL_CXX11__
     template<typename T = void>
-    class Greater;
+    struct Greater;
     #else
     template<typename T>
-    class Greater;
+    struct Greater;
     #endif
 
     /// @brief Functor that represents greater-than comparison between two objects
@@ -1746,8 +1725,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/greater
     template<typename T>
-    class Greater : public BinaryFunction<T, T, bool> {
-    public:
+    struct Greater : BinaryFunction<T, T, bool> {
         /// @brief Applies the functor to two arguments
         /// @param a Value of the first argument
         /// @param b Value of the second argument
@@ -1764,8 +1742,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/greater_void
     template<>
-    class Greater<void> : public BinaryFunction<void, void, void> {
-    public:
+    struct Greater<void> : BinaryFunction<void, void, void> {
         /// @brief Type definition indicating the functor is transparent
         typedef int IsTransparent;
 
@@ -1784,10 +1761,10 @@ namespace wstl {
 
     #ifdef __WSTL_CXX11__
     template<typename T = void>
-    class Less;
+    struct Less;
     #else
     template<typename T>
-    class Less;
+    struct Less;
     #endif
     
     /// @brief Functor that represents less-than comparison between two objects
@@ -1795,8 +1772,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/less
     template<typename T>
-    class Less : public BinaryFunction<T, T, bool> {
-    public:
+    struct Less : BinaryFunction<T, T, bool> {
         /// @brief Applies the functor to two arguments
         /// @param a Value of the first argument
         /// @param b Value of the second argument
@@ -1813,8 +1789,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/less_void
     template<>
-    class Less<void> : public BinaryFunction<void, void, void> {
-    public:
+    struct Less<void> : public BinaryFunction<void, void, void> {
         /// @brief Type definition indicating the functor is transparent
         typedef int IsTransparent;
 
@@ -1833,10 +1808,10 @@ namespace wstl {
 
     #ifdef __WSTL_CXX11__
     template<typename T = void>
-    class GreaterEqual;
+    struct GreaterEqual;
     #else
     template<typename T>
-    class GreaterEqual;
+    struct GreaterEqual;
     #endif
 
     /// @brief Functor that represents greater-than-or-equal-to comparison between two objects
@@ -1844,8 +1819,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/greater_equal
     template<typename T>
-    class GreaterEqual : public BinaryFunction<T, T, bool> {
-    public:
+    struct GreaterEqual : BinaryFunction<T, T, bool> {
         /// @brief Applies the functor to two arguments
         /// @param a Value of the first argument
         /// @param b Value of the second argument
@@ -1862,8 +1836,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/greater_equal_void
     template<>
-    class GreaterEqual<void> : public BinaryFunction<void, void, void> {
-    public:
+    struct GreaterEqual<void> : BinaryFunction<void, void, void> {
         /// @brief Type definition indicating the functor is transparent
         typedef int IsTransparent;
 
@@ -1882,10 +1855,10 @@ namespace wstl {
 
     #ifdef __WSTL_CXX11__
     template<typename T = void>
-    class LessEqual;
+    struct LessEqual;
     #else
     template<typename T>
-    class LessEqual;
+    struct LessEqual;
     #endif
 
     /// @brief Functor that represents less-than-or-equal-to comparison between two objects
@@ -1893,8 +1866,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/less_equal
     template<typename T>
-    class LessEqual : public BinaryFunction<T, T, bool> {
-    public:
+    struct LessEqual : BinaryFunction<T, T, bool> {
         /// @brief Applies the functor to two arguments
         /// @param a Value of the first argument
         /// @param b Value of the second argument
@@ -1911,8 +1883,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/less_equal_void
     template<>
-    class LessEqual<void> : public BinaryFunction<void, void, void> {
-    public:
+    struct LessEqual<void> : BinaryFunction<void, void, void> {
         /// @brief Type definition indicating the functor is transparent
         typedef int IsTransparent;
 
@@ -1931,10 +1902,10 @@ namespace wstl {
 
     #ifdef __WSTL_CXX11__
     template<typename T = void>
-    class LogicalAnd;
+    struct LogicalAnd;
     #else
     template<typename T>
-    class LogicalAnd;
+    struct LogicalAnd;
     #endif
 
     /// @brief Functor that represents logical AND operation between two objects
@@ -1942,8 +1913,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/logical_and
     template<typename T>
-    class LogicalAnd : public BinaryFunction<T, T, bool> {
-    public:
+    struct LogicalAnd : BinaryFunction<T, T, bool> {
         /// @brief Applies the functor to two arguments
         /// @param a Value of the first argument
         /// @param b Value of the second argument
@@ -1960,8 +1930,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/logical_and_void
     template<>
-    class LogicalAnd<void> : public BinaryFunction<void, void, void> {
-    public:
+    struct LogicalAnd<void> : BinaryFunction<void, void, void> {
         /// @brief Type definition indicating the functor is transparent
         typedef int IsTransparent;
 
@@ -1980,10 +1949,10 @@ namespace wstl {
 
     #ifdef __WSTL_CXX11__
     template<typename T = void>
-    class LogicalOr;
+    struct LogicalOr;
     #else
     template<typename T>
-    class LogicalOr;
+    struct LogicalOr;
     #endif
 
     /// @brief Functor that represents logical OR operation between two objects
@@ -1991,8 +1960,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/logical_or
     template<typename T>
-    class LogicalOr : public BinaryFunction<T, T, bool> {
-    public:
+    struct LogicalOr : BinaryFunction<T, T, bool> {
         /// @brief Applies the functor to two arguments
         /// @param a Value of the first argument
         /// @param b Value of the second argument
@@ -2009,8 +1977,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/logical_or_void
     template<>
-    class LogicalOr<void> : public BinaryFunction<void, void, void> {
-    public:
+    struct LogicalOr<void> : BinaryFunction<void, void, void> {
         /// @brief Type definition indicating the functor is transparent
         typedef int IsTransparent;
 
@@ -2029,10 +1996,10 @@ namespace wstl {
 
     #ifdef __WSTL_CXX11__
     template<typename T = void>
-    class LogicalNot;
+    struct LogicalNot;
     #else
     template<typename T>
-    class LogicalNot;
+    struct LogicalNot;
     #endif
 
     /// @brief Functor that represents logical NOT operation for an object
@@ -2040,8 +2007,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/logical_not
     template<typename T>
-    class LogicalNot : public UnaryFunction<T, bool> {
-    public:
+    struct LogicalNot : UnaryFunction<T, bool> {
         /// @brief Applies the functor to an argument
         /// @param x Value of the argument
         /// @return True if the argument is false, false otherwise
@@ -2057,8 +2023,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/logical_not_void
     template<>
-    class LogicalNot<void> : public UnaryFunction<void, void> {
-    public:
+    struct LogicalNot<void> : UnaryFunction<void, void> {
         /// @brief Type definition indicating the functor is transparent
         typedef int IsTransparent;
 
@@ -2076,10 +2041,10 @@ namespace wstl {
 
     #ifdef __WSTL_CXX11__
     template<typename T = void>
-    class BitwiseAnd;
+    struct BitwiseAnd;
     #else
     template<typename T>
-    class BitwiseAnd;
+    struct BitwiseAnd;
     #endif
 
     /// @brief Functor that represents bitwise AND operation for two objects
@@ -2087,8 +2052,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/bitwise_and
     template<typename T>
-    class BitwiseAnd : public BinaryFunction<T, T, T> {
-    public:
+    struct BitwiseAnd : BinaryFunction<T, T, T> {
         /// @brief Applies the functor to two arguments
         /// @param a Value of the first argument
         /// @param b Value of the second argument
@@ -2105,8 +2069,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/bitwise_and_void
     template<>
-    class BitwiseAnd<void> : public BinaryFunction<void, void, void> {
-    public:
+    struct BitwiseAnd<void> : BinaryFunction<void, void, void> {
         /// @brief Type definition indicating the functor is transparent
         typedef int IsTransparent;
 
@@ -2125,10 +2088,10 @@ namespace wstl {
 
     #ifdef __WSTL_CXX11__
     template<typename T = void>
-    class BitwiseOr;
+    struct BitwiseOr;
     #else
     template<typename T>
-    class BitwiseOr;
+    struct BitwiseOr;
     #endif
 
     /// @brief Functor that represents bitwise OR operation for two objects
@@ -2136,8 +2099,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/bitwise_or
     template<typename T>
-    class BitwiseOr : public BinaryFunction<T, T, T> {
-    public:
+    struct BitwiseOr : BinaryFunction<T, T, T> {
         /// @brief Applies the functor to two arguments
         /// @param a Value of the first argument
         /// @param b Value of the second argument
@@ -2154,8 +2116,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/bitwise_or_void
     template<>
-    class BitwiseOr<void> : public BinaryFunction<void, void, void> {
-    public:
+    struct BitwiseOr<void> : BinaryFunction<void, void, void> {
         /// @brief Type definition indicating the functor is transparent
         typedef int IsTransparent;
 
@@ -2174,10 +2135,10 @@ namespace wstl {
 
     #ifdef __WSTL_CXX11__
     template<typename T = void>
-    class BitwiseXor;
+    struct BitwiseXor;
     #else
     template<typename T>
-    class BitwiseXor;
+    struct BitwiseXor;
     #endif
 
     /// @brief Functor that represents bitwise XOR operation for two objects
@@ -2185,8 +2146,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/bitwise_xor
     template<typename T>
-    class BitwiseXor : public BinaryFunction<T, T, T> {
-    public:
+    struct BitwiseXor : BinaryFunction<T, T, T> {
         /// @brief Applies the functor to two arguments
         /// @param a Value of the first argument
         /// @param b Value of the second argument
@@ -2203,8 +2163,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/bitwise_xor_void
     template<>
-    class BitwiseXor<void> : public BinaryFunction<void, void, void> {
-    public:
+    struct BitwiseXor<void> : BinaryFunction<void, void, void> {
         /// @brief Type definition indicating the functor is transparent
         typedef int IsTransparent;
 
@@ -2223,10 +2182,10 @@ namespace wstl {
 
     #ifdef __WSTL_CXX11__
     template<typename T = void>
-    class BitwiseNot;
+    struct BitwiseNot;
     #else
     template<typename T>
-    class BitwiseNot;
+    struct BitwiseNot;
     #endif
 
     /// @brief Functor that represents bitwise NOT operation for an object
@@ -2234,8 +2193,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/bitwise_not
     template<typename T>
-    class BitwiseNot : public UnaryFunction<T, T> {
-    public:
+    struct BitwiseNot : UnaryFunction<T, T> {
         /// @brief Applies the functor to an argument
         /// @param x Value of the argument
         /// @return Bitwise NOT of the argument
@@ -2251,8 +2209,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/bitwise_not_void
     template<>
-    class BitwiseNot<void> : public UnaryFunction<void, void> {
-    public:
+    struct BitwiseNot<void> : UnaryFunction<void, void> {
         /// @brief Type definition indicating the functor is transparent
         typedef int IsTransparent;
         
@@ -2270,10 +2227,10 @@ namespace wstl {
 
     #ifdef __WSTL_CXX11__
     template<typename T = void>
-    class Identity;
+    struct Identity;
     #else
     template<typename T>
-    class Identity;
+    struct Identity;
     #endif
 
     /// @brief Functor that returns its input unchanged for non-void types
@@ -2281,8 +2238,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/identity
     template<typename T>
-    class Identity : public UnaryFunction<T, T> {
-    public:
+    struct Identity : UnaryFunction<T, T> {
         /// @brief Applies the functor to an argument
         /// @param x Value of the argument
         /// @return The argument itself
@@ -2304,8 +2260,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/identity_void
     template<>
-    class Identity<void> : public UnaryFunction<void, void> {
-    public:
+    struct Identity<void> : UnaryFunction<void, void> {
         /// @brief Type definition indicating the functor is transparent
         typedef int IsTransparent;
         
@@ -2402,13 +2357,13 @@ namespace wstl {
     /// @since C++11
     /// @see https://en.cppreference.com/w/cpp/utility/functional/is_placeholder
     template<typename T>
-    class IsPlaceholder : public IntegralConstant<int, 0> {};
+    struct IsPlaceholder : IntegralConstant<int, 0> {};
 
     // Placeholders
 
     namespace __private {
         template<int N>
-        class __Placeholder : public IntegralConstant<int, N> {};
+        struct __Placeholder : IntegralConstant<int, N> {};
     }
 
     /// @brief Namespace that contain placeholders (unbound arguments) for `wstl::Bind` function
@@ -2431,10 +2386,10 @@ namespace wstl {
     }
 
     template<int N>
-    class IsPlaceholder<__private::__Placeholder<N>> : public IntegralConstant<int, N> {};
+    struct IsPlaceholder<__private::__Placeholder<N>> : IntegralConstant<int, N> {};
 
     template<int N>
-    class IsPlaceholder<const __private::__Placeholder<N>> : public IntegralConstant<int, N> {};
+    struct IsPlaceholder<const __private::__Placeholder<N>> : IntegralConstant<int, N> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsPlaceholder
@@ -2451,7 +2406,7 @@ namespace wstl {
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/is_bind_expression
     template<typename T>
-    class IsBindExpression : public FalseType {};
+    struct IsBindExpression : FalseType {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsBindExpression
@@ -2504,7 +2459,7 @@ namespace wstl {
     // Is bind expression specialization
 
     template<typename Function, typename... Args>
-    class IsBindExpression<__private::__Bind<Function, Args...>> : public TrueType {};
+    struct IsBindExpression<__private::__Bind<Function, Args...>> : TrueType {};
 
     /// @brief Binds a function with specified arguments, including placeholders if needed
     /// @param function The function to bind
