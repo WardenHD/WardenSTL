@@ -34,10 +34,10 @@ namespace wstl {
         void operator&() const __WSTL_DELETE__;
     };
 
-    #define __WSTL_NULLPTR__ nullptr_t();
+    #define __WSTL_NULLPTR__ nullptr_t()
     #else
     using nullptr_t = decltype(nullptr);
-    #define __WSTL_NULLPTR__ nullptr;
+    #define __WSTL_NULLPTR__ nullptr
     #endif
     
     static const nullptr_t NullPointer = __WSTL_NULLPTR__;
