@@ -991,7 +991,7 @@ namespace wstl {
     /// @return True if the range is partitioned, false otherwise
     /// @ingroup algorithm
     /// @see https://en.cppreference.com/w/cpp/algorithm/is_partitioned
-    template<typename InputIterator, class UnaryPredicate>
+    template<typename InputIterator, typename UnaryPredicate>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__
     bool IsPartitioned(InputIterator first, InputIterator last, UnaryPredicate predicate) {
         for(; first != last; first++) if(!predicate(*first)) break;
@@ -2673,6 +2673,37 @@ namespace wstl {
     __WSTL_CONSTEXPR14__
     inline bool PreviousPermutation(BidirectionalIterator first, BidirectionalIterator last) {
         return PreviousPermutation(first, last, Less<typename IteratorTraits<BidirectionalIterator>::ValueType>());
+    }
+
+    // Additional functions
+
+    // Copy safe
+
+    /// @brief A safer version of the copy algorithm that checks for overlapping ranges
+    /// @param first Iterator to the beginning of the source range
+    /// @param last Iterator to the end of the source range
+    /// @param resultFirst Iterator to the beginning of the destination range
+    /// @return Output iterator to the past the last element copied
+    /// @ingroup algorithm
+    template<typename InputIterator, typename OutputIterator>
+    __WSTL_CONSTEXPR14__
+    OutputIterator CopySafe(InputIterator first, InputIterator last, OutputIterator resultFirst, OutputIterator resultLast) {
+        for(; first != last && resultFirst != resultLast; first++, resultFirst++) *resultFirst = *first;
+        return resultFirst;
+    }
+
+    /// @brief A safer version of the move algorithm that checks for overlapping ranges
+    /// @param first Iterator to the beginning of the source range
+    /// @param last Iterator to the end of the source range
+    /// @param resultFirst Iterator to the beginning of the destination range
+    /// @param resultLast Iterator to the end of the destination range
+    /// @return Output iterator to the past the last element moved
+    /// @ingroup algorithm
+    template<typename InputIterator, typename OutputIterator>
+    __WSTL_CONSTEXPR14__
+    OutputIterator MoveSafe(InputIterator first, InputIterator last, OutputIterator resultFirst, OutputIterator resultLast) {
+        for(; first != last && resultFirst != resultLast; first++, resultFirst++) *resultFirst = __WSTL_MOVE__(*first);
+        return resultFirst;
     }
 }
 
