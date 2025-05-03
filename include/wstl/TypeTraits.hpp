@@ -33,8 +33,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/integral_constant
     template <typename T, T V>
-    class IntegralConstant {
-    public:
+    struct IntegralConstant {
         static const T Value = V;
 
         typedef T ValueType;
@@ -74,7 +73,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/integral_constant
     template<bool V>
-    class BoolConstant : public IntegralConstant<bool, V> {};
+    struct BoolConstant : IntegralConstant<bool, V> {};
     #endif
 
     #ifdef __WSTL_CXX17__
@@ -98,17 +97,17 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/remove_reference
     template<typename T>
-    class RemoveReference;
+    struct RemoveReference;
 
     template<typename T>
-    class RemoveReference { public: typedef T Type; };
+    struct RemoveReference { typedef T Type; };
 
     template<typename T>
-    class RemoveReference<T&> { public: typedef T Type; };
+    struct RemoveReference<T&> { typedef T Type; };
 
     #ifdef __WSTL_CXX11__
     template<typename T>
-    class RemoveReference<T&&> { public: typedef T Type; };
+    struct RemoveReference<T&&> { typedef T Type; };
     #endif
 
     #ifdef __WSTL_CXX11__
@@ -125,22 +124,22 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/remove_pointer
     template<typename T>
-    class RemovePointer;
+    struct RemovePointer;
 
     template<typename T>
-    class RemovePointer { public: typedef T Type; };
+    struct RemovePointer { typedef T Type; };
 
     template<typename T>
-    class RemovePointer<T*> { public: typedef T Type; };
+    struct RemovePointer<T*> { typedef T Type; };
 
     template<typename T>
-    class RemovePointer<T* const> { public: typedef T Type; };
+    struct RemovePointer<T* const> { typedef T Type; };
 
     template<typename T>
-    class RemovePointer<T* volatile> { public: typedef T Type; };
+    struct RemovePointer<T* volatile> { typedef T Type; };
 
     template<typename T>
-    class RemovePointer<T* const volatile> { public: typedef T Type; };
+    struct RemovePointer<T* const volatile> { typedef T Type; };
 
     #ifdef __WSTL_CXX11__
     /// @copydoc RemovePointer
@@ -156,19 +155,19 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/remove_cv
     template<typename T>
-    class RemoveConst;
+    struct RemoveConst;
 
     template<typename T>
-    class RemoveConst { public: typedef T Type; };
+    struct RemoveConst { typedef T Type; };
 
     template<typename T>
-    class RemoveConst<const T> { public: typedef T Type; };
+    struct RemoveConst<const T> { typedef T Type; };
 
     template<typename T>
-    class RemoveConst<volatile T> { public: typedef volatile T Type; };
+    struct RemoveConst<volatile T> { typedef volatile T Type; };
 
     template<typename T>
-    class RemoveConst<const volatile T> { public: typedef volatile T Type; };
+    struct RemoveConst<const volatile T> { typedef volatile T Type; };
 
     #ifdef __WSTL_CXX11__
     /// @copydoc RemoveConst
@@ -184,19 +183,19 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/remove_cv
     template<typename T>
-    class RemoveVolatile;
+    struct RemoveVolatile;
 
     template<typename T>
-    class RemoveVolatile { public: typedef T Type; };
+    struct RemoveVolatile { typedef T Type; };
 
     template<typename T>
-    class RemoveVolatile<volatile T> { public: typedef T Type; };
+    struct RemoveVolatile<volatile T> { typedef T Type; };
 
     template<typename T>
-    class RemoveVolatile<const T> { public: typedef const T Type; };
+    struct RemoveVolatile<const T> { typedef const T Type; };
 
     template<typename T>
-    class RemoveVolatile<const volatile T> { public: typedef const T Type; };
+    struct RemoveVolatile<const volatile T> { typedef const T Type; };
 
     #ifdef __WSTL_CXX11__
     /// @copydoc RemoveVolatile
@@ -212,19 +211,19 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/remove_cv
     template<typename T>
-    class RemoveCV;
+    struct RemoveCV;
 
     template<typename T>
-    class RemoveCV { public: typedef T Type; };
+    struct RemoveCV { typedef T Type; };
 
     template<typename T>
-    class RemoveCV<const T> { public: typedef T Type; };
+    struct RemoveCV<const T> { typedef T Type; };
 
     template<typename T>
-    class RemoveCV<volatile T> { public: typedef T Type; };
+    struct RemoveCV<volatile T> { typedef T Type; };
 
     template<typename T>
-    class RemoveCV<const volatile T> { public: typedef T Type; };
+    struct RemoveCV<const volatile T> { typedef T Type; };
 
     #ifdef __WSTL_CXX11__
     /// @copydoc RemoveCV
@@ -240,16 +239,16 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/remove_extent
     template<typename T>
-    class RemoveExtent;
+    struct RemoveExtent;
 
     template<typename T>
-    class RemoveExtent { public: typedef T Type; };
+    struct RemoveExtent { typedef T Type; };
 
     template<typename T>
-    class RemoveExtent<T[]> { public: typedef T Type; };
+    struct RemoveExtent<T[]> { typedef T Type; };
 
     template<typename T, size_t S>
-    class RemoveExtent<T[S]> { public: typedef T Type; };
+    struct RemoveExtent<T[S]> { typedef T Type; };
 
     #ifdef __WSTL_CXX11__
     /// @copydoc RemoveExtent
@@ -265,16 +264,16 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/remove_all_extents
     template<typename T>
-    class RemoveAllExtents;
+    struct RemoveAllExtents;
 
     template<typename T>
-    class RemoveAllExtents { public: typedef T Type; };
+    struct RemoveAllExtents { typedef T Type; };
 
     template<typename T>
-    class RemoveAllExtents<T[]> { public: typedef typename RemoveAllExtents<T>::Type Type; };
+    struct RemoveAllExtents<T[]> { typedef typename RemoveAllExtents<T>::Type Type; };
 
     template<typename T, size_t S>
-    class RemoveAllExtents<T[S]> { public: typedef typename RemoveAllExtents<T>::Type Type; };
+    struct RemoveAllExtents<T[S]> { typedef typename RemoveAllExtents<T>::Type Type; };
 
     #ifdef __WSTL_CXX11__
     /// @copydoc RemoveAllExtents
@@ -290,10 +289,10 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/add_pointer
     template<typename T>
-    class AddPointer;
+    struct AddPointer;
 
     template<typename T>
-    class AddPointer { public: typedef typename RemoveReference<T>::Type* Type; };
+    struct AddPointer { typedef typename RemoveReference<T>::Type* Type; };
 
     #ifdef __WSTL_CXX11__
     /// @copydoc AddPointer
@@ -309,28 +308,25 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/add_reference
     template<typename T>
-    class AddLValueReference;
+    struct AddLValueReference;
 
     template<typename T>
-    class AddLValueReference { public: typedef T& Type; };
+    struct AddLValueReference { typedef T& Type; };
 
     template<typename T>
-    class AddLValueReference<T&> { public: typedef T& Type; };
+    struct AddLValueReference<T&> { typedef T& Type; };
 
     template<>
-    class AddLValueReference<void> { public: typedef void Type; };
+    struct AddLValueReference<void> { typedef void Type; };
 
     template<>
-    class AddLValueReference<const void> { public: typedef const void Type; };
+    struct AddLValueReference<const void> { typedef const void Type; };
 
     template<>
-    class AddLValueReference<volatile void> { public: typedef volatile void Type; };
+    struct AddLValueReference<volatile void> { typedef volatile void Type; };
 
     template<>
-    class AddLValueReference<const volatile void> { 
-    public: 
-        typedef const volatile void Type; 
-    };
+    struct AddLValueReference<const volatile void> { typedef const volatile void Type; };
 
     #ifdef __WSTL_CXX11__
     /// @copydoc AddLValueReference
@@ -348,28 +344,25 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/add_reference
     template<typename T>
-    class AddRValueReference;
+    struct AddRValueReference;
 
     template<typename T>
-    class AddRValueReference { public: using Type = T&&; };
+    struct AddRValueReference { using Type = T&&; };
 
     template<typename T>
-    class AddRValueReference<T&> { public: using Type = T&; };
+    struct AddRValueReference<T&> { using Type = T&; };
 
     template<>
-    class AddRValueReference<void> { public: using Type = void; };
+    struct AddRValueReference<void> { using Type = void; };
 
     template<>
-    class AddRValueReference<const void> { public: using Type = const void; };
+    struct AddRValueReference<const void> { using Type = const void; };
 
     template<>
-    class AddRValueReference<volatile void> { public: using Type = volatile void; };
+    struct AddRValueReference<volatile void> { using Type = volatile void; };
 
     template<>
-    class AddRValueReference<const volatile void> {
-    public:
-        using Type = const volatile void;
-    };
+    struct AddRValueReference<const volatile void> { using Type = const volatile void; };
     
     /// @copydoc AddRValueReference
     /// @since C++11
@@ -384,13 +377,13 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/add_cv
     template<typename T>
-    class AddConst;
+    struct AddConst;
 
     template<typename T>
-    class AddConst { public: typedef const T Type; };  
+    struct AddConst { typedef const T Type; };  
 
     template<typename T>
-    class AddConst<const T> { public: typedef const T Type; };
+    struct AddConst<const T> { typedef const T Type; };
 
     #ifdef __WSTL_CXX11__
     /// @copydoc AddConst
@@ -406,13 +399,13 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/add_cv
     template<typename T>
-    class AddVolatile;
+    struct AddVolatile;
 
     template<typename T>
-    class AddVolatile { public: typedef volatile T Type; };
+    struct AddVolatile { typedef volatile T Type; };
 
     template<typename T>
-    class AddVolatile<volatile T> { public: typedef volatile T Type; };
+    struct AddVolatile<volatile T> { typedef volatile T Type; };
 
     #ifdef __WSTL_CXX11__
     /// @copydoc AddVolatile
@@ -428,13 +421,10 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/add_cv
     template<typename T>
-    class AddCV;
+    struct AddCV;
 
     template<typename T>
-    class AddCV {
-    public:
-        typedef typename AddVolatile<typename AddConst<T>::Type>::Type Type;
-    };
+    struct AddCV { typedef typename AddVolatile<typename AddConst<T>::Type>::Type Type; };
 
     #ifdef __WSTL_CXX11__
     /// @copydoc AddCV
@@ -450,10 +440,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/remove_cvref
     template<typename T>
-    class RemoveCVReference {
-    public:
-        typedef typename RemoveCV<typename RemoveReference<T>::Type>::Type Type;
-    };
+    struct RemoveCVReference { typedef typename RemoveCV<typename RemoveReference<T>::Type>::Type Type; };
 
     #ifdef __WSTL_CXX11__
     /// @copydoc RemoveCVReference
@@ -469,17 +456,17 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/alignment_of
     template<typename T>
-    class AlignmentOf;
+    struct AlignmentOf;
 
     #ifdef __WSTL_CXX11__
     template<typename T>
-    class AlignmentOf : public IntegralConstant<size_t, alignof(T)> {};
+    struct AlignmentOf : IntegralConstant<size_t, alignof(T)> {};
     #elif defined(__WSTL_MSVC__)
     template<typename T>
-    class AlignmentOf : public IntegralConstant<size_t, size_t(__alingof(T))> {};
+    struct AlignmentOf : IntegralConstant<size_t, size_t(__alingof(T))> {};
     #else
     template<typename T>
-    class AlignmentOf : public IntegralConstant<size_t, size_t(__alingof__(T))> {};
+    struct AlignmentOf : IntegralConstant<size_t, size_t(__alingof__(T))> {};
     #endif
 
     #ifdef __WSTL_CXX17__
@@ -496,16 +483,16 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/rank
     template<typename T>
-    class Rank;
+    struct Rank;
 
     template<typename T>
-    class Rank : public IntegralConstant<size_t, 0> {};
+    struct Rank : IntegralConstant<size_t, 0> {};
 
     template<typename T>
-    class Rank<T[]> : public IntegralConstant<size_t, Rank<T>::Value + 1> {};
+    struct Rank<T[]> : IntegralConstant<size_t, Rank<T>::Value + 1> {};
 
     template<typename T, size_t S>
-    class Rank<T[S]> : public IntegralConstant<size_t, Rank<T>::Value + 1> {};
+    struct Rank<T[S]> : IntegralConstant<size_t, Rank<T>::Value + 1> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc Rank
@@ -522,19 +509,19 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/extent
     template<typename T, unsigned N = 0>
-    class Extent;
+    struct Extent;
 
     template<typename T>
-    class Extent<T[], 0> : public IntegralConstant<size_t, 0> {};
+    struct Extent<T[], 0> : IntegralConstant<size_t, 0> {};
 
     template<typename T, unsigned N>
-    class Extent<T[], N> : public IntegralConstant<size_t, Extent<T, N - 1>::Value> {};
+    struct Extent<T[], N> : IntegralConstant<size_t, Extent<T, N - 1>::Value> {};
 
     template<typename T, unsigned N>
-    class Extent<T[N], 0> : public IntegralConstant<size_t, N> {};
+    struct Extent<T[N], 0> : IntegralConstant<size_t, N> {};
 
     template<typename T, unsigned I, unsigned N>
-    class Extent<T[I], N> : public IntegralConstant<size_t, Extent<T, N - 1>::Value> {};
+    struct Extent<T[I], N> : IntegralConstant<size_t, Extent<T, N - 1>::Value> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc Extent
@@ -562,16 +549,13 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/enable_if
     template<bool B, typename T>
-    class EnableIf;
+    struct EnableIf;
 
     template<bool B, typename T = void>
-    class EnableIf {};
+    struct EnableIf {};
 
     template<typename T>
-    class EnableIf<true, T> { 
-    public:
-        typedef T Type; 
-    };
+    struct EnableIf<true, T> { typedef T Type; };
 
     #ifdef __WSTL_CXX11__
     /// @copydoc EnableIf
@@ -589,19 +573,13 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/conditional
     template<bool B, typename T, typename F>
-    class Conditional;
+    struct Conditional;
 
     template<bool B, typename T, typename F>
-    class Conditional {
-    public:
-        typedef T Type;
-    };
+    struct Conditional { typedef T Type; };
 
     template<typename T, typename F>
-    class Conditional<false, T, F> {
-    public:
-        typedef F Type;
-    };
+    struct Conditional<false, T, F> { typedef F Type; };
 
     #ifdef __WSTL_CXX11__
     /// @copydoc Conditional
@@ -619,97 +597,57 @@ namespace wstl {
     /// and maximum argument count is 2
     /// @see https://en.cppreference.com/w/cpp/types/result_of
     template<typename Callable>
-    class ResultOf;
+    struct ResultOf;
 
     #ifdef __WSTL_CXX11__
     template<typename Callable, typename... Args>
-    class ResultOf<Callable(Args...)> {
-    public:
+    struct ResultOf<Callable(Args...)> {
         using Type = decltype(DeclareValue<Callable>()(DeclareValue<Args>()...));
     };
 
     #else
     template<typename Return, typename Arg1, typename Arg2>
-    class ResultOf<Return(*)(Arg1, Arg2)> {
-    public:
-        typedef Return Type;
-    };
+    struct ResultOf<Return(*)(Arg1, Arg2)> { typedef Return Type; };
 
     template<typename Return, typename Arg1, typename Arg2>
-    class ResultOf<Return(&)(Arg1, Arg2)> {
-    public:
-        typedef Return Type;
-    };
+    struct ResultOf<Return(&)(Arg1, Arg2)> { typedef Return Type; };
 
     template<typename Object, typename Return, typename Arg1, typename Arg2>
-    class ResultOf<Return(Object::*)(Arg1, Arg2)> {
-    public:
-        typedef Return Type;
-    };
+    struct ResultOf<Return(Object::*)(Arg1, Arg2)> { typedef Return Type; };
 
     template<typename Object, typename Return, typename Arg1, typename Arg2>
-    class ResultOf<Return(Object::*)(Arg1, Arg2) const> {
-    public:
-        typedef Return Type;
-    };
+    struct ResultOf<Return(Object::*)(Arg1, Arg2) const> { typedef Return Type; };
 
     template<typename Return, typename Arg>
-    class ResultOf<Return(*)(Arg)> {
-    public:
-        typedef Return Type;
-    };
+    struct ResultOf<Return(*)(Arg)> { typedef Return Type; };
 
     template<typename Return, typename Arg>
-    class ResultOf<Return(&)(Arg)> {
-    public:
-        typedef Return Type;
-    };
+    struct ResultOf<Return(&)(Arg)> { typedef Return Type; };
 
     template<typename Object, typename Return, typename Arg>
-    class ResultOf<Return(Object::*)(Arg)> {
-    public:
-        typedef Return Type;
-    };
+    struct ResultOf<Return(Object::*)(Arg)> { typedef Return Type; };
 
     template<typename Object, typename Return, typename Arg>
-    class ResultOf<Return(Object::*)(Arg) const> {
-    public:
-        typedef Return Type;
-    };
+    struct ResultOf<Return(Object::*)(Arg) const> { typedef Return Type; };
 
     template<typename Return>
-    class ResultOf<Return(*)()> {
-    public:
-        typedef Return Type;
-    };
+    struct ResultOf<Return(*)()> { typedef Return Type; };
 
     template<typename Return>
-    class ResultOf<Return(&)()> {
-    public:
-        typedef Return Type;
-    };
+    struct ResultOf<Return(&)()> { typedef Return Type; };
 
     template<typename Object, typename Return>
-    class ResultOf<Return(Object::*)()> {
-    public:
-        typedef Return Type;
-    };
+    struct ResultOf<Return(Object::*)()> { typedef Return Type; };
 
     template<typename Object, typename Return>
-    class ResultOf<Return(Object::*)() const> {
-    public:
-        typedef Return Type;
-    };
+    struct ResultOf<Return(Object::*)() const> { typedef Return Type; };
 
     #endif
 
     // Specialization for functors
 
     template<typename Functor>
-    class ResultOf {
-    public:
-        typedef typename Functor::ResultType Type;
-    };
+    struct ResultOf { typedef typename Functor::ResultType Type; };
 
     #ifdef __WSTL_CXX11__
     /// @copydoc ResultOf
@@ -726,16 +664,16 @@ namespace wstl {
     /// @since C++11
     /// @see https://en.cppreference.com/w/cpp/types/conjunction
     template<typename... T>
-    class Conjunction;
+    struct Conjunction;
 
     template<typename...>
-    class Conjunction : public FalseType {};
+    struct Conjunction : FalseType {};
 
     template<typename T>
-    class Conjunction<T> : public T {};
+    struct Conjunction<T> : T {};
 
     template<typename T1, typename... Tn>
-    class Conjunction<T1, Tn...> : public Conditional<bool(T1::Value), Conjunction<Tn...>, T1>::Type {};
+    struct Conjunction<T1, Tn...> : Conditional<bool(T1::Value), Conjunction<Tn...>, T1>::Type {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc Conjunction
@@ -751,16 +689,16 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/disjunction
     template<typename... T>
-    class Disjunction;
+    struct Disjunction;
 
     template<typename...>
-    class Disjunction : public FalseType {};
+    struct Disjunction : FalseType {};
 
     template<typename T>
-    class Disjunction<T> : public T {};
+    struct Disjunction<T> : T {};
 
     template<typename T1, typename... Tn>
-    class Disjunction<T1, Tn...> : public Conditional<bool(T1::Value), T1, Disjunction<Tn...>>::Type {};
+    struct Disjunction<T1, Tn...> : Conditional<bool(T1::Value), T1, Disjunction<Tn...>>::Type {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc Disjunction
@@ -776,10 +714,10 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/negation
     template<typename T>
-    class Negation;
+    struct Negation;
 
     template<typename T>
-    class Negation : public BoolConstant<!bool(T::Value)> {};
+    struct Negation : BoolConstant<!bool(T::Value)> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc Negation
@@ -795,10 +733,10 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/type_identity
     template<typename T>
-    class TypeIdentity;
+    struct TypeIdentity;
 
     template<typename T>
-    class TypeIdentity { public: typedef T Type; };
+    struct TypeIdentity { typedef T Type; };
 
     #ifdef __WSTL_CXX11__
     /// @copydoc TypeIdentity
@@ -814,16 +752,16 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_const
     template<typename T>
-    class IsConst;
+    struct IsConst;
 
     template<typename T>
-    class IsConst : public FalseType {};
+    struct IsConst : FalseType {};
 
     template<typename T>
-    class IsConst<const T> : public TrueType {};
+    struct IsConst<const T> : TrueType {};
 
     template<typename T>
-    class IsConst<const volatile T> : public TrueType {};
+    struct IsConst<const volatile T> : TrueType {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsConst
@@ -839,16 +777,16 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_volatile
     template<typename T>
-    class IsVolatile;
+    struct IsVolatile;
 
     template<typename T>
-    class IsVolatile : public FalseType {};
+    struct IsVolatile : FalseType {};
 
     template<typename T>
-    class IsVolatile<volatile T> : public TrueType {};
+    struct IsVolatile<volatile T> : TrueType {};
 
     template<typename T>
-    class IsVolatile<const volatile T> : public TrueType {};
+    struct IsVolatile<const volatile T> : TrueType {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsVolatile
@@ -865,13 +803,13 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_same
     template<typename T1, typename T2>
-    class IsSame;
+    struct IsSame;
 
     template<typename T1, typename T2>
-    class IsSame : public FalseType {};
+    struct IsSame : FalseType {};
 
     template<typename T>
-    class IsSame<T, T> : public TrueType {};
+    struct IsSame<T, T> : TrueType {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsSame
@@ -887,7 +825,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_null_pointer
     template<typename T>
-    class IsNullPointer : public IsSame<NullPointerType, typename RemoveCV<T>::Type> {};
+    struct IsNullPointer : IsSame<NullPointerType, typename RemoveCV<T>::Type> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsNullPointer
@@ -903,13 +841,13 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_void
     template<typename T>
-    class IsVoid;
+    struct IsVoid;
 
     template<typename T>
-    class IsVoid : public FalseType {};
+    struct IsVoid : FalseType {};
 
     template<> 
-    class IsVoid<void> : public TrueType {};
+    struct IsVoid<void> : TrueType {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsVoid
@@ -925,29 +863,29 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_integral
     template<typename T>
-    class IsIntegral;
+    struct IsIntegral;
     
     template<typename T>
-    class IsIntegral : public FalseType {};
+    struct IsIntegral : FalseType {};
 
-    template<> class IsIntegral<char> : public TrueType {};
-    template<> class IsIntegral<signed char> : public TrueType {};
-    template<> class IsIntegral<bool> : public TrueType {};
-    template<> class IsIntegral<short> : public TrueType {};
-    template<> class IsIntegral<int> : public TrueType {};
-    template<> class IsIntegral<long> : public TrueType {};
-    template<> class IsIntegral<long long> : public TrueType {};
-    template<> class IsIntegral<wchar_t> : public TrueType {};
+    template<> struct IsIntegral<char> : TrueType {};
+    template<> struct IsIntegral<signed char> : TrueType {};
+    template<> struct IsIntegral<bool> : TrueType {};
+    template<> struct IsIntegral<short> : TrueType {};
+    template<> struct IsIntegral<int> : TrueType {};
+    template<> struct IsIntegral<long> : TrueType {};
+    template<> struct IsIntegral<long long> : TrueType {};
+    template<> struct IsIntegral<wchar_t> : TrueType {};
 
-    template<> class IsIntegral<unsigned char> : public TrueType {};
-    template<> class IsIntegral<unsigned short> : public TrueType {};
-    template<> class IsIntegral<unsigned int> : public TrueType {};
-    template<> class IsIntegral<unsigned long> : public TrueType {};
-    template<> class IsIntegral<unsigned long long> : public TrueType {};
+    template<> struct IsIntegral<unsigned char> : TrueType {};
+    template<> struct IsIntegral<unsigned short> : TrueType {};
+    template<> struct IsIntegral<unsigned int> : TrueType {};
+    template<> struct IsIntegral<unsigned long> : TrueType {};
+    template<> struct IsIntegral<unsigned long long> : TrueType {};
 
-    template<typename T> class IsIntegral<const T> : public IsIntegral<T> {};
-    template<typename T> class IsIntegral<volatile T> : public IsIntegral<T> {};
-    template<typename T> class IsIntegral<const volatile T> : public IsIntegral<T> {};
+    template<typename T> struct IsIntegral<const T> : IsIntegral<T> {};
+    template<typename T> struct IsIntegral<volatile T> : IsIntegral<T> {};
+    template<typename T> struct IsIntegral<const volatile T> : IsIntegral<T> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsIntegral
@@ -963,18 +901,18 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_floating_point
     template<typename T>
-    class IsFloatingPoint;
+    struct IsFloatingPoint;
 
     template<typename T>
-    class IsFloatingPoint : public FalseType {};
+    struct IsFloatingPoint : FalseType {};
 
-    template<> class IsFloatingPoint<float> : public TrueType {};
-    template<> class IsFloatingPoint<double> : public TrueType {};
-    template<> class IsFloatingPoint<long double> : public TrueType {};
+    template<> struct IsFloatingPoint<float> : TrueType {};
+    template<> struct IsFloatingPoint<double> : TrueType {};
+    template<> struct IsFloatingPoint<long double> : TrueType {};
 
-    template<typename T> class IsFloatingPoint<const T> : public IsFloatingPoint<T> {};
-    template<typename T> class IsFloatingPoint<volatile T> : public IsFloatingPoint<T> {};
-    template<typename T> class IsFloatingPoint<const volatile T> : public IsFloatingPoint<T> {};
+    template<typename T> struct IsFloatingPoint<const T> : IsFloatingPoint<T> {};
+    template<typename T> struct IsFloatingPoint<volatile T> : IsFloatingPoint<T> {};
+    template<typename T> struct IsFloatingPoint<const volatile T> : IsFloatingPoint<T> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsFloatingPoint
@@ -990,7 +928,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_arithmetic
     template<typename T>
-    class IsArithmetic : public BoolConstant<(IsIntegral<T>::Value || IsFloatingPoint<T>::Value)> {};
+    struct IsArithmetic : BoolConstant<(IsIntegral<T>::Value || IsFloatingPoint<T>::Value)> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsArithmetic
@@ -1006,10 +944,10 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_fundamental
     template<typename T>
-    class IsFundamental;
+    struct IsFundamental;
 
     template<typename T>
-    class IsFundamental : public BoolConstant<(IsArithmetic<T>::Value || IsVoid<T>::Value ||
+    struct IsFundamental : BoolConstant<(IsArithmetic<T>::Value || IsVoid<T>::Value ||
         IsSame<NullPointerType, typename RemoveCV<T>::Type>::Value)> {};
 
     #ifdef __WSTL_CXX17__
@@ -1023,16 +961,16 @@ namespace wstl {
 
     /// @brief Checks whether type is compound
     /// (array, function, object pointer, function pointer, member object pointer, 
-    /// member function pointer, reference, class, union, or enumeration, 
+    /// member function pointer, reference, struct, union, or enumeration, 
     /// including any cv-qualified variants)
     /// @tparam T Type to check
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_compound
     template<typename T>
-    class IsCompound;
+    struct IsCompound;
 
     template<typename T>
-    class IsCompound : public BoolConstant<(!IsFundamental<T>::Value)> {};
+    struct IsCompound : BoolConstant<(!IsFundamental<T>::Value)> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsCompound
@@ -1048,156 +986,156 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_function 
     template<typename T>
-    class IsFunction;
+    struct IsFunction;
 
     template<typename T>
-    class IsFunction : public FalseType {};
+    struct IsFunction : FalseType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args...)> : public TrueType {};
+    struct IsFunction<Return(Args...)> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args..., ...)> : public TrueType {};
+    struct IsFunction<Return(Args..., ...)> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args...) const> : public TrueType {};
+    struct IsFunction<Return(Args...) const> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args...) volatile> : public TrueType {};
+    struct IsFunction<Return(Args...) volatile> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args...) const volatile> : public TrueType {};
+    struct IsFunction<Return(Args...) const volatile> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args..., ...) const> : public TrueType {};
+    struct IsFunction<Return(Args..., ...) const> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args..., ...) volatile> : public TrueType {};
+    struct IsFunction<Return(Args..., ...) volatile> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args..., ...) const volatile> : public TrueType {};
+    struct IsFunction<Return(Args..., ...) const volatile> : TrueType {};
 
     #ifdef __WSTL_CXX11__
     template<typename Return, typename... Args> 
-    class IsFunction<Return(Args...)&> : public TrueType {};
+    struct IsFunction<Return(Args...)&> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args...) const&> : public TrueType {};
+    struct IsFunction<Return(Args...) const&> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args...) volatile&> : public TrueType {};
+    struct IsFunction<Return(Args...) volatile&> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args...) const volatile&> : public TrueType {};
+    struct IsFunction<Return(Args...) const volatile&> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args..., ...)&> : public TrueType {};
+    struct IsFunction<Return(Args..., ...)&> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args..., ...) const&> : public TrueType {};
+    struct IsFunction<Return(Args..., ...) const&> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args..., ...) volatile&> : public TrueType {};
+    struct IsFunction<Return(Args..., ...) volatile&> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args..., ...) const volatile&> : public TrueType {};
+    struct IsFunction<Return(Args..., ...) const volatile&> : TrueType {};
 
     template<typename Return, typename... Args> 
-    class IsFunction<Return(Args...)&&> : public TrueType {};
+    struct IsFunction<Return(Args...)&&> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args...) const&&> : public TrueType {};
+    struct IsFunction<Return(Args...) const&&> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args...) volatile&&> : public TrueType {};
+    struct IsFunction<Return(Args...) volatile&&> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args...) const volatile&&> : public TrueType {};
+    struct IsFunction<Return(Args...) const volatile&&> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args..., ...)&&> : public TrueType {};
+    struct IsFunction<Return(Args..., ...)&&> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args..., ...) const&&> : public TrueType {};
+    struct IsFunction<Return(Args..., ...) const&&> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args..., ...) volatile&&> : public TrueType {};
+    struct IsFunction<Return(Args..., ...) volatile&&> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args..., ...) const volatile&&> : public TrueType {};
+    struct IsFunction<Return(Args..., ...) const volatile&&> : TrueType {};
     
     #ifdef __WSTL_EXCEPTIONS__
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args...) noexcept> : public TrueType {};
+    struct IsFunction<Return(Args...) noexcept> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args..., ...) noexcept> : public TrueType {};
+    struct IsFunction<Return(Args..., ...) noexcept> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args...) const noexcept> : public TrueType {};
+    struct IsFunction<Return(Args...) const noexcept> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args...) volatile noexcept> : public TrueType {};
+    struct IsFunction<Return(Args...) volatile noexcept> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args...) const volatile noexcept> : public TrueType {};
+    struct IsFunction<Return(Args...) const volatile noexcept> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args..., ...) const noexcept> : public TrueType {};
+    struct IsFunction<Return(Args..., ...) const noexcept> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args..., ...) volatile noexcept> : public TrueType {};
+    struct IsFunction<Return(Args..., ...) volatile noexcept> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args..., ...) const volatile noexcept> : public TrueType {};
+    struct IsFunction<Return(Args..., ...) const volatile noexcept> : TrueType {};
 
     template<typename Return, typename... Args> 
-    class IsFunction<Return(Args...)& noexcept> : public TrueType {};
+    struct IsFunction<Return(Args...)& noexcept> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args...) const& noexcept> : public TrueType {};
+    struct IsFunction<Return(Args...) const& noexcept> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args...) volatile& noexcept> : public TrueType {};
+    struct IsFunction<Return(Args...) volatile& noexcept> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args...) const volatile& noexcept> : public TrueType {};
+    struct IsFunction<Return(Args...) const volatile& noexcept> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args..., ...)& noexcept> : public TrueType {};
+    struct IsFunction<Return(Args..., ...)& noexcept> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args..., ...) const& noexcept> : public TrueType {};
+    struct IsFunction<Return(Args..., ...) const& noexcept> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args..., ...) volatile& noexcept> : public TrueType {};
+    struct IsFunction<Return(Args..., ...) volatile& noexcept> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args..., ...) const volatile& noexcept> : public TrueType {};
+    struct IsFunction<Return(Args..., ...) const volatile& noexcept> : TrueType {};
 
     template<typename Return, typename... Args> 
-    class IsFunction<Return(Args...)&& noexcept> : public TrueType {};
+    struct IsFunction<Return(Args...)&& noexcept> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args...) const&& noexcept> : public TrueType {};
+    struct IsFunction<Return(Args...) const&& noexcept> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args...) volatile&& noexcept> : public TrueType {};
+    struct IsFunction<Return(Args...) volatile&& noexcept> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args...) const volatile&& noexcept> : public TrueType {};
+    struct IsFunction<Return(Args...) const volatile&& noexcept> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args..., ...)&& noexcept> : public TrueType {};
+    struct IsFunction<Return(Args..., ...)&& noexcept> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args..., ...) const&& noexcept> : public TrueType {};
+    struct IsFunction<Return(Args..., ...) const&& noexcept> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args..., ...) volatile&& noexcept> : public TrueType {};
+    struct IsFunction<Return(Args..., ...) volatile&& noexcept> : TrueType {};
 
     template<typename Return, typename... Args>
-    class IsFunction<Return(Args..., ...) const volatile&& noexcept> : public TrueType {};
+    struct IsFunction<Return(Args..., ...) const volatile&& noexcept> : TrueType {};
     #endif
     #endif
 
@@ -1215,16 +1153,16 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_array
     template<typename T>
-    class IsArray;
+    struct IsArray;
 
     template<typename T>
-    class IsArray : public FalseType {};
+    struct IsArray : FalseType {};
 
     template<typename T>
-    class IsArray<T[]> : public TrueType {};
+    struct IsArray<T[]> : TrueType {};
     
     template<typename T, size_t S>
-    class IsArray<T[S]> : public TrueType {};
+    struct IsArray<T[S]> : TrueType {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsArray
@@ -1240,10 +1178,10 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_union
     template<typename T>
-    class IsUnion;
+    struct IsUnion;
 
     template<typename T>
-    class IsUnion : public BoolConstant<
+    struct IsUnion : BoolConstant<
     #if defined(__WSTL_GCC__) || defined(__WSTL_MSVC__) || defined(__WSTL_ICC__)
     __is_union(T)
     #else
@@ -1262,10 +1200,10 @@ namespace wstl {
 
     namespace __private {
         template<typename T>
-        class __IsMemberPointer : public FalseType {};
+        struct __IsMemberPointer : FalseType {};
 
         template<typename T, typename U>
-        class __IsMemberPointer<T U::*> : public TrueType {};
+        struct __IsMemberPointer<T U::*> : TrueType {};
     }
 
     /// @brief Checks whether type is pointer to non-static member object or function
@@ -1273,7 +1211,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_member_pointer
     template<typename T>
-    class IsMemberPointer : public __private::__IsMemberPointer<typename RemoveCV<T>::Type> {};
+    struct IsMemberPointer : __private::__IsMemberPointer<typename RemoveCV<T>::Type> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsMemberPointer
@@ -1286,10 +1224,10 @@ namespace wstl {
 
     namespace __private {
         template<typename T>
-        class __IsMemberFunctionPointer : public FalseType {};
+        struct __IsMemberFunctionPointer : FalseType {};
 
         template<typename T, typename U>
-        class __IsMemberFunctionPointer<T U::*> : public IsFunction<T> {};
+        struct __IsMemberFunctionPointer<T U::*> : IsFunction<T> {};
     }
     
     /// @brief Checks whether type is pointer to non-static member function
@@ -1297,7 +1235,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_member_function_pointer
     template<typename T>
-    class IsMemberFunctionPointer : 
+    struct IsMemberFunctionPointer : 
         public __private::__IsMemberFunctionPointer<typename RemoveCV<T>::Type> {};
 
     #ifdef __WSTL_CXX17__
@@ -1314,7 +1252,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_member_object_pointer
     template<typename T>
-    class IsMemberObjectPointer : public BoolConstant<IsMemberPointer<T>::Value && 
+    struct IsMemberObjectPointer : BoolConstant<IsMemberPointer<T>::Value && 
         !IsMemberFunctionPointer<T>::Value> {};
 
     #ifdef __WSTL_CXX17__
@@ -1343,7 +1281,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_class
     template<typename T>
-    class IsClass : public BoolConstant<sizeof(__private::__TestClass<T>(0)) == sizeof(long)> {};
+    struct IsClass : BoolConstant<sizeof(__private::__TestClass<T>(0)) == sizeof(long)> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsClass
@@ -1368,7 +1306,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_base_of
     template<typename Base, typename Derived>
-    class IsBaseOf : public BoolConstant<IsClass<Base>::Value && IsClass<Derived>::Value 
+    struct IsBaseOf : BoolConstant<IsClass<Base>::Value && IsClass<Derived>::Value 
         && (sizeof(__private::__TestBaseOf<Base, Derived>(static_cast<Derived*>(0))) == sizeof(long))> {};
 
     #ifdef __WSTL_CXX17__
@@ -1403,7 +1341,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_convertible
     template<typename From, typename To>
-    class IsConvertible : public BoolConstant<
+    struct IsConvertible : BoolConstant<
         sizeof(__private::__TestReturnable<To>(static_cast<To(*)()>(0))) == sizeof(long) && 
         sizeof(__private::__TestImplicitlyConvertible<From, To>(&__private::__TestConvert)) == sizeof(long) || 
         (IsVoid<From>::Value && IsVoid<To>::Value)
@@ -1420,8 +1358,8 @@ namespace wstl {
 
     namespace __private {
         template<typename T>
-        class __TestConvertibleToInt {
-        public:
+        struct __TestConvertibleToInt {
+
             static T Type();
             static long Check(int);
             static char Check(...);
@@ -1438,7 +1376,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_enum
     template<typename T>
-    class IsEnum : public BoolConstant<!IsFundamental<T>::Value && !IsClass<T>::Value && 
+    struct IsEnum : BoolConstant<!IsFundamental<T>::Value && !IsClass<T>::Value && 
         !IsUnion<T>::Value && __private::__TestConvertibleToInt<T>::Value> {};
     
     #ifdef __WSTL_CXX17__
@@ -1452,10 +1390,10 @@ namespace wstl {
 
     namespace __private {
         template<typename T>
-        class __IsPointer : public FalseType {};
+        struct __IsPointer : FalseType {};
 
         template<typename T>
-        class __IsPointer<T*> : public TrueType {};
+        struct __IsPointer<T*> : TrueType {};
     }
 
     /// @brief Checks whether type is pointer
@@ -1463,7 +1401,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_pointer
     template<typename T>
-    class IsPointer : public __private::__IsPointer<typename RemoveCV<T>::Type> {};
+    struct IsPointer : __private::__IsPointer<typename RemoveCV<T>::Type> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsPointer
@@ -1479,7 +1417,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_scalar
     template<typename T>
-    class IsScalar : public BoolConstant<IsArithmetic<T>::Value || IsEnum<T>::Value 
+    struct IsScalar : BoolConstant<IsArithmetic<T>::Value || IsEnum<T>::Value 
         || IsPointer<T>::Value || IsMemberPointer<T>::Value || IsNullPointer<T>::Value> {};
 
     #ifdef __WSTL_CXX17__
@@ -1496,7 +1434,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_trivial
     template<typename T>
-    class IsTrivial : public BoolConstant<IsFundamental<T>::Value || IsPointer<T>::Value 
+    struct IsTrivial : BoolConstant<IsFundamental<T>::Value || IsPointer<T>::Value 
         || IsArray<T>::Value> {};
 
     #ifdef __WSTL_CXX17__
@@ -1513,7 +1451,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_pod
     template<typename T>
-    class IsPOD : public BoolConstant<IsFundamental<T>::Value && IsPointer<T>::Value> {};
+    struct IsPOD : BoolConstant<IsFundamental<T>::Value && IsPointer<T>::Value> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsPOD
@@ -1529,7 +1467,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_object
     template<typename T>
-    class IsObject : public BoolConstant<IsScalar<T>::Value || IsArray<T>::Value || 
+    struct IsObject : BoolConstant<IsScalar<T>::Value || IsArray<T>::Value || 
         IsArray<T>::Value || IsUnion<T>::Value || IsClass<T>::Value> {};
 
     #ifdef __WSTL_CXX17__
@@ -1548,7 +1486,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_constructible
     template<typename T, typename... Args>
-    class IsConstructible : public BoolConstant<__is_constructible(T, Args...)> {};
+    struct IsConstructible : BoolConstant<__is_constructible(T, Args...)> {};
     #else
     /// @brief Checks whether type is constructor
     /// @tparam T Constructor type
@@ -1556,14 +1494,14 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_constructible
     template<typename T, typename Args = void>
-    class IsConstructible : public BoolConstant<__is_constructible(T, Args)> {};
+    struct IsConstructible : BoolConstant<__is_constructible(T, Args)> {};
     
     /// @brief Checks whether type is constructor
     /// @tparam T Constructor type
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_constructible
     template<typename T>
-    class IsConstructible<T, void> : public BoolConstant<__is_constructible(T)> {};
+    struct IsConstructible<T, void> : BoolConstant<__is_constructible(T)> {};
     #endif
 
     #ifdef __WSTL_CXX17__
@@ -1582,7 +1520,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_constructible
     template<typename T, typename... Args>
-    class IsTriviallyConstructible : public BoolConstant<
+    struct IsTriviallyConstructible : BoolConstant<
     #ifdef __WSTL_GCC__
     __has_trivial_constructor(T)
     #else
@@ -1596,7 +1534,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_constructible
     template<typename T, typename Args = void>
-    class IsTriviallyConstructible : public BoolConstant<
+    struct IsTriviallyConstructible : BoolConstant<
     #ifdef __WSTL_GCC__
     __has_trivial_constructor(T)
     #else
@@ -1609,7 +1547,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_constructible
     template<typename T>
-    class IsTriviallyConstructible<T, void> : public BoolConstant<
+    struct IsTriviallyConstructible<T, void> : BoolConstant<
     #ifdef __WSTL_GCC__
     __has_trivial_constructor(T)
     #else
@@ -1648,7 +1586,7 @@ namespace wstl {
     /// @note Requires `__WSTL_EXCEPTIONS__` to be defined
     /// @see https://en.cppreference.com/w/cpp/types/is_constructible
     template<typename T, typename... Args>
-    class IsNothrowConstructible : 
+    struct IsNothrowConstructible : 
         public BoolConstant<__private::__TestNothrowConstructible<T, Args...>(0)> {};
 
     #else
@@ -1659,7 +1597,7 @@ namespace wstl {
     /// @note Requires `__WSTL_EXCEPTIONS__` to be defined
     /// @see https://en.cppreference.com/w/cpp/types/is_constructible
     template<typename T, typename Args = void>
-    class IsNothrowConstructible : public BoolConstant<
+    struct IsNothrowConstructible : BoolConstant<
     #if defined(__WSTL_GCC__) || defined(__WSTL_CLANG__)
     __has_nothrow_constructor(T)
     #elif defined(__WSTL_MSVC__)
@@ -1675,7 +1613,7 @@ namespace wstl {
     /// @note Requires `__WSTL_EXCEPTIONS__` to be defined
     /// @see https://en.cppreference.com/w/cpp/types/is_constructible
     template<typename T>
-    class IsNothrowConstructible<T, void> : public BoolConstant<
+    struct IsNothrowConstructible<T, void> : BoolConstant<
     #if defined(__WSTL_GCC__) || defined(__WSTL_CLANG__)
     __has_nothrow_constructor(T)
     #elif defined(__WSTL_MSVC__)
@@ -1701,7 +1639,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_default_constructible
     template<typename T>
-    class IsDefaultConstructible : public IsConstructible<T> {};
+    struct IsDefaultConstructible : IsConstructible<T> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsDefaultConstructible
@@ -1717,7 +1655,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_default_constructible
     template<typename T>
-    class IsTriviallyDefaultConstructible : public IsTriviallyConstructible<T> {};
+    struct IsTriviallyDefaultConstructible : IsTriviallyConstructible<T> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsTriviallyDefaultConstructible
@@ -1735,7 +1673,7 @@ namespace wstl {
     /// @note Requires `__WSTL_EXCEPTIONS__` to be defined
     /// @see https://en.cppreference.com/w/cpp/types/is_default_constructible
     template<typename T>
-    class IsNothrowDefaultConstructible : public IsNothrowConstructible<T> {};
+    struct IsNothrowDefaultConstructible : IsNothrowConstructible<T> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsNothrowDefaultConstructible
@@ -1752,7 +1690,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_copy_constructible
     template<typename T>
-    class IsCopyConstructible : public IsConstructible<T, 
+    struct IsCopyConstructible : IsConstructible<T, 
         typename AddLValueReference<typename AddConst<T>::Type>::Type> {};
 
     #ifdef __WSTL_CXX17__
@@ -1769,7 +1707,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_copy_constructible
     template<typename T>
-    class IsTriviallyCopyConstructible : public IsTriviallyConstructible<T, 
+    struct IsTriviallyCopyConstructible : IsTriviallyConstructible<T, 
         typename AddLValueReference<typename AddConst<T>::Type>::Type> {};
 
     #ifdef __WSTL_CXX17__
@@ -1788,7 +1726,7 @@ namespace wstl {
     /// @note Requires `__WSTL_EXCEPTIONS__` to be defined
     /// @see https://en.cppreference.com/w/cpp/types/is_copy_constructible
     template<typename T>
-    class IsNothrowCopyConstructible : public IsNothrowConstructible<T, 
+    struct IsNothrowCopyConstructible : IsNothrowConstructible<T, 
         typename AddLValueReference<typename AddConst<T>::Type>::Type> {};
 
     #ifdef __WSTL_CXX17__
@@ -1808,7 +1746,7 @@ namespace wstl {
     /// @since C++11
     /// @see https://en.cppreference.com/w/cpp/types/is_move_constructible
     template<typename T>
-    class IsMoveConstructible : public IsConstructible<T, typename AddRValueReference<T>::Type> {};
+    struct IsMoveConstructible : IsConstructible<T, typename AddRValueReference<T>::Type> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsMoveConstructible
@@ -1825,7 +1763,7 @@ namespace wstl {
     /// @since C++11
     /// @see https://en.cppreference.com/w/cpp/types/is_move_constructible
     template<typename T>
-    class IsTriviallyMoveConstructible : public IsTriviallyConstructible<T, 
+    struct IsTriviallyMoveConstructible : IsTriviallyConstructible<T, 
         typename AddRValueReference<T>::Type> {};
 
     #ifdef __WSTL_CXX17__
@@ -1845,7 +1783,7 @@ namespace wstl {
     /// @note Requires `__WSTL_EXCEPTIONS__` to be defined
     /// @see https://en.cppreference.com/w/cpp/types/is_move_constructible
     template<typename T>
-    class IsNothrowMoveConstructible : public IsNothrowConstructible<T, 
+    struct IsNothrowMoveConstructible : IsNothrowConstructible<T, 
         typename AddRValueReference<T>::Type> {};
 
     #ifdef __WSTL_CXX17__
@@ -1886,7 +1824,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_assignable
     template<typename T, typename U>
-    class IsAssignable : public BoolConstant<
+    struct IsAssignable : BoolConstant<
     #ifdef __WSTL_CXX11__
     __private::__TestAssignable<T, U>(0)
     #else
@@ -1909,7 +1847,24 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_assignable
     template<typename T, typename U>
-    class IsTriviallyAssignable : public BoolConstant<IsAssignable<T, U>::Value && IsTrivial<T>::Value> {};
+    struct IsTriviallyAssignable : BoolConstant<
+        #if defined(__WSTL_CXX11__) && !defined(__WSTL_MSVC__) 
+        #if defined(__WSTL_GCC__) || defined(__WSTL_ICC__) || defined(__WSTL_CLANG__)
+        __is_trivially_assignable(T, U)
+        #else
+        false
+        #endif
+        #else
+        IsAssignable<T, U>::Value && 
+        #if defined(__WSTL_GCC__) || defined(__WSTL_ICC__) || defined(__WSTL_CLANG__)
+        __has_trivial_assign(T) && __has_trivial_assign(U)
+        #elif defined(__WSTL_MSVC__)
+        __is_pod(T) && __is_pod(U)
+        #else
+        false
+        #endif
+        #endif
+    > {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsTriviallyAssignable
@@ -1929,7 +1884,7 @@ namespace wstl {
     /// @note Requires `__WSTL_EXCEPTIONS__` to be defined
     /// @see https://en.cppreference.com/w/cpp/types/is_assignable
     template<typename T, typename U>
-    class IsNothrowAssignable : public BoolConstant<IsAssignable<T, U>::Value && 
+    struct IsNothrowAssignable : BoolConstant<IsAssignable<T, U>::Value && 
         noexcept(DeclareValue<T>() = DeclareValue<U>())> {};
     #else
     /// @brief Checks whether type is nothrow (noexcept) assignable to another
@@ -1939,7 +1894,7 @@ namespace wstl {
     /// @note Requires `__WSTL_EXCEPTIONS__` to be defined
     /// @see https://en.cppreference.com/w/cpp/types/is_assignable
     template<typename T, typename U>
-    class IsNothrowAssignable : public BoolConstant<
+    struct IsNothrowAssignable : BoolConstant<
     #if defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__)
     __is_nothrow_assignable(T, U)
     #else
@@ -1963,7 +1918,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_copy_assignable
     template<typename T>
-    class IsCopyAssignable : public IsAssignable<typename AddLValueReference<T>::Type, 
+    struct IsCopyAssignable : IsAssignable<typename AddLValueReference<T>::Type, 
         typename AddLValueReference<const T>::Type> {};
 
     #ifdef __WSTL_CXX17__
@@ -1980,7 +1935,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_copy_assignable
     template<typename T>
-    class IsTriviallyCopyAssignable : public IsTriviallyAssignable<typename AddLValueReference<T>::Type,
+    struct IsTriviallyCopyAssignable : IsTriviallyAssignable<typename AddLValueReference<T>::Type,
         typename AddLValueReference<const T>::Type> {};
 
     #ifdef __WSTL_CXX17__
@@ -1997,7 +1952,7 @@ namespace wstl {
     /// @note Requires `__WSTL_EXCEPTIONS__` to be defined
     /// @see https://en.cppreference.com/w/cpp/types/is_copy_assignable
     template<typename T>
-    class IsNothrowCopyAssignable : public IsNothrowAssignable<typename AddLValueReference<T>::Type,
+    struct IsNothrowCopyAssignable : IsNothrowAssignable<typename AddLValueReference<T>::Type,
         typename AddLValueReference<const T>::Type> {};
 
     #ifdef __WSTL_CXX17__
@@ -2017,7 +1972,7 @@ namespace wstl {
     /// @since C++11
     /// @see https://en.cppreference.com/w/cpp/types/is_move_assignable
     template<typename T>
-    class IsMoveAssignable : public IsAssignable<typename AddLValueReference<T>::Type, 
+    struct IsMoveAssignable : IsAssignable<typename AddLValueReference<T>::Type, 
         typename AddRValueReference<T>::Type> {};
 
     #ifdef __WSTL_CXX17__
@@ -2035,7 +1990,7 @@ namespace wstl {
     /// @since C++11
     /// @see https://en.cppreference.com/w/cpp/types/is_move_assignable
     template<typename T>
-    class IsTriviallyMoveAssignable : public IsTriviallyAssignable<typename AddLValueReference<T>::Type,
+    struct IsTriviallyMoveAssignable : IsTriviallyAssignable<typename AddLValueReference<T>::Type,
         typename AddRValueReference<T>::Type> {};
 
     #ifdef __WSTL_CXX17__
@@ -2056,7 +2011,7 @@ namespace wstl {
     /// @note Requires `__WSTL_EXCEPTIONS__` to be defined
     /// @see https://en.cppreference.com/w/cpp/types/is_move_assignable
     template<typename T>
-    class IsNothrowMoveAssignable : public IsNothrowAssignable<typename AddLValueReference<T>::Type,
+    struct IsNothrowMoveAssignable : IsNothrowAssignable<typename AddLValueReference<T>::Type,
         typename AddRValueReference<T>::Type> {};
 
     #ifdef __WSTL_CXX17__
@@ -2089,7 +2044,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_destructible
     template<typename T>
-    class IsDestructible : public BoolConstant<
+    struct IsDestructible : BoolConstant<
     #ifdef __WSTL_CXX11__
     __private::__TestDestructible<T>(0)
     #elif defined(__WSTL_GCC__) || defined(__WSTL_CLANG__)
@@ -2115,7 +2070,19 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_destructible
     template<typename T>
-    class IsTriviallyDestructible : public BoolConstant<!__private::__TestDestructible<T>(0)> {};
+    struct IsTriviallyDestructible : BoolConstant<
+    #if defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__)
+        __has_trivial_destructor(T)
+    #elif defined(__WSTL_MSVC__)
+        #ifdef __WSTL_CXX11__
+        __is_trivially_destructible(T)
+        #else
+        __is_pod(T)
+        #endif
+    #else
+        false
+    #endif
+    > {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsTriviallyDestructible
@@ -2147,7 +2114,7 @@ namespace wstl {
     /// @note Requires `__WSTL_EXCEPTIONS__` to be defined
     /// @see https://en.cppreference.com/w/cpp/types/is_destructible
     template<typename T>
-    class IsNothrowDestructible : public BoolConstant<
+    struct IsNothrowDestructible : BoolConstant<
     #ifdef __WSTL_CXX11__
     __private::__TestNothrowDestructible<T>(0)
     #elif defined(__WSTL_GCC__) || defined(__WSTL_MSVC__) || defined(__WSTL_CLANG__)
@@ -2172,8 +2139,15 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_trivially_copyable
     template<typename T>
-    class IsTriviallyCopyable : public BoolConstant<IsTriviallyConstructible<T>::Value &&
-        IsTriviallyDestructible<T>::Value && IsTriviallyAssignable<T, T>::Value> {};
+    struct IsTriviallyCopyable : BoolConstant<
+        #if defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || (defined(__WSTL_MSVC__) && defined(__WSTL_CXX11__)) || defined(__WSTL_ICC__)
+        __has_trivial_constructor(T) && __has_trivial_assign(T) && __has_trivial_destructor(T) 
+        #elif defined(__WSTL_MSVC__)
+        __is_pod(T)
+        #else
+        false
+        #endif
+    > {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsTriviallyCopyable
@@ -2186,10 +2160,10 @@ namespace wstl {
 
     namespace __private {
         template<typename T>
-        class __IsLValueReference : public FalseType {};
+        struct __IsLValueReference : FalseType {};
 
         template<typename T>
-        class __IsLValueReference<T&> : public TrueType {};
+        struct __IsLValueReference<T&> : TrueType {};
     }   
 
     /// @brief Checks whether type is lvalue reference
@@ -2197,7 +2171,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_lvalue_reference
     template<typename T>
-    class IsLValueReference : public __private::__IsLValueReference<typename RemoveCV<T>::Type> {};
+    struct IsLValueReference : __private::__IsLValueReference<typename RemoveCV<T>::Type> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsLValueReference
@@ -2211,10 +2185,10 @@ namespace wstl {
     #ifdef __WSTL_CXX11__
     namespace __private {
         template<typename T>
-        class __IsRValueReference : public FalseType {};
+        struct __IsRValueReference : FalseType {};
 
         template<typename T>
-        class __IsRValueReference<T&&> : public TrueType {};
+        struct __IsRValueReference<T&&> : TrueType {};
     }
 
     /// @brief Checks whether type is rvalue reference
@@ -2223,7 +2197,7 @@ namespace wstl {
     /// @since C++11
     /// @see https://en.cppreference.com/w/cpp/types/is_rvalue_reference
     template<typename T>
-    class IsRValueReference : public __private::__IsRValueReference<typename RemoveCV<T>::Type> {};
+    struct IsRValueReference : __private::__IsRValueReference<typename RemoveCV<T>::Type> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsRValueReference
@@ -2240,7 +2214,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_reference
     template<typename T>
-    class IsReference : public BoolConstant<(
+    struct IsReference : BoolConstant<(
         IsLValueReference<T>::Value
         #ifdef __WSTL_CXX11__
         || IsRValueReference<T>::Value
@@ -2261,34 +2235,34 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_signed
     template<typename T>
-    class IsSigned;
+    struct IsSigned;
 
     template<typename T>
-    class IsSigned : public FalseType {};
+    struct IsSigned : FalseType {};
 
-    template<> class IsSigned<signed char> : public TrueType {};
-    template<> class IsSigned<char> : public BoolConstant<(char(255) < 0)> {};
-    template<> class IsSigned<wchar_t> : public BoolConstant<(wchar_t(-1) < wchar_t(0))> {};
-    template<> class IsSigned<short> : public TrueType {};
-    template<> class IsSigned<int> : public TrueType {};
-    template<> class IsSigned<long> : public TrueType {};
-    template<> class IsSigned<long long> : public TrueType {};
-    template<> class IsSigned<float> : public TrueType {};
-    template<> class IsSigned<double> : public TrueType {};
-    template<> class IsSigned<long double> : public TrueType {};
+    template<> struct IsSigned<signed char> : TrueType {};
+    template<> struct IsSigned<char> : BoolConstant<(char(255) < 0)> {};
+    template<> struct IsSigned<wchar_t> : BoolConstant<(wchar_t(-1) < wchar_t(0))> {};
+    template<> struct IsSigned<short> : TrueType {};
+    template<> struct IsSigned<int> : TrueType {};
+    template<> struct IsSigned<long> : TrueType {};
+    template<> struct IsSigned<long long> : TrueType {};
+    template<> struct IsSigned<float> : TrueType {};
+    template<> struct IsSigned<double> : TrueType {};
+    template<> struct IsSigned<long double> : TrueType {};
 
     #ifdef __WSTL_CXX20__
-    template<> class IsSigned<char8_t> : public BoolConstant<(char8_t(-1) < char8_t(0))> {};
+    template<> struct IsSigned<char8_t> : BoolConstant<(char8_t(-1) < char8_t(0))> {};
     #endif
 
     #ifdef __WSTL_CXX11__
-    template<> class IsSigned<char16_t> : public BoolConstant<(char16_t(-1) < char16_t(0))> {};
-    template<> class IsSigned<char32_t> : public BoolConstant<(char32_t(-1) < char32_t(0))> {};
+    template<> struct IsSigned<char16_t> : BoolConstant<(char16_t(-1) < char16_t(0))> {};
+    template<> struct IsSigned<char32_t> : BoolConstant<(char32_t(-1) < char32_t(0))> {};
     #endif
 
-    template<typename T> class IsSigned<const T> : public IsSigned<T> {};
-    template<typename T> class IsSigned<volatile T> : public IsSigned<T> {};
-    template<typename T> class IsSigned<const volatile T> : public IsSigned<T> {};
+    template<typename T> struct IsSigned<const T> : IsSigned<T> {};
+    template<typename T> struct IsSigned<volatile T> : IsSigned<T> {};
+    template<typename T> struct IsSigned<const volatile T> : IsSigned<T> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsSigned
@@ -2304,32 +2278,32 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_unsigned
     template<typename T>
-    class IsUnsigned;
+    struct IsUnsigned;
 
     template<typename T>
-    class IsUnsigned : public FalseType {};
+    struct IsUnsigned : FalseType {};
 
-    template<> class IsUnsigned<bool> : public TrueType {};
-    template<> class IsUnsigned<char> : public BoolConstant<(char(255) > 0)> {};
-    template<> class IsUnsigned<wchar_t> : public BoolConstant<(wchar_t(-1) > wchar_t(0))> {};
-    template<> class IsUnsigned<unsigned char> : public TrueType {};
-    template<> class IsUnsigned<unsigned short> : public TrueType {};
-    template<> class IsUnsigned<unsigned int> : public TrueType {};
-    template<> class IsUnsigned<unsigned long> : public TrueType {};
-    template<> class IsUnsigned<unsigned long long> : public TrueType {};
+    template<> struct IsUnsigned<bool> : TrueType {};
+    template<> struct IsUnsigned<char> : BoolConstant<(char(255) > 0)> {};
+    template<> struct IsUnsigned<wchar_t> : BoolConstant<(wchar_t(-1) > wchar_t(0))> {};
+    template<> struct IsUnsigned<unsigned char> : TrueType {};
+    template<> struct IsUnsigned<unsigned short> : TrueType {};
+    template<> struct IsUnsigned<unsigned int> : TrueType {};
+    template<> struct IsUnsigned<unsigned long> : TrueType {};
+    template<> struct IsUnsigned<unsigned long long> : TrueType {};
 
     #ifdef __WSTL_CXX20__
-    template<> class IsUnsigned<char8_t> : public BoolConstant<(char8_t(-1) > char8_t(0))> {};
+    template<> struct IsUnsigned<char8_t> : BoolConstant<(char8_t(-1) > char8_t(0))> {};
     #endif
 
     #ifdef __WSTL_CXX11__
-    template<> class IsUnsigned<char16_t> : public BoolConstant<(char16_t(-1) > char16_t(0))> {};
-    template<> class IsUnsigned<char32_t> : public BoolConstant<(char32_t(-1) > char32_t(0))> {};
+    template<> struct IsUnsigned<char16_t> : BoolConstant<(char16_t(-1) > char16_t(0))> {};
+    template<> struct IsUnsigned<char32_t> : BoolConstant<(char32_t(-1) > char32_t(0))> {};
     #endif
 
-    template<typename T> class IsUnsigned<const T> : public IsUnsigned<T> {};
-    template<typename T> class IsUnsigned<volatile T> : public IsUnsigned<T> {};
-    template<typename T> class IsUnsigned<const volatile T> : public IsUnsigned<T> {};
+    template<typename T> struct IsUnsigned<const T> : IsUnsigned<T> {};
+    template<typename T> struct IsUnsigned<volatile T> : IsUnsigned<T> {};
+    template<typename T> struct IsUnsigned<const volatile T> : IsUnsigned<T> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsUnsigned
@@ -2345,7 +2319,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/decay
     template<typename T>
-    class Decay {
+    struct Decay {
     private:
         typedef typename RemoveReference<T>::Type U;
 
@@ -2370,13 +2344,10 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/utility/functional/unwrap_reference
     template<typename T>
-    class UnwrapReference;
+    struct UnwrapReference;
     
     template<typename T>
-    class UnwrapReference {
-    public:
-        typedef T Type;
-    };
+    struct UnwrapReference { typedef T Type; };
 
     #ifdef __WSTL_CXX11__
     /// @copydoc UnwrapReference
@@ -2392,7 +2363,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/utility/functional/unwrap_reference
     template<typename T>
-    class UnwrapReferenceDecay : public UnwrapReference<typename Decay<T>::Type> {};
+    struct UnwrapReferenceDecay : UnwrapReference<typename Decay<T>::Type> {};
 
     #ifdef __WSTL_CXX11__
     /// @copydoc UnwrapReferenceDecay
@@ -2410,36 +2381,36 @@ namespace wstl {
     /// @since C++11
     /// @see https://en.cppreference.com/w/cpp/types/common_type
     template<typename... Ts>
-    class CommonType;
+    struct CommonType;
 
     // One type
 
     template<typename T>
-    class CommonType<T> : public CommonType<T, T> {};
+    struct CommonType<T> : CommonType<T, T> {};
 
     namespace __private {
         template<typename T1, typename T2>
         using __ConditionalResultType = decltype(false ? DeclareValue<T1>() : DeclareValue<T2>());
 
         template<typename, typename, typename = void>
-        class __DecayConditionalResult {};
+        struct __DecayConditionalResult {};
 
         template<typename T1, typename T2>
-        class __DecayConditionalResult<T1, T2, VoidType<__ConditionalResultType<T1, T2>>> :
+        struct __DecayConditionalResult<T1, T2, VoidType<__ConditionalResultType<T1, T2>>> :
             public Decay<__ConditionalResultType<T1, T2>> {};
 
         template<typename T1, typename T2, typename = void>
-        class __CommonType2 : public __DecayConditionalResult<const T1&, const T2&> {};
+        struct __CommonType2 : __DecayConditionalResult<const T1&, const T2&> {};
 
         template<typename T1, typename T2>
-        class __CommonType2<T1, T2, VoidType<__ConditionalResultType<T1, T2>>> : 
+        struct __CommonType2<T1, T2, VoidType<__ConditionalResultType<T1, T2>>> : 
             public __DecayConditionalResult<T1, T2> {};
     }
 
     // Two types
 
     template<typename T1, typename T2>
-    class CommonType<T1, T2> : public Conditional<IsSame<T1, typename Decay<T1>::Type>::Value &&
+    struct CommonType<T1, T2> : Conditional<IsSame<T1, typename Decay<T1>::Type>::Value &&
         IsSame<T2, typename Decay<T2>::Type>::Value, __private::__CommonType2<T1, T2>, 
         CommonType<typename Decay<T1>::Type, typename Decay<T2>::Type>>::Type {};
 
@@ -2447,15 +2418,15 @@ namespace wstl {
 
     namespace __private {
         template<typename AlwaysVoid, typename T1, typename T2, typename... R>
-        class __CommonTypeMany {};
+        struct __CommonTypeMany {};
 
         template<typename T1, typename T2, typename... R>
-        class __CommonTypeMany<VoidType<typename CommonType<T1, T2>::Type>, T1, T2, R...> :
+        struct __CommonTypeMany<VoidType<typename CommonType<T1, T2>::Type>, T1, T2, R...> :
             public CommonType<typename CommonType<T1, T2>::Type, R...> {};
     }
 
     template<typename T1, typename T2, typename... R>
-    class CommonType<T1, T2, R...> : public __private::__CommonTypeMany<void, T1, T2, R...> {};
+    struct CommonType<T1, T2, R...> : __private::__CommonTypeMany<void, T1, T2, R...> {};
 
     #ifdef __WSTL_CXX11__
     /// @copydoc CommonType
@@ -2472,37 +2443,37 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/make_signed
     template<typename T>
-    class MakeSigned;
+    struct MakeSigned;
 
     template<typename T>
-    class MakeSigned { public: typedef T Type; };
+    struct MakeSigned { typedef T Type; };
 
     template<>
-    class MakeSigned<unsigned char> { public: typedef signed char Type; };
+    struct MakeSigned<unsigned char> { typedef signed char Type; };
 
     template<>
-    class MakeSigned<unsigned short> { public: typedef short Type; };
+    struct MakeSigned<unsigned short> { typedef short Type; };
 
     template<>
-    class MakeSigned<unsigned int> { public: typedef int Type; };
+    struct MakeSigned<unsigned int> { typedef int Type; };
 
     template<>
-    class MakeSigned<unsigned long> { public: typedef long Type; };
+    struct MakeSigned<unsigned long> { typedef long Type; };
 
     template<>
-    class MakeSigned<unsigned long long> { public: typedef long long Type; };
+    struct MakeSigned<unsigned long long> { typedef long long Type; };
 
     #ifdef __WSTL_CXX20__
     template<>
-    class MakeSigned<char8_t> { public: typedef signed char Type; };
+    struct MakeSigned<char8_t> { typedef signed char Type; };
     #endif
 
     #ifdef __WSTL_CXX11__
     template<>
-    class MakeSigned<char16_t> { public: typedef signed short Type; };
+    struct MakeSigned<char16_t> { typedef signed short Type; };
 
     template<>
-    class MakeSigned<char32_t> { public: typedef signed int Type; };
+    struct MakeSigned<char32_t> { typedef signed int Type; };
 
     /// @copydoc MakeSigned
     /// @since C++11
@@ -2517,37 +2488,37 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/make_unsigned
     template<typename T>
-    class MakeUnsigned;
+    struct MakeUnsigned;
 
     template<typename T>
-    class MakeUnsigned { public: typedef T Type; };
+    struct MakeUnsigned { typedef T Type; };
 
     template<>
-    class MakeUnsigned<char> { public: typedef unsigned char Type; };
+    struct MakeUnsigned<char> { typedef unsigned char Type; };
 
     template<>
-    class MakeUnsigned<short> { public: typedef unsigned short Type; };
+    struct MakeUnsigned<short> { typedef unsigned short Type; };
 
     template<>
-    class MakeUnsigned<int> { public: typedef unsigned int Type; };
+    struct MakeUnsigned<int> { typedef unsigned int Type; };
 
     template<>
-    class MakeUnsigned<long> { public: typedef unsigned long Type; };
+    struct MakeUnsigned<long> { typedef unsigned long Type; };
 
     template<>
-    class MakeUnsigned<long long> { public: typedef unsigned long long Type; };
+    struct MakeUnsigned<long long> { typedef unsigned long long Type; };
 
     #ifdef __WSTL_CXX20__
     template<>
-    class MakeUnsigned<char8_t> { public: typedef unsigned char Type; };
+    struct MakeUnsigned<char8_t> { typedef unsigned char Type; };
     #endif
 
     #ifdef __WSTL_CXX11__
     template<>
-    class MakeUnsigned<char16_t> { public: typedef unsigned short Type; };
+    struct MakeUnsigned<char16_t> { typedef unsigned short Type; };
 
     template<>
-    class MakeUnsigned<char32_t> { public: typedef unsigned int Type; };
+    struct MakeUnsigned<char32_t> { typedef unsigned int Type; };
 
     /// @copydoc MakeUnsigned
     /// @since C++11
