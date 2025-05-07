@@ -15,7 +15,7 @@
 
 #include "private/Swap.hpp"
 #include "TypeTraits.hpp"
-#include "Memory.hpp"
+#include "private/AddressOf.hpp"
 
 
 /// @defgroup iterator Iterator
