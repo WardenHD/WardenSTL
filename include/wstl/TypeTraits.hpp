@@ -8,6 +8,7 @@
 
 #include <stddef.h>
 #include "NullPointer.hpp"
+#include "StaticAssert.hpp"
 #include "private/Platform.hpp"
 
 
@@ -2525,6 +2526,180 @@ namespace wstl {
     template<typename T>
     using MakeUnsignedType = typename MakeUnsigned<T>::Type;
     #endif
+
+    // Type with alignment
+
+    /// @brief Provides a type with specified alignment
+    /// @tparam Alignment Alignment in bytes
+    /// @ingroup type_traits
+    template<size_t Alignment>
+    struct TypeWithAlignment;
+
+    #ifdef __WSTL_CXX11__
+    template<size_t Alignment>
+    struct TypeWithAlignment {
+        typedef struct { alignas(Alignment) char __Dummy; } Type;
+    };
+
+    /// @copydoc TypeWithAlignment
+    /// @since C++11
+    template<size_t Alignment>
+    using TypeWithAlignmentType = typename TypeWithAlignment<Alignment>::Type;
+    #else
+    #define __MATCH_ALIGNMENT(T) \
+        template<> struct TypeWithAlignment<AlignmentOf<T>::Value> { typedef T Type; }
+
+    __MATCH_ALIGNMENT(int_least8_t);
+    __MATCH_ALIGNMENT(int_least16_t);
+    __MATCH_ALIGNMENT(int32_t);
+    __MATCH_ALIGNMENT(int64_t);
+    __MATCH_ALIGNMENT(float);
+    __MATCH_ALIGNMENT(double);
+    __MATCH_ALIGNMENT(void*);
+
+    #undef __MATCH_ALIGNMENT
+    #endif
+
+    // Is type aligned
+
+    /// @brief Checks whether type is aligned to specified alignment
+    /// @tparam T Type to check
+    /// @tparam Alignment Alignment in bytes
+    /// @ingroup type_traits
+    template<typename T, size_t Alignment>
+    struct IsTypeAligned : BoolConstant<(AlignmentOf<T>::Value == Alignment)> {};
+
+    #ifdef __WSTL_CXX17__
+    /// @copydoc IsTypeAligned
+    /// @since C++17
+    template<typename T, size_t Alignment>
+    inline constexpr bool IsTypeAlignedValue = IsTypeAligned<T, Alignment>::Value;
+    #endif
+
+    // Aligned storage
+
+    /// @brief Provides a storage type with specified size and alignment
+    /// @tparam Length Size in bytes
+    /// @tparam Alignment Alignment in bytes
+    /// @ingroup type_traits
+    /// @see https://en.cppreference.com/w/cpp/types/aligned_storage
+    template<size_t Length, size_t Alignment>
+    struct AlignedStorage {
+        struct Type {
+            /// @brief Conversion operator to reference type
+            /// @tparam T Type to convert to
+            /// @return Reference to the data
+            template<typename T>
+            operator T&() {
+                StaticAssert((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
+                T* t = *this;
+                return *t;
+            }
+            
+            /// @brief Conversion operator to const reference type
+            /// @tparam T Type to convert to
+            /// @return Const reference to the data
+            template<typename T>
+            operator const T&() const {
+                StaticAssert((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
+                const T* t = *this;
+                return *t;
+            }
+
+            /// @brief Conversion operator to pointer type
+            /// @tparam T Type to convert to
+            /// @return Pointer to the data
+            template<typename T>
+            operator T*() {
+                StaticAssert((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
+                return reinterpret_cast<T*>(Data);
+            }
+
+            /// @brief Conversion operator to const pointer type
+            /// @tparam T Type to convert to
+            /// @return Const pointer to the data
+            template<typename T>
+            operator const T*() const {
+                StaticAssert((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
+                return reinterpret_cast<const T*>(Data);
+            }
+
+            /// @brief Gets pointer to the data
+            /// @tparam T Type to convert to
+            /// @return Pointer to the data
+            template<typename T>
+            T* GetPointer() {
+                StaticAssert((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
+                return reinterpret_cast<T*>(Data);
+            }
+
+            /// @brief Gets const pointer to the data
+            /// @tparam T Type to convert to
+            /// @return Const pointer to the data
+            template<typename T>
+            const T* GetPointer() const {
+                StaticAssert((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
+                return reinterpret_cast<const T*>(Data);
+            }
+
+            /// @brief Gets reference to the data
+            /// @tparam T Type to convert to
+            /// @return Reference to the data
+            template<typename T>
+            T& GetReference() {
+                StaticAssert((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
+                T* t = *this;
+                return *t;
+            }
+
+            /// @brief Gets const reference to the data
+            /// @tparam T Type to convert to
+            /// @return Const reference to the data
+            template<typename T>
+            const T& GetReference() const {
+                StaticAssert((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
+                const T* t = *this;
+                return *t;
+            }
+
+            #ifdef __WSTL_CXX11__
+            alignas(Alignment) char Data[Length];
+            #else
+            union {
+                char Data[Length];
+                typename TypeWithAlignment<Alignment>::Type __Aligner;
+            };
+            #endif
+        };
+    };
+
+    // Is aligned
+
+    /// @brief Checks whether pointer is aligned to specified alignment
+    /// @param pointer Pointer to check
+    /// @param alignment Alignment in bytes
+    /// @ingroup type_traits
+    inline __WSTL_CONSTEXPR__ bool IsAligned(void* pointer, size_t alignment) {
+        return (reinterpret_cast<size_t>(pointer) % alignment) == 0;
+    }
+
+    /// @brief Checks whether pointer is aligned to specified alignment
+    /// @tparam Alignment Alignment in bytes
+    /// @param pointer Pointer to check
+    /// @ingroup type_traits
+    template<size_t Alignment>
+    inline __WSTL_CONSTEXPR__ bool IsAligned(void* pointer) {
+        return (reinterpret_cast<size_t>(pointer) % Alignment) == 0;
+    }
+
+    /// @brief Checks whether pointer has the same alignment as specified type
+    /// @tparam T Type to check against
+    /// @param pointer Pointer to check
+    /// @ingroup type_traits
+    template<typename T>
+    inline __WSTL_CONSTEXPR__ bool IsAligned(void* pointer) {
+        return IsAligned<AlignmentOf<T>::Value>(pointer);
+    }
 }
 
 #endif
