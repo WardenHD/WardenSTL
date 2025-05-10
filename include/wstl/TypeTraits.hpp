@@ -2567,7 +2567,7 @@ namespace wstl {
     /// @tparam Alignment Alignment in bytes
     /// @ingroup type_traits
     template<typename T, size_t Alignment>
-    struct IsTypeAligned : BoolConstant<(AlignmentOf<T>::Value == Alignment)> {};
+    struct IsTypeAligned : BoolConstant<((Alignment % AlignmentOf<T>::Value) == 0)> {};
 
     #ifdef __WSTL_CXX17__
     /// @copydoc IsTypeAligned
@@ -2592,8 +2592,7 @@ namespace wstl {
             template<typename T>
             operator T&() {
                 StaticAssert((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
-                T* t = *this;
-                return *t;
+                return *reinterpret_cast<T*>(Data);
             }
             
             /// @brief Conversion operator to const reference type
@@ -2602,8 +2601,7 @@ namespace wstl {
             template<typename T>
             operator const T&() const {
                 StaticAssert((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
-                const T* t = *this;
-                return *t;
+                return *reinterpret_cast<const T*>(Data);
             }
 
             /// @brief Conversion operator to pointer type
@@ -2648,8 +2646,7 @@ namespace wstl {
             template<typename T>
             T& GetReference() {
                 StaticAssert((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
-                T* t = *this;
-                return *t;
+                return *reinterpret_cast<T*>(Data);
             }
 
             /// @brief Gets const reference to the data
@@ -2658,8 +2655,7 @@ namespace wstl {
             template<typename T>
             const T& GetReference() const {
                 StaticAssert((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
-                const T* t = *this;
-                return *t;
+                return *reinterpret_cast<const T*>(Data);
             }
 
             #ifdef __WSTL_CXX11__
@@ -2672,6 +2668,13 @@ namespace wstl {
             #endif
         };
     };
+
+    #ifdef __WSTL_CXX11__
+    /// @copydoc AlignedStorage
+    /// @since C++11
+    template<size_t Length, size_t Alignment>
+    using AlignedStorageType = typename AlignedStorage<Length, Alignment>::Type;
+    #endif
 
     // Is aligned
 
