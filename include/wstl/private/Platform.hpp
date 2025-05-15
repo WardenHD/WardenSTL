@@ -151,12 +151,14 @@ namespace wstl {
 
 #if defined(__WSTL_CXX17__)
     #define __WSTL_CONSTEXPR17__ constexpr
+    #define __WSTL_IF_CONSTEXPR__ constexpr
     #define __WSTL_NODISCARD__ [[nodiscard]]
     #define __WSTL_FALLTHROUGH__ [[fallthrough]]
     #define __WSTL_MAYBE_UNUSED__ [[maybe_unused]]
     #define __WSTL_INLINE_VARIABLE__ inline
 #else
     #define __WSTL_CONSTEXPR17__
+    #define __WSTL_IF_CONSTEXPR__
     #define __WSTL_INLINE_VARIABLE__
 
     #if defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__)
