@@ -34,19 +34,19 @@ namespace wstl {
                 m_Begin(begin), m_End(end), m_Current(start) {}
 
             __WSTL_CONSTEXPR14__ __CircularIteratorCommon(const __CircularIteratorCommon& other) :
-                m_Begin(other.m_Begin), m_End(other.m_End), m_Current(other.m_Current) {}
+                m_Begin(other.Begin()), m_End(other.End()), m_Current(other.Current()) {}
 
             template<typename U>
             __WSTL_CONSTEXPR14__ __CircularIteratorCommon(const __CircularIteratorCommon<U>& other) :
-                m_Begin(other.m_Begin), m_End(other.m_End), m_Current(other.m_Current) {}
+                m_Begin(other.Begin()), m_End(other.End()), m_Current(other.Current()) {}
 
             #ifdef __WSTL_CXX11__
             __WSTL_CONSTEXPR14__ __CircularIteratorCommon(__CircularIteratorCommon&& other) :
-                m_Begin(Move(other.m_Begin)), m_End(Move(other.m_End)), m_Current(Move(other.m_Current)) {}
+                m_Begin(Move(other.Begin())), m_End(Move(other.End())), m_Current(Move(other.Current())) {}
 
             template<typename U>
             __WSTL_CONSTEXPR14__ __CircularIteratorCommon(__CircularIteratorCommon<U>&& other) :
-                m_Begin(Move(other.m_Begin)), m_End(Move(other.m_End)), m_Current(Move(other.m_Current)) {}
+                m_Begin(Move(other.Begin())), m_End(Move(other.End())), m_Current(Move(other.Current())) {}
             #endif
 
             __WSTL_CONSTEXPR14__ __CircularIteratorCommon& operator=(const __CircularIteratorCommon& other) {
@@ -102,12 +102,12 @@ namespace wstl {
             }
 
             /// @brief Deference operator
-            __WSTL_CONSTEXPR14__ ValueType operator*() {
+            __WSTL_CONSTEXPR14__ ReferenceType operator*() {
                 return *m_Current;
             }
 
             /// @brief Const deference operator
-            __WSTL_CONSTEXPR14__ const ValueType operator*() const {
+            __WSTL_CONSTEXPR14__ const ReferenceType operator*() const {
                 return *m_Current;
             }
 
@@ -540,7 +540,7 @@ namespace wstl {
     /// @ingroup iterator
     template<typename U>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ 
-    CircularIterator<U> operator+(CircularIterator<U>& x, typename IteratorTraits<U>::DifferenceType offset) {
+    CircularIterator<U> operator+(const CircularIterator<U>& x, typename IteratorTraits<U>::DifferenceType offset) {
         CircularIterator<U> result(x);
         result += offset;
         return result;
@@ -555,7 +555,7 @@ namespace wstl {
     /// @ingroup iterator
     template<typename U>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ 
-    CircularIterator<U> operator-(CircularIterator<U>& x, typename IteratorTraits<U>::DifferenceType offset) {
+    CircularIterator<U> operator-(const CircularIterator<U>& x, typename IteratorTraits<U>::DifferenceType offset) {
         CircularIterator<U> result(x);
         result -= offset;
         return result;
