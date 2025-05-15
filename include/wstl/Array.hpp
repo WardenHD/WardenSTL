@@ -14,6 +14,7 @@
 #include "Iterator.hpp"
 #include "Algorithm.hpp"
 #include "private/Error.hpp"
+#include "StandardExceptions.hpp"
 #include <stddef.h>
 
 
@@ -22,31 +23,6 @@
 /// @ingroup containers
 
 namespace wstl {
-    // Array exceptions
-
-    /// @brief Base class for all array exceptions
-    /// @ingroup array
-    class ArrayException : public Exception {
-    public:
-        /// @brief Constructor
-        /// @param reason Reason for the exception
-        /// @param file File where the exception occurred
-        /// @param line Line number where the exception occurred
-        ArrayException(StringType reason, StringType file, NumericType line) :
-            Exception(reason, file, line) {}
-    };
-
-    /// @brief Exception thrown when an index is out of range
-    /// @ingroup array
-    class IndexOutOfRange : public ArrayException {
-    public:
-        /// @brief Constructor
-        /// @param file File where the exception occurred
-        /// @param line Line number where the exception occurred
-        IndexOutOfRange(StringType file, NumericType line) :
-            ArrayException("Index out of range", file, line) {}
-    };
-
     // Array class
 
     /// @brief A container that encapsulates a fixed size array
@@ -77,7 +53,7 @@ namespace wstl {
         /// @return Reference to the element at the specified index
         /// @throws IndexOutOfRange if the index is out of range
         __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ReferenceType At(SizeType index) {
-            __WSTL_ASSERT__(index < N, IndexOutOfRange(__FILE__, __LINE__));
+            __WSTL_ASSERT__(index < N, OutOfRange(__FILE__, __LINE__));
             return __m_Data[index];
         }
 
@@ -86,7 +62,7 @@ namespace wstl {
         /// @return Const reference to the element at the specified index
         /// @throws IndexOutOfRange if the index is out of range
         __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ConstReferenceType At(SizeType index) const {
-            __WSTL_ASSERT__(index < N, IndexOutOfRange(__FILE__, __LINE__));
+            __WSTL_ASSERT__(index < N, OutOfRange(__FILE__, __LINE__));
             return __m_Data[index];
         }
 

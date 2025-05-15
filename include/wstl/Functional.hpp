@@ -19,28 +19,15 @@
 namespace wstl {
     // Function exceptions
 
-    /// @brief Base class for all exceptions related to functions
-    /// @ingroup functional
-    class FunctionException : public Exception {
-    public:
-        /// @brief Constructor
-        /// @param reason A string describing the reason for the exception
-        /// @param file The name of the source file where the exception occurred
-        /// @param line The line number in the source file where the exception occurred
-        FunctionException(StringType reason, StringType file, NumericType line) :
-            Exception(reason, file, line) {}
-    };
-
     /// @brief Exception class for invalid function calls
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/bad_function_call
-    class BadFunctionCall : public FunctionException {
+    class BadFunctionCall : public Exception {
     public:
         /// @brief Constructor
         /// @param file The name of the source file where the exception occurred
         /// @param line The line number in the source file where the exception occurred
-        BadFunctionCall(StringType file, NumericType line) :
-            FunctionException("Bad function call", file, line) {}
+        BadFunctionCall(StringType file, NumericType line) : Exception("Bad function call", file, line) {}
     };
 
     // Unary function
