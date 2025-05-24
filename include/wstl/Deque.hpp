@@ -96,7 +96,7 @@ namespace wstl {
         }
 
         void Assign(SizeType count, ConstReferenceType value) {
-            __WSTL_ASSERT__(count <= this->m_Capacity, LengthError("Deque is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(count <= this->m_Capacity, LengthError("Deque is full", __FILE__, __LINE__));
             Initialize();
             for(; count > 0; count--) PushBack(value);
         }
@@ -155,15 +155,15 @@ namespace wstl {
         }
 
         Iterator End() {
-            return Iterator(wstl::Begin(m_Buffer), wstl::End(m_Buffer), wstl::Begin(m_Buffer) + ((this->m_StartIndex + this->m_CurrentSize) % this->m_Capacity));
+            return Iterator(wstl::Begin(m_Buffer), wstl::End(m_Buffer), wstl::Begin(m_Buffer) + ((this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity));
         }
 
         ConstIterator End() const {
-            return ConstIterator(wstl::Begin(m_Buffer), wstl::End(m_Buffer), wstl::Begin(m_Buffer) + ((this->m_StartIndex + this->m_CurrentSize) % this->m_Capacity));
+            return ConstIterator(wstl::Begin(m_Buffer), wstl::End(m_Buffer), wstl::Begin(m_Buffer) + ((this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity));
         }
 
         ConstIterator ConstEnd() const {
-            return ConstIterator(wstl::ConstBegin(m_Buffer), wstl::ConstEnd(m_Buffer), wstl::ConstBegin(m_Buffer) + ((this->m_StartIndex + this->m_CurrentSize) % this->m_Capacity));
+            return ConstIterator(wstl::ConstBegin(m_Buffer), wstl::ConstEnd(m_Buffer), wstl::ConstBegin(m_Buffer) + ((this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity));
         }
 
         ReverseIterator ReverseBegin() {
@@ -195,9 +195,10 @@ namespace wstl {
         }
 
         Iterator Insert(ConstIterator position, ConstReferenceType value) {
-            __WSTL_ASSERT__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
             Iterator pos = Begin() + Distance(ConstBegin(), position);
 
+            __WSTL_ASSERT_RETURNVALUE__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__), pos);
+            
             if(pos == Begin()) CreateFront(value);
             else if(pos == End()) CreateBack(value);
             else {
@@ -218,8 +219,9 @@ namespace wstl {
 
         #ifdef __WSTL_CXX11__
         Iterator Insert(ConstIterator position, T&& value) {
-            __WSTL_ASSERT__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
             Iterator pos = Begin() + Distance(ConstBegin(), position);
+
+            __WSTL_ASSERT_RETURNVALUE__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__), pos);
 
             if(pos == Begin()) CreateFront(Move(value));
             else if(pos == End()) CreateBack(Move(value));
@@ -242,10 +244,10 @@ namespace wstl {
         #endif
 
         Iterator Insert(ConstIterator position, SizeType count, ConstReferenceType value) {
-            __WSTL_ASSERT__(count <= this->m_Capacity - this->m_CurrentSize, LengthError("Deque is full", __FILE__, __LINE__));
-
             Iterator pos;
             Iterator it = Begin() + Distance(ConstBegin(), position);
+
+            __WSTL_ASSERT_RETURNVALUE__(count <= this->m_Capacity - this->m_CurrentSize, LengthError("Deque is full", __FILE__, __LINE__), pos);
 
             if (position == Begin()) {
                 for (SizeType i = 0; i < count; i++) CreateFront(value);
@@ -307,7 +309,7 @@ namespace wstl {
 
         void PushBack(ConstReferenceType value) {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
             #endif
             CreateBack(value);
         }
@@ -315,7 +317,7 @@ namespace wstl {
         #ifdef __WSTL_CXX11__
         void PushBack(T&& value) {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
             #endif
             CreateBack(Move(value));
         }
@@ -323,14 +325,14 @@ namespace wstl {
 
         void PopBack() {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT__(!this->Empty(), OutOfRange("Deque is empty", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Empty(), OutOfRange("Deque is empty", __FILE__, __LINE__));
             #endif
             DestroyBack();
         }
 
         void PushFront(ConstReferenceType value) {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
             #endif
             CreateFront(value);
         }
@@ -338,7 +340,7 @@ namespace wstl {
         #ifdef __WSTL_CXX11__
         void PushFront(T&& value) {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
             #endif
             CreateFront(Move(value));
         }
@@ -346,14 +348,16 @@ namespace wstl {
 
         void PopFront() {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT__(!this->Empty(), OutOfRange("Deque is empty", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Empty(), OutOfRange("Deque is empty", __FILE__, __LINE__));
             #endif
             DestroyFront();
         }
     
-    // DEBUG
+    // FOR DEBUG
     public:
-        T m_Buffer[SIZE + 1];
+        static const __WSTL_CONSTEXPR__ SizeType m_BufferCapacity = SIZE + 1;
+
+        T m_Buffer[m_BufferCapacity];
         SizeType m_StartIndex;
 
         template<typename U = T>
@@ -369,37 +373,37 @@ namespace wstl {
         }
 
         void CreateFront(ConstReferenceType value) {
-            this->m_StartIndex = (this->m_StartIndex + this->m_Capacity - 1) % this->m_Capacity;
+            this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
             ::new(static_cast<void*>(&m_Buffer[this->m_StartIndex])) T(value);
             this->m_CurrentSize++;
         }
 
         void CreateBack(ConstReferenceType value) {
-            ::new(static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_Capacity])) T(value);
+            ::new(static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity])) T(value);
             this->m_CurrentSize++;
         }
 
         #ifdef __WSTL_CXX11__
         void CreateFront(T&& value) {
-            this->m_StartIndex = (this->m_StartIndex + this->m_Capacity - 1) % this->m_Capacity;
+            this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
             ::new(static_cast<void*>(&m_Buffer[this->m_StartIndex])) T(Move(value));
             this->m_CurrentSize++;
         }
 
         void CreateBack(T&& value) {
-            ::new(static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_Capacity])) T(Move(value));
+            ::new(static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity])) T(Move(value));
             this->m_CurrentSize++;
         }
         #endif
 
         void DestroyBack() {
             this->m_CurrentSize--;
-            m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_Capacity].~T();
+            m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity].~T();
         }
 
         void DestroyFront() {
             m_Buffer[this->m_StartIndex].~T();
-            this->m_StartIndex = (this->m_StartIndex + 1) % this->m_Capacity;
+            this->m_StartIndex = (this->m_StartIndex + 1) % this->m_BufferCapacity;
             this->m_CurrentSize--;
         }
     };
