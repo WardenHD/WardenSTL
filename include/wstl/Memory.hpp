@@ -562,7 +562,7 @@ namespace wstl {
     /// @ingroup memory
     /// @see https://en.cppreference.com/w/cpp/memory/make_unique
     template<typename T, typename Arg>
-    inline typename EnableIf<!IsArray<T>::Value, UniquePointer<T>>::Type MakeUnique(Arg arg) {
+    inline typename EnableIf<!IsArray<T>::Value, UniquePointer<T>>::Type MakeUnique(const Arg& arg) {
         return UniquePointer<T>(::new T(arg));
     }
 
@@ -574,7 +574,7 @@ namespace wstl {
     /// @ingroup memory
     /// @see https://en.cppreference.com/w/cpp/memory/make_unique
     template<typename T, typename Arg1, typename Arg2>
-    inline typename EnableIf<!IsArray<T>::Value, UniquePointer<T>>::Type MakeUnique(Arg1 arg1, Arg2 arg2) {
+    inline typename EnableIf<!IsArray<T>::Value, UniquePointer<T>>::Type MakeUnique(const Arg1& arg1, const Arg2& arg2) {
         return UniquePointer<T>(::new T(arg1, arg2));
     }
 
@@ -587,7 +587,7 @@ namespace wstl {
     /// @ingroup memory
     /// @see https://en.cppreference.com/w/cpp/memory/make_unique
     template<typename T, typename Arg1, typename Arg2, typename Arg3>
-    inline typename EnableIf<!IsArray<T>::Value, UniquePointer<T>>::Type MakeUnique(Arg1 arg1, Arg2 arg2, Arg3 arg3) {
+    inline typename EnableIf<!IsArray<T>::Value, UniquePointer<T>>::Type MakeUnique(const Arg1& arg1, const Arg2& arg2, const Arg3& arg3) {
         return UniquePointer<T>(::new T(arg1, arg2, arg3));
     }
     #endif
