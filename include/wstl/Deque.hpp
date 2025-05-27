@@ -249,12 +249,12 @@ namespace wstl {
 
             __WSTL_ASSERT_RETURNVALUE__(count <= this->m_Capacity - this->m_CurrentSize, LengthError("Deque is full", __FILE__, __LINE__), pos);
 
-            if (position == Begin()) {
-                for (SizeType i = 0; i < count; i++) CreateFront(value);
+            if(position == Begin()) {
+                for(SizeType i = 0; i < count; i++) CreateFront(value);
                 pos = Begin();
             }
-            else if (position == End()) {
-                for (SizeType i = 0; i < count; i++) CreateBack(value);
+            else if(position == End()) {
+                for(SizeType i = 0; i < count; i++) CreateBack(value);
                 pos = End() - count;
             }
             else {
@@ -263,7 +263,7 @@ namespace wstl {
                 const SizeType distanceFront = Distance(Begin(), it);
                 const SizeType distanceBack = Distance(it, End());
 
-                if (distanceFront < distanceBack) {
+                if(distanceFront < distanceBack) {
                     // Shift towards front
                     SizeType moveCount = distanceFront;
                     SizeType copyCount = Min(count, moveCount);
@@ -271,9 +271,9 @@ namespace wstl {
 
                     Iterator moveFrom = Begin() + copyCount - 1;
 
-                    for (SizeType i = 0; i < newCount; i++) CreateFront(value);
+                    for(SizeType i = 0; i < newCount; i++) CreateFront(value);
 
-                    for (SizeType i = 0; i < copyCount; i++) CreateFront(*moveFrom--);
+                    for(SizeType i = 0; i < copyCount; i++) CreateFront(*moveFrom--);
 
                     Iterator moveSource = pos - (moveCount - copyCount);
                     Iterator moveDestination = Begin() + copyCount;
@@ -291,9 +291,9 @@ namespace wstl {
 
                     Iterator moveFrom = End() - copyCount;
 
-                    for (SizeType i = 0; i < newCount; i++) CreateBack(value);
+                    for(SizeType i = 0; i < newCount; i++) CreateBack(value);
 
-                    for (SizeType i = 0; i < copyCount; i++) CreateBack(*moveFrom++);
+                    for(SizeType i = 0; i < copyCount; i++) CreateBack(*moveFrom++);
 
                     MoveBackward(pos, pos + (moveCount - copyCount), pos + count + (moveCount - copyCount));
                     FillInRange(pos, count - newCount, value);
@@ -303,7 +303,227 @@ namespace wstl {
             return pos;
         }
 
+        template<typename Iterator>
+        typename EnableIf<!IsIntegral<Iterator>::Value, typename Deque::Iterator>::Type
+        Insert(ConstIterator position, Iterator first, Iterator last) {
+            typename Deque::Iterator pos;
+            typename Deque::Iterator it = Begin() + Distance(ConstBegin(), position);
+            SizeType count = Distance(first, last);
 
+            __WSTL_ASSERT_RETURNVALUE__(count <= this->m_Capacity - this->m_CurrentSize, LengthError("Deque is full", __FILE__, __LINE__), pos);
+
+            if(position == Begin()) {
+                CreateFront(first, count);
+                pos = Begin();
+            }
+            else if(position == End()) {
+                for(; first != last; first++) CreateBack(*first);
+                pos = End() - count;
+            }
+            else {
+                pos = typename Deque::Iterator(wstl::Begin(m_Buffer), wstl::End(m_Buffer), it);
+
+                const SizeType distanceFront = Distance(Begin(), it);
+                const SizeType distanceBack = Distance(it, End());
+
+                if(distanceFront < distanceBack) {
+                    // Shift towards front
+                    SizeType moveCount = distanceFront;
+                    SizeType copyCount = Min(count, moveCount);
+                    SizeType newCount = count - copyCount;
+
+                    Iterator moveFrom = Begin() + copyCount - 1;
+
+                    CreateFront(first, newCount);
+
+                    for(SizeType i = 0; i < copyCount; i++) CreateFront(*moveFrom--);
+
+                    typename Deque::Iterator moveSource = pos - (moveCount - copyCount);
+                    typename Deque::Iterator moveDestination = Begin() + copyCount;
+
+                    Move(moveSource, moveSource + (moveCount - copyCount), moveDestination);
+                    Copy(first, last, pos - copyCount);
+
+                    pos = Begin() + distanceFront;
+                }
+                else {
+                    // Shift towards back
+                    SizeType moveCount = distanceBack;
+                    SizeType copyCount = Min(count, moveCount);
+                    SizeType newCount = count - copyCount;
+
+                    Iterator moveFrom = End() - copyCount;
+
+                    for(SizeType i = 0; i < newCount; i++, first++) CreateBack(*first);
+
+                    for(SizeType i = 0; i < copyCount; i++) CreateBack(*moveFrom++);
+
+                    MoveBackward(pos, pos + (moveCount - copyCount), pos + count + (moveCount - copyCount));
+                    Copy(first, last, pos);
+                }
+            }
+
+            return pos;
+        }
+
+        #ifndef __WSTL_CXX11__
+        template<typename... Args>
+        Iterator Emplace(ConstIterator position, Args&&... args) {
+            Iterator pos = Begin() + Distance(ConstBegin(), position);
+
+            __WSTL_ASSERT_RETURNVALUE__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__), pos);
+
+            void* pointer;
+            
+            if(pos == Begin()) {
+                this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
+                this->m_CurrentSize++;
+                pointer = static_cast<void*>(&m_Buffer[this->m_StartIndex]);
+            }
+            else if(pos == End()) {
+                this->m_CurrentSize++;
+                pointer = static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity]);
+            }
+            else {
+                if(Distance(Begin(), pos) < Distance(pos, End() - 1)) {
+                    CreateFront(*Begin());
+                    Move(Begin() + 1, pos, Begin());
+
+                    (*--pos).~T();
+                    pointer = AddressOf(*pos);
+                }   
+                else {
+                    CreateBack(*(End() - 1));
+                    MoveBackward(pos, End() - 2, End() - 1);
+                    
+                    (*pos).~T();
+                    pointer = AddressOf(*pos);
+                }
+            }
+
+            ::new(p) T(Forward<Args>(args)...);
+
+            return pos;
+        }
+
+        #else
+        template<typename Arg>
+        Iterator Emplace(ConstIterator position, const Arg& arg) {
+            Iterator pos = Begin() + Distance(ConstBegin(), position);
+
+            __WSTL_ASSERT_RETURNVALUE__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__), pos);
+
+            void* pointer;
+            
+            if(pos == Begin()) {
+                this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
+                this->m_CurrentSize++;
+                pointer = static_cast<void*>(&m_Buffer[this->m_StartIndex]);
+            }
+            else if(pos == End()) {
+                this->m_CurrentSize++;
+                pointer = static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity]);
+            }
+            else {
+                if(Distance(Begin(), pos) < Distance(pos, End() - 1)) {
+                    CreateFront(*Begin());
+                    Move(Begin() + 1, pos, Begin());
+
+                    (*--pos).~T();
+                    pointer = AddressOf(*pos);
+                }   
+                else {
+                    CreateBack(*(End() - 1));
+                    MoveBackward(pos, End() - 2, End() - 1);
+                    
+                    (*pos).~T();
+                    pointer = AddressOf(*pos);
+                }
+            }
+
+            ::new(pointer) T(arg);
+
+            return pos;
+        }
+
+        template<typename Arg1, typename Arg2>
+        Iterator Emplace(ConstIterator position, const Arg1& arg1, const Arg2& arg2) {
+            Iterator pos = Begin() + Distance(ConstBegin(), position);
+
+            __WSTL_ASSERT_RETURNVALUE__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__), pos);
+
+            void* pointer;
+            
+            if(pos == Begin()) {
+                this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
+                this->m_CurrentSize++;
+                pointer = static_cast<void*>(&m_Buffer[this->m_StartIndex]);
+            }
+            else if(pos == End()) {
+                this->m_CurrentSize++;
+                pointer = static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity]);
+            }
+            else {
+                if(Distance(Begin(), pos) < Distance(pos, End() - 1)) {
+                    CreateFront(*Begin());
+                    Move(Begin() + 1, pos, Begin());
+
+                    (*--pos).~T();
+                    pointer = AddressOf(*pos);
+                }   
+                else {
+                    CreateBack(*(End() - 1));
+                    MoveBackward(pos, End() - 2, End() - 1);
+                    
+                    (*pos).~T();
+                    pointer = AddressOf(*pos);
+                }
+            }
+
+            ::new(pointer) T(arg1, arg2);
+
+            return pos;
+        }
+
+        template<typename Arg1, typename Arg2, typename Arg3>
+        Iterator Emplace(ConstIterator position, const Arg1& arg1, const Arg2& arg2, const Arg3& arg3) {
+            Iterator pos = Begin() + Distance(ConstBegin(), position);
+
+            __WSTL_ASSERT_RETURNVALUE__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__), pos);
+
+            void* pointer;
+            
+            if(pos == Begin()) {
+                this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
+                this->m_CurrentSize++;
+                pointer = static_cast<void*>(&m_Buffer[this->m_StartIndex]);
+            }
+            else if(pos == End()) {
+                this->m_CurrentSize++;
+                pointer = static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity]);
+            }
+            else {
+                if(Distance(Begin(), pos) < Distance(pos, End() - 1)) {
+                    CreateFront(*Begin());
+                    Move(Begin() + 1, pos, Begin());
+
+                    (*--pos).~T();
+                    pointer = AddressOf(*pos);
+                }   
+                else {
+                    CreateBack(*(End() - 1));
+                    MoveBackward(pos, End() - 2, End() - 1);
+                    
+                    (*pos).~T();
+                    pointer = AddressOf(*pos);
+                }
+            }
+
+            ::new(pointer) T(arg1, arg2, arg3);
+
+            return pos;
+        }
+        #endif
 
         /// TODO: Implement from At to Erase
 
@@ -376,6 +596,17 @@ namespace wstl {
             this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
             ::new(static_cast<void*>(&m_Buffer[this->m_StartIndex])) T(value);
             this->m_CurrentSize++;
+        }
+
+        template<typename Iterator>
+        void CreateFront(Iterator first, SizeType count) {
+            if(count == 0) return;
+
+            this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - count) % this->m_BufferCapacity;
+            this->m_CurrentSize += count;
+
+            for(SizeType i = 0; i < count; i++, first++)
+                ::new(static_cast<void*>(&m_Buffer[this->m_StartIndex + i])) T(*first);
         }
 
         void CreateBack(ConstReferenceType value) {
