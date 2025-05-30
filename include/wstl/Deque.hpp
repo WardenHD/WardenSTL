@@ -244,127 +244,140 @@ namespace wstl {
         #endif
 
         Iterator Insert(ConstIterator position, SizeType count, ConstReferenceType value) {
-            Iterator pos;
-            Iterator it = Begin() + Distance(ConstBegin(), position);
+            Iterator pos = Begin() + Distance(ConstBegin(), position);
+            Iterator result;
 
-            __WSTL_ASSERT_RETURNVALUE__(count <= this->m_Capacity - this->m_CurrentSize, LengthError("Deque is full", __FILE__, __LINE__), pos);
+            __WSTL_ASSERT_RETURNVALUE__(
+                count <= this->m_Capacity - this->m_CurrentSize,
+                LengthError("Deque is full", __FILE__, __LINE__),
+                result
+            );
 
-            if(position == Begin()) {
-                for(SizeType i = 0; i < count; i++) CreateFront(value);
-                pos = Begin();
+            SizeType distanceFront = Distance(Begin(), pos);
+            SizeType distanceBack = Distance(pos, End());
+
+            if (position == Begin()) {
+                // Insert at front
+                for(SizeType i = 0; i < count; ++i) CreateFront(value);
+                result = Begin();
             }
-            else if(position == End()) {
-                for(SizeType i = 0; i < count; i++) CreateBack(value);
-                pos = End() - count;
-            }
-            else {
-                pos = Iterator(wstl::Begin(m_Buffer), wstl::End(m_Buffer), it);
-
-                const SizeType distanceFront = Distance(Begin(), it);
-                const SizeType distanceBack = Distance(it, End());
-
-                if(distanceFront < distanceBack) {
-                    // Shift towards front
-                    SizeType moveCount = distanceFront;
-                    SizeType copyCount = Min(count, moveCount);
-                    SizeType newCount = count - copyCount;
-
-                    Iterator moveFrom = Begin() + copyCount - 1;
-
-                    for(SizeType i = 0; i < newCount; i++) CreateFront(value);
-
-                    for(SizeType i = 0; i < copyCount; i++) CreateFront(*moveFrom--);
-
-                    Iterator moveSource = pos - (moveCount - copyCount);
-                    Iterator moveDestination = Begin() + copyCount;
-
-                    Move(moveSource, moveSource + (moveCount - copyCount), moveDestination);
-                    FillInRange(pos - copyCount, count - newCount, value);
-
-                    pos = Begin() + distanceFront;
-                }
-                else {
-                    // Shift towards back
-                    SizeType moveCount = distanceBack;
-                    SizeType copyCount = Min(count, moveCount);
-                    SizeType newCount = count - copyCount;
-
-                    Iterator moveFrom = End() - copyCount;
-
-                    for(SizeType i = 0; i < newCount; i++) CreateBack(value);
-
-                    for(SizeType i = 0; i < copyCount; i++) CreateBack(*moveFrom++);
-
-                    MoveBackward(pos, pos + (moveCount - copyCount), pos + count + (moveCount - copyCount));
-                    FillInRange(pos, count - newCount, value);
-                }
-            }
-
-            return pos;
-        }
-
-        template<typename Iterator>
-        typename EnableIf<!IsIntegral<Iterator>::Value, typename Deque::Iterator>::Type
-        Insert(ConstIterator position, Iterator first, Iterator last) {
-            typename Deque::Iterator pos;
-            typename Deque::Iterator it = Begin() + Distance(ConstBegin(), position);
-            SizeType count = Distance(first, last);
-
-            __WSTL_ASSERT_RETURNVALUE__(count <= this->m_Capacity - this->m_CurrentSize, LengthError("Deque is full", __FILE__, __LINE__), pos);
-
-            if(position == Begin()) {
-                CreateFront(first, count);
-                pos = Begin();
-            }
-            else if(position == End()) {
-                for(; first != last; first++) CreateBack(*first);
-                pos = End() - count;
+            else if (position == End()) {
+                // Insert at back
+                for(SizeType i = 0; i < count; ++i) CreateBack(value);
+                result = End() - count;
             }
             else {
-                pos = typename Deque::Iterator(wstl::Begin(m_Buffer), wstl::End(m_Buffer), it);
+                // Insert in the middle
+                if (distanceFront <= distanceBack) {
+                    SizeType move = distanceFront;
+                    SizeType createCopy = Min(count, move);
+                    SizeType createNew = (count > createCopy) ? count - createCopy : 0;
+                    SizeType copyNew = (count > createNew) ? count - createNew : 0;
+                    SizeType copyOld = move - createCopy;
 
-                const SizeType distanceFront = Distance(Begin(), it);
-                const SizeType distanceBack = Distance(it, End());
+                    for(SizeType i = 0; i < createNew; i++) CreateFront(value);
+                    for(SizeType i = 0; i < createCopy; i++) CreateFront(*(Begin() + createCopy - 1 - i));
 
-                if(distanceFront < distanceBack) {
-                    // Shift towards front
-                    SizeType moveCount = distanceFront;
-                    SizeType copyCount = Min(count, moveCount);
-                    SizeType newCount = count - copyCount;
-
-                    Iterator moveFrom = Begin() + copyCount - 1;
-
-                    CreateFront(first, newCount);
-
-                    for(SizeType i = 0; i < copyCount; i++) CreateFront(*moveFrom--);
-
-                    typename Deque::Iterator moveSource = pos - (moveCount - copyCount);
-                    typename Deque::Iterator moveDestination = Begin() + copyCount;
-
-                    Move(moveSource, moveSource + (moveCount - copyCount), moveDestination);
-                    Copy(first, last, pos - copyCount);
-
-                    pos = Begin() + distanceFront;
-                }
+                    result = Begin() + move;
+                } 
                 else {
-                    // Shift towards back
-                    SizeType moveCount = distanceBack;
-                    SizeType copyCount = Min(count, moveCount);
-                    SizeType newCount = count - copyCount;
+                    // Shift elements towards back
+                    // Step 1: push back space
+                    for (SizeType i = 0; i < count; ++i)
+                        CreateBack(*(End() - distanceBack + i));
 
-                    Iterator moveFrom = End() - copyCount;
+                    // Step 2: move range backward
+                    for (SizeType i = distanceBack - count; i > 0; --i)
+                        *(pos + count + i - 1) = *(pos + i - 1);
 
-                    for(SizeType i = 0; i < newCount; i++, first++) CreateBack(*first);
+                    // Step 3: fill inserted range
+                    for (SizeType i = 0; i < count; ++i)
+                        *(pos + i) = value;
 
-                    for(SizeType i = 0; i < copyCount; i++) CreateBack(*moveFrom++);
-
-                    MoveBackward(pos, pos + (moveCount - copyCount), pos + count + (moveCount - copyCount));
-                    Copy(first, last, pos);
+                    result = pos;
                 }
             }
 
-            return pos;
+            return result;
         }
+
+
+       template<typename InputIt>
+typename EnableIf<!IsIntegral<InputIt>::Value, typename Deque::Iterator>::Type
+Insert(ConstIterator position, InputIt first, InputIt last) {
+    Iterator result;
+    Iterator insertAt = Begin() + Distance(ConstBegin(), position);
+    SizeType insertIndex = Distance(Begin(), insertAt);
+    SizeType count = Distance(first, last);
+
+    __WSTL_ASSERT_RETURNVALUE__(count <= this->m_Capacity - this->m_CurrentSize, LengthError("Deque is full", __FILE__, __LINE__), result);
+
+    if (position == Begin()) {
+        CreateFront(first, count);
+        result = Begin();
+    }
+    else if (position == End()) {
+        for (; first != last; ++first) CreateBack(*first);
+        result = End() - count;
+    }
+    else {
+        // Middle insertion
+        SizeType frontDist = insertIndex;
+        SizeType backDist = this->m_CurrentSize - insertIndex;
+
+        result = Iterator(wstl::Begin(m_Buffer), wstl::End(m_Buffer), insertAt);
+
+        if (frontDist < backDist) {
+            // Shift elements toward front
+            SizeType shiftCount = frontDist;
+            SizeType moveCount = Min(shiftCount, count);
+            SizeType newFrontItems = count - moveCount;
+
+            // Create new front elements from input
+            CreateFront(first, newFrontItems);  // advances 'it' internally
+
+            // Copy elements being moved to new front
+            for (SizeType i = 0; i < moveCount; ++i)
+                CreateFront(*(Begin() + moveCount - i - 1));
+
+            // Move range back into place
+            Move(Begin() + moveCount, insertAt, Begin());
+
+            // Fill gap with remaining values
+            Copy(first, last, result - moveCount);
+
+            result = Begin() + insertIndex;
+        }
+        else {
+            // Shift elements toward back
+            SizeType shiftCount = backDist;
+            SizeType moveCount = Min(shiftCount, count);
+            SizeType newBackItems = count - moveCount;
+
+            // Advance iterator to point to end of pre-inserted values
+            InputIt it = first;
+            Advance(it, count - newBackItems);
+
+            // Create new back elements from input
+            for (SizeType i = 0; i < newBackItems; ++i, ++it)
+                CreateBack(*it);
+
+            // Copy elements being moved to new back
+            for (SizeType i = 0; i < moveCount; ++i)
+                CreateBack(*(End() - count + i));
+
+            // Move shifted elements
+            MoveBackward(insertAt, End() - count, insertAt + count);
+
+            // Fill gap with remaining values
+            Copy(first, first + (count - newBackItems), insertAt);
+        }
+    }
+
+    return result;
+}
+
+
 
         #ifndef __WSTL_CXX11__
         template<typename... Args>
