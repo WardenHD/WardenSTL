@@ -12,6 +12,7 @@
 #define __WSTL_CIRCULARITERATOR_HPP__
 
 #include "private/Platform.hpp"
+#include "Numeric.hpp"
 #include "Iterator.hpp"
 
 
@@ -571,7 +572,12 @@ namespace wstl {
     template<typename U>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ 
     typename IteratorTraits<U>::DifferenceType operator-(CircularIterator<U>& a, CircularIterator<U>& b) {
-        return U(a) - U(b);
+        typedef typename IteratorTraits<U>::DifferenceType DifferenceType;
+
+        DifferenceType forward = (a.Current() - b.Current() + a.Size()) % a.Size();
+        DifferenceType backward = forward - a.Size();
+        if(forward > Absolute(backward)) return forward;
+        return backward;
     }
 
     // Comparison operators
