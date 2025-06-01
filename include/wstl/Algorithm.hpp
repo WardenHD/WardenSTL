@@ -598,7 +598,7 @@ namespace wstl {
     template<typename OutputIterator, typename Size, typename T>
     __WSTL_CONSTEXPR14__ 
     OutputIterator FillInRange(OutputIterator first, Size count, const T& value) {
-        if(count > 0) for(Size i = 0; i < count; i++) *first = value;
+        if(count > 0) for(Size i = 0; i < count; i++, first++) *first = value;
         return first;
     }
 
