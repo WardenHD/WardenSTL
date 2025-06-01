@@ -104,7 +104,7 @@ namespace wstl {
         #if defined(__WSTL_CXX11__) && !defined(__WSTL_NO_INITIALIZERLIST__)
         void Assign(InitializerList<T> list) {
             Initialize();
-            for(T* iterator = const_cast<T*>(list.Begin()); iterator != list.End(); iterator++) PushBack(*iterator);
+            for(typename InitializerList<T>::Iterator it = list.Begin(); it != list.End(); it++) PushBack(*it);
         }
         #endif
 
@@ -244,8 +244,7 @@ namespace wstl {
         #endif
 
         Iterator Insert(ConstIterator position, SizeType count, ConstReferenceType value) {
-            Iterator pos = Begin() + Distance(ConstBegin(), position);
-            Iterator result;
+            Iterator result = Begin() + Distance(ConstBegin(), position);
 
             __WSTL_ASSERT_RETURNVALUE__(
                 count <= this->m_Capacity - this->m_CurrentSize,
@@ -253,15 +252,15 @@ namespace wstl {
                 result
             );
 
-            SizeType distanceFront = Distance(Begin(), pos);
-            SizeType distanceBack = Distance(pos, End());
+            SizeType distanceFront = Distance(Begin(), result);
+            SizeType distanceBack = Distance(result, End());
 
-            if (position == Begin()) {
+            if(position == Begin()) {
                 // Insert at front
                 for(SizeType i = 0; i < count; ++i) CreateFront(value);
                 result = Begin();
             }
-            else if (position == End()) {
+            else if(position == End()) {
                 // Insert at back
                 for(SizeType i = 0; i < count; ++i) CreateBack(value);
                 result = End() - count;
@@ -269,117 +268,201 @@ namespace wstl {
             else {
                 // Insert in the middle
                 if (distanceFront <= distanceBack) {
-                    SizeType move = distanceFront;
-                    SizeType createCopy = Min(count, move);
+                    SizeType createCopy = Min(count, distanceFront);
                     SizeType createNew = (count > createCopy) ? count - createCopy : 0;
                     SizeType copyNew = (count > createNew) ? count - createNew : 0;
-                    SizeType copyOld = move - createCopy;
+                    SizeType copyOld = distanceFront - createCopy;
 
+                    // Create new values
                     for(SizeType i = 0; i < createNew; i++) CreateFront(value);
-                    for(SizeType i = 0; i < createCopy; i++) CreateFront(*(Begin() + createCopy - 1 - i));
 
-                    result = Begin() + move;
+                    // Create copies of old values
+                    Iterator from = Begin() + createCopy - 1 + createNew;
+                    for(SizeType i = 0; i < createCopy; i++, from--) CreateFront(*from);
+
+                    // Move old values
+                    from = result - copyOld;
+                    Iterator to = Begin() + createCopy;
+                    Move(from, from + copyOld, to);
+
+                    // Fill the rest of the new values
+                    to = result - createCopy;
+                    FillInRange(to, copyNew, value);
+
+                    result = Begin() + distanceFront;
                 } 
                 else {
-                    // Shift elements towards back
-                    // Step 1: push back space
-                    for (SizeType i = 0; i < count; ++i)
-                        CreateBack(*(End() - distanceBack + i));
+                    SizeType createCopy = Min(count, distanceBack);
+                    SizeType createNew = (count > createCopy) ? count - createCopy : 0;
+                    SizeType copyNew = (count > createNew) ? count - createNew : 0;
+                    SizeType copyOld = distanceBack - createCopy;
 
-                    // Step 2: move range backward
-                    for (SizeType i = distanceBack - count; i > 0; --i)
-                        *(pos + count + i - 1) = *(pos + i - 1);
+                    // Create new values
+                    for(SizeType i = 0; i < createNew; i++) CreateBack(value);
 
-                    // Step 3: fill inserted range
-                    for (SizeType i = 0; i < count; ++i)
-                        *(pos + i) = value;
+                    // Create copies of old values
+                    for(SizeType i = 0; i < createCopy; i++) CreateBack(*(result + copyOld + i));
 
-                    result = pos;
+                    // Move old values
+                    MoveBackward(result, result + copyOld, result + count + copyOld);
+
+                    // Fill the rest of the new values
+                    FillInRange(result, copyNew, value);
                 }
             }
 
             return result;
         }
 
+        template<typename InputIterator>
+        typename EnableIf<!IsIntegral<InputIterator>::Value, Iterator>::Type
+        Insert(ConstIterator position, InputIterator first, InputIterator last) {
+            Iterator result = Begin() + Distance(ConstBegin(), position);
+            SizeType count = Distance(first, last);
 
-       template<typename InputIt>
-typename EnableIf<!IsIntegral<InputIt>::Value, typename Deque::Iterator>::Type
-Insert(ConstIterator position, InputIt first, InputIt last) {
-    Iterator result;
-    Iterator insertAt = Begin() + Distance(ConstBegin(), position);
-    SizeType insertIndex = Distance(Begin(), insertAt);
-    SizeType count = Distance(first, last);
+            __WSTL_ASSERT_RETURNVALUE__(
+                count <= this->m_Capacity - this->m_CurrentSize,
+                LengthError("Deque is full", __FILE__, __LINE__),
+                result
+            );
 
-    __WSTL_ASSERT_RETURNVALUE__(count <= this->m_Capacity - this->m_CurrentSize, LengthError("Deque is full", __FILE__, __LINE__), result);
+            SizeType distanceFront = Distance(Begin(), result);
+            SizeType distanceBack = Distance(result, End());
 
-    if (position == Begin()) {
-        CreateFront(first, count);
-        result = Begin();
-    }
-    else if (position == End()) {
-        for (; first != last; ++first) CreateBack(*first);
-        result = End() - count;
-    }
-    else {
-        // Middle insertion
-        SizeType frontDist = insertIndex;
-        SizeType backDist = this->m_CurrentSize - insertIndex;
+            if(position == Begin()) {
+                // Insert at front
+                CreateFront(first, count);
+                result = Begin();
+            }
+            else if(position == End()) {
+                // Insert at back
+                for(; first != last; first++) CreateBack(*first);
+                result = End() - count;
+            }
+            else {
+                // Insert in the middle
+                if (distanceFront <= distanceBack) {
+                    SizeType createCopy = Min(count, distanceFront);
+                    SizeType createNew = (count > createCopy) ? count - createCopy : 0;
+                    SizeType copyNew = (count > createNew) ? count - createNew : 0;
+                    SizeType copyOld = distanceFront - createCopy;
 
-        result = Iterator(wstl::Begin(m_Buffer), wstl::End(m_Buffer), insertAt);
+                    // Create new values
+                    CreateFront(first, createNew);
 
-        if (frontDist < backDist) {
-            // Shift elements toward front
-            SizeType shiftCount = frontDist;
-            SizeType moveCount = Min(shiftCount, count);
-            SizeType newFrontItems = count - moveCount;
+                    // Create copies of old values
+                    CreateFront(Begin() + createNew, createCopy);
 
-            // Create new front elements from input
-            CreateFront(first, newFrontItems);  // advances 'it' internally
+                    // Move old values
+                    Iterator from = result - copyOld;
+                    Iterator to = Begin() + createCopy;
+                    Move(from, from + copyOld, to);
+                    
+                    // Copy new values
+                    to = result - createCopy;
+                    first += createNew;
+                    CopyInRange(first, copyNew, to);
 
-            // Copy elements being moved to new front
-            for (SizeType i = 0; i < moveCount; ++i)
-                CreateFront(*(Begin() + moveCount - i - 1));
+                    result = Begin() + distanceFront;
+                } 
+                else {
+                    SizeType createCopy = Min(count, distanceBack);
+                    SizeType createNew = (count > createCopy) ? count - createCopy : 0;
+                    SizeType copyNew = (count > createNew) ? count - createNew : 0;
+                    SizeType copyOld = distanceBack - createCopy;
 
-            // Move range back into place
-            Move(Begin() + moveCount, insertAt, Begin());
+                    // Create new values
+                    InputIterator it = first + (count - createNew);
+                    for(SizeType i = 0; i < createNew; i++, it++) CreateBack(*it);
 
-            // Fill gap with remaining values
-            Copy(first, last, result - moveCount);
+                    // Create copies of old values
+                    for(SizeType i = 0; i < createCopy; i++) CreateBack(*(result + copyOld + i));
 
-            result = Begin() + insertIndex;
+                    // Move old values
+                    MoveBackward(result, result + copyOld, result + count + copyOld);
+
+                    // Copy new values
+                    CopyInRange(first, copyNew, result);
+                }
+            }
+
+            return result;
         }
-        else {
-            // Shift elements toward back
-            SizeType shiftCount = backDist;
-            SizeType moveCount = Min(shiftCount, count);
-            SizeType newBackItems = count - moveCount;
 
-            // Advance iterator to point to end of pre-inserted values
-            InputIt it = first;
-            Advance(it, count - newBackItems);
+        #if defined(__WSTL_CXX11__) && !defined(__WSTL_NO_INITIALIZERLIST__)
+        Iterator Insert(ConstIterator position, InitializerList<T> list) {
+            Iterator result = Begin() + Distance(ConstBegin(), position);
 
-            // Create new back elements from input
-            for (SizeType i = 0; i < newBackItems; ++i, ++it)
-                CreateBack(*it);
+            __WSTL_ASSERT_RETURNVALUE__(
+                list.Size() <= this->m_Capacity - this->m_CurrentSize,
+                LengthError("Deque is full", __FILE__, __LINE__),
+                result
+            );
 
-            // Copy elements being moved to new back
-            for (SizeType i = 0; i < moveCount; ++i)
-                CreateBack(*(End() - count + i));
+            SizeType distanceFront = Distance(Begin(), result);
+            SizeType distanceBack = Distance(result, End());
 
-            // Move shifted elements
-            MoveBackward(insertAt, End() - count, insertAt + count);
+            if(position == Begin()) {
+                // Insert at front
+                CreateFront(list.Begin(), list.Size());
+                result = Begin();
+            }
+            else if(position == End()) {
+                // Insert at back
+                for(typename InitializerList<T>::Iterator it = list.Begin(); it != list.End(); it++) CreateBack(*it);
+                result = End() - list.Size();
+            }
+            else {
+                // Insert in the middle
+                if (distanceFront <= distanceBack) {
+                    SizeType createCopy = Min(list.Size(), distanceFront);
+                    SizeType createNew = (list.Size() > createCopy) ? list.Size() - createCopy : 0;
+                    SizeType copyNew = (list.Size() > createNew) ? list.Size() - createNew : 0;
+                    SizeType copyOld = distanceFront - createCopy;
 
-            // Fill gap with remaining values
-            Copy(first, first + (count - newBackItems), insertAt);
+                    // Create new values
+                    CreateFront(list.Begin(), createNew);
+
+                    // Create copies of old values
+                    CreateFront(Begin() + createNew, createCopy);
+
+                    // Move old values
+                    Iterator from = result - copyOld;
+                    Iterator to = Begin() + createCopy;
+                    Move(from, from + copyOld, to);
+                    
+                    // Copy new values
+                    to = result - createCopy;
+                    CopyInRange(list.Begin() + createNew, copyNew, to);
+
+                    result = Begin() + distanceFront;
+                } 
+                else {
+                    SizeType createCopy = Min(list.Size(), distanceBack);
+                    SizeType createNew = (list.Size() > createCopy) ? list.Size() - createCopy : 0;
+                    SizeType copyNew = (list.Size() > createNew) ? list.Size() - createNew : 0;
+                    SizeType copyOld = distanceBack - createCopy;
+
+                    // Create new values
+                    typename InitializerList<T>::Iterator it = list.Begin() + (list.Size() - createNew);
+                    for(SizeType i = 0; i < createNew; i++, it++) CreateBack(*it);
+
+                    // Create copies of old values
+                    for(SizeType i = 0; i < createCopy; i++) CreateBack(*(result + copyOld + i));
+
+                    // Move old values
+                    MoveBackward(result, result + copyOld, result + list.Size() + copyOld);
+
+                    // Copy new values
+                    CopyInRange(list.Begin(), copyNew, result);
+                }
+            }
+
+            return result;
         }
-    }
+        #endif
 
-    return result;
-}
-
-
-
-        #ifndef __WSTL_CXX11__
+        #ifdef __WSTL_CXX11__
         template<typename... Args>
         Iterator Emplace(ConstIterator position, Args&&... args) {
             Iterator pos = Begin() + Distance(ConstBegin(), position);
@@ -414,7 +497,7 @@ Insert(ConstIterator position, InputIt first, InputIt last) {
                 }
             }
 
-            ::new(p) T(Forward<Args>(args)...);
+            ::new(pointer) T(Forward<Args>(args)...);
 
             return pos;
         }
@@ -538,7 +621,136 @@ Insert(ConstIterator position, InputIt first, InputIt last) {
         }
         #endif
 
-        /// TODO: Implement from At to Erase
+        Iterator Erase(Iterator position) {
+            __WSTL_ASSERT_RETURNVALUE__(
+                Distance(Begin(), position) <= DifferenceType(this->m_CurrentSize), 
+                OutOfRange("Deque index out of range", __FILE__, __LINE__), 
+                position
+            );
+
+            if(position == Begin()) {
+                DestroyFront();
+                position = Begin();
+            }
+            else if(position == End() - 1) {
+                DestroyBack();
+                position = End();
+            }
+            else {
+                if(Distance(Begin(), position) <= Distance(position, End())) {
+                    MoveBackward(Begin(), position, position + 1);
+                    DestroyFront();
+                    position++;
+                }
+                else {
+                    Move(position + 1, End(), position);
+                    DestroyBack();
+                }
+            }
+
+            return position;
+        }
+
+        Iterator Erase(ConstIterator position) {
+            Iterator result = Begin() + Distance(ConstBegin(), position);
+
+            __WSTL_ASSERT_RETURNVALUE__(
+                Distance(Begin(), result) <= DifferenceType(this->m_CurrentSize), 
+                OutOfRange("Deque index out of range", __FILE__, __LINE__), 
+                result
+            );
+
+            if(result == Begin()) {
+                DestroyFront();
+                result = Begin();
+            }
+            else if(result == End() - 1) {
+                DestroyBack();
+                result = End();
+            }
+            else {
+                if(Distance(Begin(), result) <= Distance(result, End())) {
+                    MoveBackward(Begin(), result, result + 1);
+                    DestroyFront();
+                    result++;
+                }
+                else {
+                    Move(result + 1, End(), result);
+                    DestroyBack();
+                }
+            }
+
+            return result;
+        }
+
+        Iterator Erase(Iterator first, Iterator last) {
+            SizeType count = Distance(first, last);
+
+            __WSTL_ASSERT_RETURNVALUE__(
+                (Distance(Begin(), first) <= DifferenceType(this->m_CurrentSize)) && (Distance(Begin(), last) <= DifferenceType(this->m_CurrentSize)), 
+                OutOfRange("Deque index out of range", __FILE__, __LINE__), 
+                first
+            );
+
+            if(first == Begin()) {
+                for(SizeType i = 0; i < count; i++) DestroyFront();
+                first = Begin();
+            }
+            else if(first == End() - count) {
+                for(SizeType i = 0; i < count; i++) DestroyBack();
+                first = End();
+            }
+            else {
+                if(Distance(Begin(), first) < DifferenceType(this->m_CurrentSize / 2)) {
+                    MoveBackward(Begin(), first, first + count);
+
+                    for(SizeType i = 0; i < count; i++) DestroyFront();
+                    first += count;
+                }
+                else {
+                    Move(first + count, End(), first);
+
+                    for(SizeType i = 0; i < count; i++) DestroyBack();
+                }
+            }
+
+            return first;
+        }
+
+        Iterator Erase(ConstIterator first, ConstIterator last) {
+            Iterator result = Begin() + Distance(ConstBegin(), first);
+            SizeType count = Distance(first, last);
+
+            __WSTL_ASSERT_RETURNVALUE__(
+                (Distance(ConstBegin(), first) <= DifferenceType(this->m_CurrentSize)) && (Distance(ConstBegin(), last) <= DifferenceType(this->m_CurrentSize)), 
+                OutOfRange("Deque index out of range", __FILE__, __LINE__), 
+                result
+            );
+
+            if(result == Begin()) {
+                for(SizeType i = 0; i < count; i++) DestroyFront();
+                result = Begin();
+            }
+            else if(result == End() - count) {
+                for(SizeType i = 0; i < count; i++) DestroyBack();
+                result = End();
+            }
+            else {
+                if(Distance(Begin(), result) <= DifferenceType(this->m_CurrentSize / 2)) {
+                    MoveBackward(Begin(), result, result + count);
+
+                    for(SizeType i = 0; i < count; i++) DestroyFront();
+                    result += count;
+                }
+                else {
+                    Move(result + count, End(), result);
+                    
+                    for(SizeType i = 0; i < count; i++) DestroyBack();
+                }
+            }
+
+            return result;
+        }
 
         void PushBack(ConstReferenceType value) {
             #ifdef __WSTL_CHECK_PUSHPOP__
@@ -552,9 +764,57 @@ Insert(ConstIterator position, InputIt first, InputIt last) {
             #ifdef __WSTL_CHECK_PUSHPOP__
             __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
             #endif
-            CreateBack(Move(value));
+            CreateBack(Forward<T>(value));
         }
         #endif
+
+        #ifdef __WSTL_CXX11__
+        template<typename... Args>
+        void EmplaceBack(Args&&... args) {
+            #ifdef __WSTL_CHECK_PUSHPOP__
+            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            #endif
+
+            ::new(static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity])) T(Forward<Args>(args)...);
+            this->m_CurrentSize++;
+        }
+
+        #else
+        template<typename Arg>
+        void EmplaceBack(const Arg& arg) {
+            #ifdef __WSTL_CHECK_PUSHPOP__
+            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            #endif
+
+            ::new(static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity])) T(arg);
+            this->m_CurrentSize++;
+        }
+
+        template<typename Arg1, typename Arg2>
+        void EmplaceBack(const Arg1& arg1, const Arg2& arg2) {
+            #ifdef __WSTL_CHECK_PUSHPOP__
+            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            #endif
+
+            ::new(static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity])) T(arg1, arg2);
+            this->m_CurrentSize++;
+        }
+
+        template<typename Arg1, typename Arg2, typename Arg3>
+        void EmplaceBack(const Arg1& arg1, const Arg2& arg2, const Arg3& arg3) {
+            #ifdef __WSTL_CHECK_PUSHPOP__
+            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            #endif
+
+            ::new(static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity])) T(arg1, arg2, arg3);
+            this->m_CurrentSize++;
+        }
+        #endif
+
+        template<typename InputIterator>
+        inline void AppendRange(InputIterator first, InputIterator last) {
+            return Insert(End(), first, last);
+        }
 
         void PopBack() {
             #ifdef __WSTL_CHECK_PUSHPOP__
@@ -575,7 +835,54 @@ Insert(ConstIterator position, InputIt first, InputIt last) {
             #ifdef __WSTL_CHECK_PUSHPOP__
             __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
             #endif
-            CreateFront(Move(value));
+            CreateFront(Forward<T>(value));
+        }
+        #endif
+
+        #ifdef __WSTL_CXX11__
+        template<typename... Args>
+        void EmplaceFront(Args&&... args) {
+            #ifdef __WSTL_CHECK_PUSHPOP__
+            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            #endif
+
+            this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
+            ::new(static_cast<void*>(&m_Buffer[this->m_StartIndex])) T(Forward<Args>(args)...);
+            this->m_CurrentSize++;
+        }
+
+        #else
+        template<typename Arg>
+        void EmplaceFront(const Arg& arg) {
+            #ifdef __WSTL_CHECK_PUSHPOP__
+            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            #endif
+
+            this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
+            ::new(static_cast<void*>(&m_Buffer[this->m_StartIndex])) T(arg);
+            this->m_CurrentSize++;
+        }
+
+        template<typename Arg1, typename Arg2>
+        void EmplaceFront(const Arg1& arg1, const Arg2& arg2) {
+            #ifdef __WSTL_CHECK_PUSHPOP__
+            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            #endif
+
+            this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
+            ::new(static_cast<void*>(&m_Buffer[this->m_StartIndex])) T(arg1, arg2);
+            this->m_CurrentSize++;
+        }
+
+        template<typename Arg1, typename Arg2, typename Arg3>
+        void EmplaceFront(const Arg1& arg1, const Arg2& arg2, const Arg3& arg3) {
+            #ifdef __WSTL_CHECK_PUSHPOP__
+            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            #endif
+
+            this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
+            ::new(static_cast<void*>(&m_Buffer[this->m_StartIndex])) T(arg1, arg2, arg3);
+            this->m_CurrentSize++;
         }
         #endif
 
@@ -585,9 +892,17 @@ Insert(ConstIterator position, InputIt first, InputIt last) {
             #endif
             DestroyFront();
         }
+
+        template<typename InputIterator>
+        inline void PrependRange(InputIterator first, InputIterator last) {
+            return Insert(Begin(), first, last);
+        }
+
+        void Swap(Deque& other) {
+            
+        }
     
-    // FOR DEBUG
-    public:
+    private:
         static const __WSTL_CONSTEXPR__ SizeType m_BufferCapacity = SIZE + 1;
 
         T m_Buffer[m_BufferCapacity];
