@@ -77,94 +77,65 @@ namespace wstl {
 
 
 
-        class Iterator {
-        private:
-            typedef typename __private::__CircularIterator<T, typename IteratorTraits<T>::IteratorCategory> InternalType;
-
+        class Iterator : public wstl::Iterator<RandomAccessIteratorTag, T*> {
         public: 
-            typedef typename InternalType::ValueType ValueType;
-            typedef typename InternalType::IteratorCategory IteratorCategory;
-            typedef typename InternalType::ReferenceType ReferenceType;
-            typedef typename InternalType::PointerType PointerType;
-            typedef typename InternalType::DifferenceType DifferenceType;
+            friend class Deque;
 
             /// @brief Default constructor
             __WSTL_CONSTEXPR14__ Iterator() : m_Iterator() {}
 
-            /// @brief Parameterized constructor
-            /// @param begin Iterator pointing to the beginning
-            /// @param end Iterator pointing to the end
-            __WSTL_CONSTEXPR14__ Iterator(T begin, T end) : m_Iterator(begin, end, begin) {}
-
-            /// @brief Parameterized constructor with a starting point
-            /// @param begin Iterator pointing to the beginning
-            /// @param end Iterator pointing to the end
-            /// @param start Iterator pointing to the starting point
-            __WSTL_CONSTEXPR14__ Iterator(T begin, T end, T start) : 
-                m_Iterator(begin, end, start) {}
-
             /// @brief Copy constructor
             /// @param other Iterator to copy from
             __WSTL_CONSTEXPR14__ Iterator(const Iterator& other) :
-                m_Iterator(other) {}
+                m_Iterator(other.m_Iterator) {}
 
             #ifdef __WSTL_CXX11__
             /// @brief Move constructor
             /// @param other Iterator to move from
-            __WSTL_CONSTEXPR14__ Iterator(Iterator&& other) : m_Iterator(Move(other)) {}
+            __WSTL_CONSTEXPR14__ Iterator(Iterator&& other) : m_Iterator(Move(other.m_Iterator)) {}
             #endif
 
             /// @brief Assignment operator
             /// @param other Iterator to assign from
-            __WSTL_CONSTEXPR14__ Iterator& operator=(const Iterator& other) {
-                m_Iterator = other;
+            Iterator& operator=(const Iterator& other) {
+                m_Iterator = other.m_Iterator;
                 return *this;
             }
 
             #ifdef __WSTL_CXX11__
             /// @brief Move assignment operator
             /// @param other Iterator to move from
-            __WSTL_CONSTEXPR14__ Iterator& operator=(Iterator&& other) {
-                m_Iterator = Move(other);
+            Iterator& operator=(Iterator&& other) {
+                m_Iterator = Move(other.m_Iterator);
                 return *this;
             }
             #endif
 
-            /// @brief Deference operator
-            __WSTL_CONSTEXPR14__ ReferenceType operator*() {
-                return *m_Iterator;
-            }
-
             /// @brief Const deference operator
-            __WSTL_CONSTEXPR14__ const ReferenceType operator*() const {
+            ReferenceType operator*() const {
                 return *m_Iterator;
-            }
-
-            /// @brief Arrow operator
-            __WSTL_CONSTEXPR14__ T operator->() {
-                return m_Iterator.operator->();
             }
 
             /// @brief Const arrow operator
-            __WSTL_CONSTEXPR14__ const T operator->() const {
+            PointerType operator->() const {
                 return m_Iterator.operator->();
             }
 
             /// @brief Conversion operator to the underlying type
-            __WSTL_CONSTEXPR14__ operator T() const {
+            operator T() const {
                 return m_Iterator.operator T();
             }
 
             /// @brief Pre-increment operator - moves the iterator forward by one element
             /// @return Reference to the updated iterator
-            __WSTL_CONSTEXPR14__ Iterator& operator++() {
-                ++m_Iterator
+            Iterator& operator++() {
+                ++m_Iterator;
                 return *this;
             }
 
             /// @brief Post-increment operator - moves the iterator forward by one element
             /// @return Reference to the iterator before incrementing
-            __WSTL_CONSTEXPR14__ Iterator operator++(int) {
+            Iterator operator++(int) {
                 Iterator original(*this);
                 ++(*this);
                 return original;
@@ -172,14 +143,14 @@ namespace wstl {
 
             /// @brief Pre-decrement operator - moves the iterator backwards by one element
             /// @return Reference to the updated iterator
-            __WSTL_CONSTEXPR14__ Iterator& operator--() {
+            Iterator& operator--() {
                 --m_Iterator;
                 return *this;
             }
 
             /// @brief Post-decrement operator - moves the iterator backwards by one element
             /// @return Reference to the iterator before decrementing
-            __WSTL_CONSTEXPR14__ Iterator operator--(int) {
+            Iterator operator--(int) {
                 Iterator original(*this);
                 --(*this);
                 return original;
@@ -188,7 +159,7 @@ namespace wstl {
             /// @brief Addition operator - moves the iterator forward by a given offset
             /// @param offset The offset to add (negative for backward movement)
             /// @return Reference to the updated iterator
-            __WSTL_CONSTEXPR14__ Iterator& operator+=(DifferenceType offset) {
+            Iterator& operator+=(DifferenceType offset) {
                 m_Iterator += offset;
                 return *this;
             }
@@ -196,25 +167,69 @@ namespace wstl {
             /// @brief Subtraction operator - moves the iterator backwards by a given offset
             /// @param offset The offset to subtract (negative for forward movement)
             /// @return Reference to the updated iterator
-            __WSTL_CONSTEXPR14__ Iterator& operator-=(DifferenceType offset) {
+            Iterator& operator-=(DifferenceType offset) {
                 return operator+=(-offset);
             }
 
+            ReferenceType operator[](SizeType i) {
+                return m_Iterator[i];
+            }
+
+            friend Iterator operator+(const Iterator& x, DifferenceType offset) {
+                Iterator result(x);
+                result += offset;
+                return result;
+            }
+
+            friend Iterator operator+(DifferenceType offset, const Iterator& x) {
+                Iterator result(x);
+                result += offset;
+                return result;
+            }
+
+            friend Iterator operator-(const Iterator& x, DifferenceType offset) {
+                Iterator result(x);
+                result -= offset;
+                return result;
+            }
+
+            friend DifferenceType operator-(const Iterator& a, const Iterator& b) {
+                return a.m_Iterator - b.m_Iterator;
+            }
+
+            friend bool operator==(const Iterator& a, const Iterator& b) {
+                return a.m_Iterator == b.m_Iterator;
+            }
+
+            friend bool operator!=(const Iterator& a, const Iterator& b) {
+                return !(a == b);
+            }
+
+            friend bool operator<(const Iterator& a, const Iterator& b) {
+                return a.m_Iterator < b.m_Iterator;
+            }
+
+            friend bool operator<=(const Iterator& a, const Iterator& b) {
+                return !(b < a);
+            }
+            
+            friend bool operator>(const Iterator& a, const Iterator& b) {
+                return b < a;
+            }
+
+            friend bool operator>=(const Iterator& a, const Iterator& b) {
+                return !(a < b);
+            }
+
         private:
-            CircularIterator<T> m_Iterator;
+            CircularIterator<T*> m_Iterator;
+
+            Iterator(Deque deque) : m_Iterator(wstl::Begin(deque.m_Buffer), wstl::End(deque.m_Buffer), wstl::Begin(deque.m_Buffer) + deque.m_StartIndex) {}
+            Iterator(const Deque& deque, T* start) : m_Iterator(wstl::Begin(deque.m_Buffer), wstl::End(deque.m_Buffer), start) {}
         };
 
-        class ConstIterator {
-        private:
-            typedef typename __private::__CircularIterator<const T, typename IteratorTraits<const T>::IteratorCategory> InternalType;
-
+        class ConstIterator : public wstl::Iterator<RandomAccessIteratorTag, const T*> {
         public: 
-            typedef typename InternalType::ValueType ValueType;
-            typedef typename InternalType::IteratorCategory IteratorCategory;
-            typedef typename InternalType::ReferenceType ReferenceType;
-            typedef typename InternalType::PointerType PointerType;
-            typedef typename InternalType::DifferenceType DifferenceType;
-
             friend class Deque;
 
             /// @brief Default constructor
@@ -223,18 +238,18 @@ namespace wstl {
             /// @brief Copy constructor
             /// @param other ConstIterator to copy from
             __WSTL_CONSTEXPR14__ ConstIterator(const ConstIterator& other) :
-                m_Iterator(other) {}
+                m_Iterator(other.m_Iterator) {}
 
             #ifdef __WSTL_CXX11__
             /// @brief Move constructor
             /// @param other ConstIterator to move from
-            __WSTL_CONSTEXPR14__ ConstIterator(ConstIterator&& other) : m_Iterator(Move(other)) {}
+            __WSTL_CONSTEXPR14__ ConstIterator(ConstIterator&& other) : m_Iterator(Move(other.m_Iterator)) {}
             #endif
 
             /// @brief Assignment operator
             /// @param other ConstIterator to assign from
             ConstIterator& operator=(const ConstIterator& other) {
-                m_Iterator = other;
+                m_Iterator = other.m_Iterator;
                 return *this;
             }
 
@@ -242,24 +257,14 @@ namespace wstl {
             /// @brief Move assignment operator
             /// @param other ConstIterator to move from
             ConstIterator& operator=(ConstIterator&& other) {
-                m_Iterator = Move(other);
+                m_Iterator = Move(other.m_Iterator);
                 return *this;
             }
             #endif
 
-            /// @brief Deference operator
-            ReferenceType operator*() {
-                return *m_Iterator;
-            }
-
             /// @brief Const deference operator
-            const ReferenceType operator*() const {
+            ReferenceType operator*() const {
                 return *m_Iterator;
-            }
-
-            /// @brief Arrow operator
-            PointerType operator->() {
-                return m_Iterator.operator->();
             }
 
             /// @brief Const arrow operator
@@ -275,7 +280,7 @@ namespace wstl {
             /// @brief Pre-increment operator - moves the iterator forward by one element
             /// @return Reference to the updated iterator
             ConstIterator& operator++() {
-                ++m_Iterator
+                ++m_Iterator;
                 return *this;
             }
 
@@ -317,29 +322,63 @@ namespace wstl {
                 return operator+=(-offset);
             }
 
-        private:
-            CircularIterator<T> m_Iterator;
+            ReferenceType operator[](SizeType i) {
+                return m_Iterator[i];
+            }
 
-            ConstIterator(Deque deque) : m_Iterator(Begin(deque.m_Buffer), End(deque.m_Buffer), Begin(deque.m_Buffer) + deque.m_StartIndex) {}
+            friend ConstIterator operator+(const ConstIterator& x, DifferenceType offset) {
+                ConstIterator result(x);
+                result += offset;
+                return result;
+            }
+
+            friend ConstIterator operator+(DifferenceType offset, const ConstIterator& x) {
+                ConstIterator result(x);
+                result += offset;
+                return result;
+            }
+
+            friend ConstIterator operator-(const ConstIterator& x, DifferenceType offset) {
+                ConstIterator result(x);
+                result -= offset;
+                return result;
+            }
+
+            friend DifferenceType operator-(const ConstIterator& a, const ConstIterator& b) {
+                return a.m_Iterator - b.m_Iterator;
+            }
+
+            friend bool operator==(const ConstIterator& a, const ConstIterator& b) {
+                return a.m_Iterator == b.m_Iterator;
+            }
+
+            friend bool operator!=(const ConstIterator& a, const ConstIterator& b) {
+                return !(a == b);
+            }
+
+            friend bool operator<(const ConstIterator& a, const ConstIterator& b) {
+                return a.m_Iterator < b.m_Iterator;
+            }
+
+            friend bool operator<=(const ConstIterator& a, const ConstIterator& b) {
+                return !(b < a);
+            }
+
+            friend bool operator>(const ConstIterator& a, const ConstIterator& b) {
+                return b < a;
+            }
+
+            friend bool operator>=(const ConstIterator& a, const ConstIterator& b) {
+                return !(a < b);
+            }
+
+        private:
+            CircularIterator<const T*> m_Iterator;
+
+            ConstIterator(const Deque& deque, const T* start) : m_Iterator(wstl::ConstBegin(deque.m_Buffer), wstl::ConstEnd(deque.m_Buffer), start) {}
+            ConstIterator(const Deque& deque) : m_Iterator(wstl::ConstBegin(deque.m_Buffer), wstl::ConstEnd(deque.m_Buffer)) {}
         };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        // typedef CircularIterator<T*> Iterator;
-        typedef CircularIterator<const T*> ConstIterator;
         typedef wstl::ReverseIterator<Iterator> ReverseIterator;
         typedef wstl::ReverseIterator<ConstIterator> ConstReverseIterator;
 
@@ -413,27 +452,27 @@ namespace wstl {
         }
 
         Iterator Begin() {
-            return Iterator(wstl::Begin(m_Buffer), wstl::End(m_Buffer), wstl::Begin(m_Buffer) + this->m_StartIndex);
+            return Iterator(*this, wstl::Begin(m_Buffer) + this->m_StartIndex);
         }
 
         ConstIterator Begin() const {
-            return ConstIterator(wstl::Begin(m_Buffer), wstl::End(m_Buffer), wstl::Begin(m_Buffer) + this->m_StartIndex);
+            return ConstIterator(*this, wstl::Begin(m_Buffer) + this->m_StartIndex);
         }
 
         ConstIterator ConstBegin() const {
-            return ConstIterator(wstl::ConstBegin(m_Buffer), wstl::ConstEnd(m_Buffer), wstl::ConstBegin(m_Buffer) + this->m_StartIndex);
+            return ConstIterator(*this, wstl::ConstBegin(m_Buffer) + this->m_StartIndex);
         }
 
         Iterator End() {
-            return Iterator(wstl::Begin(m_Buffer), wstl::End(m_Buffer), wstl::Begin(m_Buffer) + ((this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity));
+            return Iterator(*this, wstl::Begin(m_Buffer) + ((this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity));
         }
 
         ConstIterator End() const {
-            return ConstIterator(wstl::Begin(m_Buffer), wstl::End(m_Buffer), wstl::Begin(m_Buffer) + ((this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity));
+            return ConstIterator(*this, wstl::Begin(m_Buffer) + ((this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity));
         }
 
         ConstIterator ConstEnd() const {
-            return ConstIterator(wstl::ConstBegin(m_Buffer), wstl::ConstEnd(m_Buffer), wstl::ConstBegin(m_Buffer) + ((this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity));
+            return ConstIterator(*this, wstl::ConstBegin(m_Buffer) + ((this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity));
         }
 
         ReverseIterator ReverseBegin() {
