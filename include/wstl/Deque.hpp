@@ -1,3 +1,11 @@
+// Part of WardenSTL - https://github.com/WardenHD/WardenSTL
+// Copyright (c) 2025 Artem Bezruchko (WardenHD)
+//
+// This file is inspired by the Embedded Template Library (ETL)'s deque implementation,
+// but it has been re-implemented with custom logic for WardenSTL.
+//
+// Licensed under the MIT License. See LICENSE file for full details.
+
 #ifndef __WSTL_DEQUE_HPP__
 #define __WSTL_DEQUE_HPP__
 
@@ -9,9 +17,16 @@
 #include <stddef.h>
 
 
+/// @defgroup deque Deque
+/// @ingroup containers
+/// @brief A double-ended queue with size defined at compile-time
+
 namespace wstl {
     // Deque interface
 
+    /// @brief Interface for all deque-like containers
+    /// @tparam T Type of the element to store
+    /// @ingroup deque
     template<typename T>
     class IDeque {
     public:
@@ -23,40 +38,53 @@ namespace wstl {
         typedef T* PointerType;
         typedef const T* ConstPointerType;
 
+        /// @brief Gets the current size of the deque
         SizeType Size() const {
             return m_CurrentSize;
         }
 
+        /// @brief Checks if the deque is empty
         bool Empty() const {
             return m_CurrentSize == 0;
         }
 
+        /// @brief Gets the maximum size of the deque
         SizeType MaxSize() const {
             return m_Capacity;
         }
 
+        /// @brief Checks if the deque is full
         bool Full() const {
             return m_CurrentSize == m_Capacity;
         }
 
+        /// @brief Gets the capacity of the deque
         SizeType Capacity() const {
             return m_Capacity;
         }
 
+        /// @brief Gets the available space in the deque
         SizeType Available() const {
             return MaxSize() - Size();
         }
 
     protected:
+        /// @brief Protected constructor
+        /// @param capacity The maximum number of elements the deque can hold
         IDeque(SizeType capacity) : m_Capacity(capacity), m_CurrentSize(0) {}
 
+        /// @brief Protected destructor
         ~IDeque();
 
         SizeType m_CurrentSize;
         const SizeType m_Capacity;
     };
 
-
+    /// @brief A double-ended queue that supports pushing and popping elements from both ends
+    /// @tparam T Type of the element to store in the deque
+    /// @tparam SIZE The maximum number of elements the deque can hold
+    /// @ingroup deque
+    /// @see https://en.cppreference.com/w/cpp/container/deque
     template<typename T, const size_t SIZE>
     class Deque : public IDeque<T> {
     public:
@@ -68,6 +96,7 @@ namespace wstl {
         typedef typename IDeque<T>::PointerType PointerType;
         typedef typename IDeque<T>::ConstPointerType ConstPointerType;
 
+        /// @brief Circular const iterator type for the deque
         class ConstIterator : public wstl::Iterator<RandomAccessIteratorTag, typename IteratorTraits<const T*>::ValueType> {
         public: 
             friend class Deque;
@@ -95,14 +124,14 @@ namespace wstl {
             ConstIterator(typename Deque::Iterator&& other) : m_Iterator(Move(other.m_Iterator)) {}
             #endif
 
-            /// @brief Assignment operator
+            /// @brief Copy assignment operator
             /// @param other Const iterator to assign from
             ConstIterator& operator=(const ConstIterator& other) {
                 m_Iterator = other.m_Iterator;
                 return *this;
             }
 
-            /// @brief Assignment operator
+            /// @brief Copy assignment operator
             /// @param other Iterator to assign from
             ConstIterator& operator=(const typename Deque::Iterator& other) {
                 m_Iterator = other.m_Iterator;
@@ -180,32 +209,54 @@ namespace wstl {
                 return operator+=(-offset);
             }
 
+            /// @brief Access operator - allows access to the element at the given index
+            /// @param i Index of the element to access
+            /// @return Reference to the element at the given index
             ReferenceType operator[](SizeType i) {
                 return *(m_Iterator + i);
             }
 
+            /// @brief Const access operator - allows access to the element at the given index
+            /// @param i Index of the element to access
+            /// @return Const reference to the element at the given index
             const ReferenceType operator[](SizeType i) const {
                 return *(m_Iterator + i);
             }
 
+            /// @brief Addition operator - allows adding an offset to the iterator
+            /// @param x The iterator to add the offset to
+            /// @param offset The offset to add (negative for backward movement)
+            /// @return A new iterator advanced by `offset` positions
             friend ConstIterator operator+(const ConstIterator& x, DifferenceType offset) {
                 ConstIterator result(x);
                 result += offset;
                 return result;
             }
 
+            /// @brief Addition operator - allows adding an offset to the iterator
+            /// @param offset The offset to add (negative for backward movement)
+            /// @param x The iterator to add the offset to
+            /// @return A new iterator advanced by `offset` positions
             friend ConstIterator operator+(DifferenceType offset, const ConstIterator& x) {
                 ConstIterator result(x);
                 result += offset;
                 return result;
             }
-
+            
+            /// @brief Subtraction operator - allows subtracting an offset from the iterator
+            /// @param x The iterator to subtract the offset from
+            /// @param offset The offset to subtract (negative for forward movement)
+            /// @return A new iterator moved back by `offset` positions
             friend ConstIterator operator-(const ConstIterator& x, DifferenceType offset) {
                 ConstIterator result(x);
                 result -= offset;
                 return result;
             }
 
+            /// @brief Subtraction operator - allows subtracting two iterators
+            /// @param a The first iterator
+            /// @param b The second iterator
+            /// @return The difference in positions between the two iterators
             friend DifferenceType operator-(const ConstIterator& a, const ConstIterator& b) {
                 return a.m_Iterator - b.m_Iterator;
             }
@@ -237,10 +288,17 @@ namespace wstl {
         private:
             CircularIterator<const T*> m_Iterator;
 
+            /// @brief Private constructor
+            /// @param deque The deque to create the iterator for
             ConstIterator(const Deque& deque) : m_Iterator(wstl::Begin(deque.m_Buffer), wstl::End(deque.m_Buffer)) {}
+
+            /// @brief Private constructor
+            /// @param deque The deque to create the iterator for
+            /// @param start Pointer to the starting element
             ConstIterator(const Deque& deque, const T* start) : m_Iterator(wstl::Begin(deque.m_Buffer), wstl::End(deque.m_Buffer), start) {}
         };
 
+        /// @brief Circular iterator type for the deque
         class Iterator : public wstl::Iterator<RandomAccessIteratorTag, typename IteratorTraits<T*>::ValueType> {
         public: 
             friend class Deque;
@@ -260,7 +318,7 @@ namespace wstl {
             Iterator(Iterator&& other) : m_Iterator(Move(other.m_Iterator)) {}
             #endif
 
-            /// @brief Assignment operator
+            /// @brief Copy assignment operator
             /// @param other Iterator to assign from
             Iterator& operator=(const Iterator& other) {
                 m_Iterator = other.m_Iterator;
@@ -331,32 +389,53 @@ namespace wstl {
                 return operator+=(-offset);
             }
 
+            /// @brief Access operator - allows access to the element at the given index
+            /// @param i Index of the element to access
+            /// @return Reference to the element at the given index
             ReferenceType operator[](SizeType i) {
                 return m_Iterator[i];
             }
 
+            /// @brief Const access operator - allows access to the element at the given index
+            /// @param i Index of the element to access
+            /// @return Const reference to the element at the given index
             const ReferenceType operator[](SizeType i) const {
                 return m_Iterator[i];
             }
 
+            /// @brief Addition operator - allows adding an offset to the iterator
+            /// @param x The iterator to add the offset to
+            /// @param offset The offset to add (negative for backward movement)
+            /// @return A new iterator advanced by `offset` positions
             friend Iterator operator+(const Iterator& x, DifferenceType offset) {
                 Iterator result(x);
                 result += offset;
                 return result;
             }
 
+            /// @brief Addition operator - allows adding an offset to the iterator
+            /// @param offset The offset to add (negative for backward movement)
+            /// @param x The iterator to add the offset to
+            /// @return A new iterator advanced by `offset` positions
             friend Iterator operator+(DifferenceType offset, const Iterator& x) {
                 Iterator result(x);
                 result += offset;
                 return result;
             }
 
+            /// @brief Subtraction operator - allows subtracting an offset from the iterator
+            /// @param x The iterator to subtract the offset from
+            /// @param offset The offset to subtract (negative for forward movement)
             friend Iterator operator-(const Iterator& x, DifferenceType offset) {
                 Iterator result(x);
                 result -= offset;
                 return result;
             }
 
+            /// @brief Subtraction operator - allows subtracting two iterators
+            /// @param a The first iterator
+            /// @param b The second iterator
+            /// @return The difference in positions between the two iterators
             friend DifferenceType operator-(const Iterator& a, const Iterator& b) {
                 return a.m_Iterator - b.m_Iterator;
             }
@@ -388,26 +467,38 @@ namespace wstl {
         private:
             CircularIterator<T*> m_Iterator;
 
+            /// @brief Private constructor
+            /// @param deque The deque to create the iterator for
             Iterator(Deque& deque) : m_Iterator(wstl::Begin(deque.m_Buffer), wstl::End(deque.m_Buffer)) {}
+
+            /// @brief Private constructor
+            /// @param deque The deque to create the iterator for
+            /// @param start Pointer to the starting element
             Iterator(Deque& deque, T* start) : m_Iterator(wstl::Begin(deque.m_Buffer), wstl::End(deque.m_Buffer), start) {}
         };
 
         typedef wstl::ReverseIterator<Iterator> ReverseIterator;
         typedef wstl::ReverseIterator<ConstIterator> ConstReverseIterator;
 
+        /// @brief Default constructor
         Deque() : IDeque<T>(SIZE), m_StartIndex(0) {
             Initialize();
         }
 
+        /// @brief Destructor
         ~Deque() {
             Initialize();
         }
 
+        /// @brief Copy constructor
+        /// @param other The deque to copy from
         Deque(const Deque& other) : IDeque<T>(other.SIZE), m_StartIndex(0) {
             if(this != &other) Assign(other.Begin(), other.End());
         }
 
         #ifdef __WSTL_CXX11__
+        /// @brief Move constructor
+        /// @param other The deque to move from
         Deque(Deque&& other) : IDeque<T>(other.SIZE), m_StartIndex(0) {
             if(this != &other) {
                 Initialize();
@@ -418,27 +509,39 @@ namespace wstl {
         }
         #endif
 
+        /// @brief Constructor that initializes the deque with a range of elements
+        /// @param first Iterator to the first element in the range
+        /// @param last Iterator to the element following the last element in the range
         template<typename InputIterator>
         Deque(InputIterator first, InputIterator last) : IDeque<T>(SIZE), m_StartIndex(0) {
             Assign(first, last);
         }
 
+        /// @brief Constructor that initializes the deque with a specific number of elements
+        /// @param count The number of elements to initialize the deque with
+        /// @param value The value to initialize each element with (default is ValueType())
         explicit Deque(SizeType count, ConstReferenceType value = ValueType()) : IDeque<T>(SIZE), m_StartIndex(0) {
             Assign(count, value);
         }
 
         #if defined(__WSTL_CXX11__) && !defined(__WSTL_NO_INITIALIZERLIST__)
+        /// @brief Constructor that initializes the deque with an initializer list
+        /// @param list The initializer list to initialize the deque with
         Deque(InitializerList<T> list) : IDeque<T>(SIZE), m_StartIndex(0) {
             Assign(list);
         }
         #endif
 
+        /// @brief Copy assignment operator
+        /// @param other The deque to copy from
         Deque& operator=(const Deque& other) {
             if(this != &other) Assign(other.Begin(), other.End());
             return *this;
         }
 
         #ifdef __WSTL_CXX11__
+        /// @brief Move assignment operator
+        /// @param other The deque to move from
         Deque& operator=(Deque&& other) {
             if(this != &other) {
                 Clear();
@@ -451,6 +554,8 @@ namespace wstl {
         }
 
         #ifndef __WSTL_NO_INITIALIZERLIST__
+        /// @brief Assignment operator
+        /// @param list The initializer list to assign to the deque
         Deque& operator=(InitializerList<T> list) {
             Assign(list);
             return *this;
@@ -458,12 +563,19 @@ namespace wstl {
         #endif
         #endif
 
+        /// @brief Assigns a range of elements to the deque
+        /// @param first Iterator to the first element in the range
+        /// @param last Iterator to the element following the last element in the range
         template<typename InputIterator>
         typename EnableIf<!IsIntegral<InputIterator>::Value, void>::Type Assign(InputIterator first, InputIterator last) {
             Initialize();
             for(; first != last; ++first) PushBack(*first);
         }
 
+        /// @brief Assigns a specific number of elements to the deque
+        /// @param count The number of elements to assign
+        /// @param value The value to assign to each element
+        /// @throws LengthError if the deque is full
         void Assign(SizeType count, ConstReferenceType value) {
             __WSTL_ASSERT_RETURN__(count <= this->m_Capacity, LengthError("Deque is full", __FILE__, __LINE__));
             Initialize();
@@ -471,98 +583,132 @@ namespace wstl {
         }
         
         #if defined(__WSTL_CXX11__) && !defined(__WSTL_NO_INITIALIZERLIST__)
+        /// @brief Assigns an initializer list to the deque
+        /// @param list The initializer list to assign to the deque
         void Assign(InitializerList<T> list) {
             Initialize();
             for(typename InitializerList<T>::Iterator it = list.Begin(); it != list.End(); it++) PushBack(*it);
         }
         #endif
 
+        /// @brief Gets the element at the specified position in the deque
+        /// @param position The position of the element to access
+        /// @throws OutOfRange if the position is out of range
         ReferenceType At(SizeType position) {
             __WSTL_ASSERT__(position < this->m_CurrentSize, OutOfRange("Deque index out of range", __FILE__, __LINE__));
             return m_Buffer[(this->m_StartIndex + position) % this->m_Capacity];
         }
 
+        /// @brief Gets the element at the specified position in the deque
+        /// @param position The position of the element to access
+        /// @throws OutOfRange if the position is out of range
         ConstReferenceType At(SizeType position) const {
             __WSTL_ASSERT__(position < this->m_CurrentSize, OutOfRange("Deque index out of range", __FILE__, __LINE__));
             return m_Buffer[(this->m_StartIndex + position) % this->m_Capacity];
         }
 
+        /// @brief Access operator
+        /// @param index The index of the element to access
         ReferenceType operator[](SizeType index) {
             return m_Buffer[(this->m_StartIndex + index) % this->m_Capacity];
         }
 
+        /// @brief Const access operator
+        /// @param index The index of the element to access
         ConstReferenceType operator[](SizeType index) const {
             return m_Buffer[(this->m_StartIndex + index) % this->m_Capacity];
         }
 
+        /// @brief Gets the first element in the deque
         ReferenceType Front() {
             return m_Buffer[this->m_StartIndex];
         }
 
+        /// @brief Gets the first element in the deque
         ConstReferenceType Front() const {
             return m_Buffer[this->m_StartIndex];
         }
 
+        /// @brief Gets the last element in the deque
         ReferenceType Back() {
             return m_Buffer[(this->m_StartIndex + this->m_CurrentSize - 1) % this->m_Capacity];
         }
 
+        /// @brief Gets the last element in the deque
         ConstReferenceType Back() const {
             return m_Buffer[(this->m_StartIndex + this->m_CurrentSize - 1) % this->m_Capacity];
         }
 
+        /// @brief Gets iterator to the beginning of the deque
         Iterator Begin() {
             return Iterator(*this, wstl::Begin(m_Buffer) + this->m_StartIndex);
         }
 
+        /// @brief Gets const iterator to the beginning of the deque
         ConstIterator Begin() const {
             return ConstIterator(*this, wstl::ConstBegin(m_Buffer) + this->m_StartIndex);
         }
 
+        /// @brief Gets const iterator to the beginning of the deque
         ConstIterator ConstBegin() const {
             return ConstIterator(*this, wstl::ConstBegin(m_Buffer) + this->m_StartIndex);
         }
 
+        /// @brief Gets iterator to the end of the deque
         Iterator End() {
             return Iterator(*this, wstl::Begin(m_Buffer) + ((this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity));
         }
 
+        /// @brief Gets const iterator to the end of the deque
         ConstIterator End() const {
             return ConstIterator(*this, wstl::ConstBegin(m_Buffer) + ((this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity));
         }
 
+        /// @brief Gets const iterator to the end of the deque
         ConstIterator ConstEnd() const {
             return ConstIterator(*this, wstl::ConstBegin(m_Buffer) + ((this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity));
         }
 
+        /// @brief Gets reverse iterator to the beginning of the deque
         ReverseIterator ReverseBegin() {
             return ReverseIterator(End());
         }
 
+        /// @brief Gets const reverse iterator to the beginning of the deque
         ConstReverseIterator ReverseBegin() const {
             return ConstReverseIterator(End());
         }
 
+        /// @brief Gets const reverse iterator to the beginning of the deque
         ConstReverseIterator ConstReverseBegin() const {
             return ConstReverseIterator(End());
         }
 
+        /// @brief Gets reverse iterator to the end of the deque
         ReverseIterator ReverseEnd() {
             return ReverseIterator(Begin());
         }
 
+        /// @brief Gets const reverse iterator to the end of the deque
         ConstReverseIterator ReverseEnd() const {
             return ConstReverseIterator(Begin());
         }
 
+        /// @brief Gets const reverse iterator to the end of the deque
         ConstReverseIterator ConstReverseEnd() const {
             return ConstReverseIterator(Begin());
         }
 
+        /// @brief Clears the deque, removing all elements
         void Clear() {
             Initialize();
         }
 
+        /// @brief Inserts an element at specified position in the deque
+        /// @param position The position to insert the element at
+        /// @param value The value to insert
+        /// @return Iterator to the newly inserted element
+        /// @throws LengthError if the deque is full
         Iterator Insert(ConstIterator position, ConstReferenceType value) {
             Iterator pos = Begin() + Distance(ConstBegin(), position);
 
@@ -587,6 +733,11 @@ namespace wstl {
         }
 
         #ifdef __WSTL_CXX11__
+        /// @brief Inserts an element at specified position in the deque
+        /// @param position The position to insert the element at
+        /// @param value The value to insert (rvalue reference)
+        /// @return Iterator to the newly inserted element
+        /// @throws LengthError if the deque is full
         Iterator Insert(ConstIterator position, T&& value) {
             Iterator pos = Begin() + Distance(ConstBegin(), position);
 
@@ -612,6 +763,12 @@ namespace wstl {
         }
         #endif
 
+        /// @brief Inserts multiple elements at specified position in the deque
+        /// @param position The position to insert the elements at
+        /// @param count The number of elements to insert
+        /// @param value The value to insert
+        /// @return Iterator to the first inserted element
+        /// @throws LengthError if the deque is full
         Iterator Insert(ConstIterator position, SizeType count, ConstReferenceType value) {
             Iterator result = Begin() + Distance(ConstBegin(), position);
 
@@ -683,6 +840,12 @@ namespace wstl {
             return result;
         }
 
+        /// @brief Inserts a range of elements at specified position in the deque
+        /// @param position The position to insert the elements at
+        /// @param first Iterator to the first element in the range
+        /// @param last Iterator to the element following the last element in the range
+        /// @return Iterator to the first inserted element
+        /// @throws LengthError if the deque is full
         template<typename InputIterator>
         typename EnableIf<!IsIntegral<InputIterator>::Value, Iterator>::Type
         Insert(ConstIterator position, InputIterator first, InputIterator last) {
@@ -759,6 +922,11 @@ namespace wstl {
         }
 
         #if defined(__WSTL_CXX11__) && !defined(__WSTL_NO_INITIALIZERLIST__)
+        /// @brief Inserts an initializer list at specified position in the deque
+        /// @param position The position to insert the list at
+        /// @param list The initializer list to insert
+        /// @throws LengthError if the deque is full
+        /// @return Iterator to the first inserted element
         Iterator Insert(ConstIterator position, InitializerList<T> list) {
             Iterator result = Begin() + Distance(ConstBegin(), position);
 
@@ -832,6 +1000,11 @@ namespace wstl {
         #endif
 
         #ifdef __WSTL_CXX11__
+        /// @brief Emplaces an element at specified position in the deque, constructing it in place
+        /// @param position The position to emplace the element at
+        /// @param ...args The arguments to forward to the constructor of the element
+        /// @throws LengthError if the deque is full 
+        /// @return Iterator to the newly emplaced element
         template<typename... Args>
         Iterator Emplace(ConstIterator position, Args&&... args) {
             Iterator pos = Begin() + Distance(ConstBegin(), position);
@@ -872,6 +1045,11 @@ namespace wstl {
         }
 
         #else
+        /// @brief Emplaces an element at specified position in the deque, constructing it in place
+        /// @param position The position to emplace the element at
+        /// @param arg The argument to pass to the constructor of the element
+        /// @throws LengthError if the deque is full
+        /// @return Iterator to the newly emplaced element
         template<typename Arg>
         Iterator Emplace(ConstIterator position, const Arg& arg) {
             Iterator pos = Begin() + Distance(ConstBegin(), position);
@@ -911,6 +1089,12 @@ namespace wstl {
             return pos;
         }
 
+        /// @brief Emplaces an element at specified position in the deque, constructing it in place
+        /// @param position The position to emplace the element at
+        /// @param arg1 First argument to pass to the constructor of the element
+        /// @param arg2 Second argument to pass to the constructor of the element
+        /// @throws LengthError if the deque is full
+        /// @return Iterator to the newly emplaced element
         template<typename Arg1, typename Arg2>
         Iterator Emplace(ConstIterator position, const Arg1& arg1, const Arg2& arg2) {
             Iterator pos = Begin() + Distance(ConstBegin(), position);
@@ -950,6 +1134,13 @@ namespace wstl {
             return pos;
         }
 
+        /// @brief Emplaces an element at specified position in the deque, constructing it in place
+        /// @param position The position to emplace the element at
+        /// @param arg1 First argument to pass to the constructor of the element
+        /// @param arg2 Second argument to pass to the constructor of the element
+        /// @param arg3 Third argument to pass to the constructor of the element
+        /// @throws LengthError if the deque is full
+        /// @return Iterator to the newly emplaced element
         template<typename Arg1, typename Arg2, typename Arg3>
         Iterator Emplace(ConstIterator position, const Arg1& arg1, const Arg2& arg2, const Arg3& arg3) {
             Iterator pos = Begin() + Distance(ConstBegin(), position);
@@ -990,6 +1181,10 @@ namespace wstl {
         }
         #endif
 
+        /// @brief Erases an element at specified position in the deque
+        /// @param position The position of the element to erase
+        /// @return Iterator to the element following the erased element
+        /// @throws OutOfRange if the position is out of range
         Iterator Erase(Iterator position) {
             __WSTL_ASSERT_RETURNVALUE__(
                 Distance(Begin(), position) <= DifferenceType(this->m_CurrentSize), 
@@ -1020,6 +1215,10 @@ namespace wstl {
             return position;
         }
 
+        /// @brief Erases an element at specified position in the deque
+        /// @param position The position of the element to erase
+        /// @return Iterator to the element following the erased element
+        /// @throws OutOfRange if the position is out of range
         Iterator Erase(ConstIterator position) {
             Iterator result = Begin() + Distance(ConstBegin(), position);
 
@@ -1052,6 +1251,11 @@ namespace wstl {
             return result;
         }
 
+        /// @brief Erases a range of elements from the deque
+        /// @param first Iterator to the first element in the range to erase
+        /// @param last Iterator to the element following the last element in the range to erase
+        /// @return Iterator to the first element following the erased range
+        /// @throws OutOfRange if the range is out of bounds
         Iterator Erase(Iterator first, Iterator last) {
             SizeType count = Distance(first, last);
 
@@ -1086,6 +1290,11 @@ namespace wstl {
             return first;
         }
 
+        /// @brief Erases a range of elements from the deque
+        /// @param first Iterator to the first element in the range to erase
+        /// @param last Iterator to the element following the last element in the range to erase
+        /// @return Iterator to the first element following the erased range
+        /// @throws OutOfRange if the range is out of bounds
         Iterator Erase(ConstIterator first, ConstIterator last) {
             Iterator result = Begin() + Distance(ConstBegin(), first);
             SizeType count = Distance(first, last);
@@ -1121,6 +1330,9 @@ namespace wstl {
             return result;
         }
 
+        /// @brief Pushes an element to the back of the deque
+        /// @param value The value to push to the back
+        /// @throws LengthError if the deque is full and `__WSTL_CHECK_PUSHPOP__` is defined
         void PushBack(ConstReferenceType value) {
             #ifdef __WSTL_CHECK_PUSHPOP__
             __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
@@ -1129,6 +1341,9 @@ namespace wstl {
         }
 
         #ifdef __WSTL_CXX11__
+        /// @brief Pushes an element to the back of the deque
+        /// @param value The value to push to the back
+        /// @throws LengthError if the deque is full and `__WSTL_CHECK_PUSHPOP__` is defined
         void PushBack(T&& value) {
             #ifdef __WSTL_CHECK_PUSHPOP__
             __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
@@ -1138,6 +1353,9 @@ namespace wstl {
         #endif
 
         #ifdef __WSTL_CXX11__
+        /// @brief Emplaces an element at the back of the deque, constructing it in place
+        /// @param ...args The arguments to forward to the constructor of the element
+        /// @throws LengthError if the deque is full and `__WSTL_CHECK_PUSHPOP__` is defined
         template<typename... Args>
         void EmplaceBack(Args&&... args) {
             #ifdef __WSTL_CHECK_PUSHPOP__
@@ -1149,6 +1367,9 @@ namespace wstl {
         }
 
         #else
+        /// @brief Emplaces an element at the back of the deque, constructing it in place
+        /// @param arg The argument to pass to the constructor of the element
+        /// @throws LengthError if the deque is full and `__WSTL_CHECK_PUSHPOP__` is defined
         template<typename Arg>
         void EmplaceBack(const Arg& arg) {
             #ifdef __WSTL_CHECK_PUSHPOP__
@@ -1159,6 +1380,10 @@ namespace wstl {
             this->m_CurrentSize++;
         }
 
+        /// @brief Emplaces an element at the back of the deque, constructing it in place
+        /// @param arg1 First argument to pass to the constructor of the element
+        /// @param arg2 Second argument to pass to the constructor of the element
+        /// @throws LengthError if the deque is full and `__WSTL_CHECK_PUSHPOP__` is defined
         template<typename Arg1, typename Arg2>
         void EmplaceBack(const Arg1& arg1, const Arg2& arg2) {
             #ifdef __WSTL_CHECK_PUSHPOP__
@@ -1169,6 +1394,11 @@ namespace wstl {
             this->m_CurrentSize++;
         }
 
+        /// @brief Emplaces an element at the back of the deque, constructing it in place
+        /// @param arg1 First argument to pass to the constructor of the element
+        /// @param arg2 Second argument to pass to the constructor of the element
+        /// @param arg3 Third argument to pass to the constructor of the element
+        /// @throws LengthError if the deque is full and `__WSTL_CHECK_PUSHPOP__` is defined
         template<typename Arg1, typename Arg2, typename Arg3>
         void EmplaceBack(const Arg1& arg1, const Arg2& arg2, const Arg3& arg3) {
             #ifdef __WSTL_CHECK_PUSHPOP__
@@ -1180,12 +1410,18 @@ namespace wstl {
         }
         #endif
 
+        /// @brief Appends a range of elements to the back of the deque
+        /// @param container The container to append the elements from
+        /// @throws LengthError if the deque is full
         template<typename Container>
         inline void AppendRange(const Container& container) {
             Insert(End(), wstl::Begin(container), wstl::End(container));
         }
 
         #ifdef __WSTL_CXX11__
+        /// @brief Appends a range of elements to the back of the deque, moving them
+        /// @param container The container to append the elements from
+        /// @throws LengthError if the deque is full
         template<typename Container>
         inline void AppendRange(Container&& container) {
             Insert(End(), MakeMoveIterator(wstl::Begin(container)), 
@@ -1193,6 +1429,8 @@ namespace wstl {
         }
         #endif
 
+        /// @brief Pops the last element from the deque
+        /// @throws OutOfRange if the deque is empty and `__WSTL_CHECK_PUSHPOP__` is defined
         void PopBack() {
             #ifdef __WSTL_CHECK_PUSHPOP__
             __WSTL_ASSERT_RETURN__(!this->Empty(), OutOfRange("Deque is empty", __FILE__, __LINE__));
@@ -1200,6 +1438,9 @@ namespace wstl {
             DestroyBack();
         }
 
+        /// @brief Pushes an element to the front of the deque
+        /// @param value The value to push to the front
+        /// @throws LengthError if the deque is full and `__WSTL_CHECK_PUSHPOP__` is defined
         void PushFront(ConstReferenceType value) {
             #ifdef __WSTL_CHECK_PUSHPOP__
             __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
@@ -1208,6 +1449,9 @@ namespace wstl {
         }
 
         #ifdef __WSTL_CXX11__
+        /// @brief Pushes an element to the front of the deque
+        /// @param value The value to push to the front
+        /// @throws LengthError if the deque is full and `__WSTL_CHECK_PUSHPOP__` is defined
         void PushFront(T&& value) {
             #ifdef __WSTL_CHECK_PUSHPOP__
             __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
@@ -1217,6 +1461,9 @@ namespace wstl {
         #endif
 
         #ifdef __WSTL_CXX11__
+        /// @brief Emplaces an element at the front of the deque, constructing it in place
+        /// @param ...args The arguments to forward to the constructor of the element
+        /// @throws LengthError if the deque is full and `__WSTL_CHECK_PUSHPOP__` is defined
         template<typename... Args>
         void EmplaceFront(Args&&... args) {
             #ifdef __WSTL_CHECK_PUSHPOP__
@@ -1229,6 +1476,9 @@ namespace wstl {
         }
 
         #else
+        /// @brief Emplaces an element at the front of the deque, constructing it in place
+        /// @param arg The argument to pass to the constructor of the element
+        /// @throws LengthError if the deque is full and `__WSTL_CHECK_PUSHPOP__` is defined
         template<typename Arg>
         void EmplaceFront(const Arg& arg) {
             #ifdef __WSTL_CHECK_PUSHPOP__
@@ -1240,6 +1490,10 @@ namespace wstl {
             this->m_CurrentSize++;
         }
 
+        /// @brief Emplaces an element at the front of the deque, constructing it in place
+        /// @param arg1 First argument to pass to the constructor of the element
+        /// @param arg2 Second argument to pass to the constructor of the element
+        /// @throws LengthError if the deque is full and `__WSTL_CHECK_PUSHPOP__` is defined
         template<typename Arg1, typename Arg2>
         void EmplaceFront(const Arg1& arg1, const Arg2& arg2) {
             #ifdef __WSTL_CHECK_PUSHPOP__
@@ -1251,6 +1505,11 @@ namespace wstl {
             this->m_CurrentSize++;
         }
 
+        /// @brief Emplaces an element at the front of the deque, constructing it in place
+        /// @param arg1 First argument to pass to the constructor of the element
+        /// @param arg2 Second argument to pass to the constructor of the element
+        /// @param arg3 Third argument to pass to the constructor of the element
+        /// @throws LengthError if the deque is full and `__WSTL_CHECK_PUSHPOP__` is defined
         template<typename Arg1, typename Arg2, typename Arg3>
         void EmplaceFront(const Arg1& arg1, const Arg2& arg2, const Arg3& arg3) {
             #ifdef __WSTL_CHECK_PUSHPOP__
@@ -1263,6 +1522,8 @@ namespace wstl {
         }
         #endif
 
+        /// @brief Pops the first element from the deque
+        /// @throws OutOfRange if the deque is empty and `__WSTL_CHECK_PUSHPOP__` is defined
         void PopFront() {
             #ifdef __WSTL_CHECK_PUSHPOP__
             __WSTL_ASSERT_RETURN__(!this->Empty(), OutOfRange("Deque is empty", __FILE__, __LINE__));
@@ -1270,12 +1531,18 @@ namespace wstl {
             DestroyFront();
         }
 
+        /// @brief Prepends a range of elements to the front of the deque
+        /// @param container The container to prepend the elements from
+        /// @throws LengthError if the deque is full
         template<typename Container>
         inline void PrependRange(const Container& container) {
             Insert(Begin(), wstl::Begin(container), wstl::End(container));
         }
 
         #ifdef __WSTL_CXX11__
+        /// @brief Prepends a range of elements to the front of the deque, moving them
+        /// @param container The container to prepend the elements from
+        /// @throws LengthError if the deque is full
         template<typename Container>
         inline void PrependRange(Container&& container) {
             Insert(Begin(), MakeMoveIterator(wstl::Begin(container)), 
@@ -1283,6 +1550,10 @@ namespace wstl {
         }
         #endif
 
+        /// @brief Resizes the deque to the specified size, filling new elements with a default value
+        /// @param count The new size of the deque
+        /// @param value The value to fill new elements with, defaults to default constructed value of T
+        /// @throws LengthError if the deque is full
         void Resize(SizeType count, ConstReferenceType value = ValueType()) {
             __WSTL_ASSERT_RETURN__(count <= this->m_Capacity, LengthError("Deque is full", __FILE__, __LINE__));
 
@@ -1293,7 +1564,9 @@ namespace wstl {
                 for(SizeType i = 0; i < newCount; i++) CreateBack(value);
             }
         }
-
+        
+        /// @brief Swaps content of two deques
+        /// @param other The deque to swap with
         void Swap(Deque& other) __WSTL_NOEXCEPT__ {
             wstl::Swap(m_Buffer, other.m_Buffer);
             wstl::Swap(m_StartIndex, other.m_StartIndex);
@@ -1306,24 +1579,31 @@ namespace wstl {
         T m_Buffer[m_BufferCapacity];
         SizeType m_StartIndex;
 
+        /// @brief Initializes the deque
         template<typename U = T>
         typename EnableIf<IsTriviallyDestructible<U>::Value, void>::Type Initialize() {
             this->m_CurrentSize = 0;
             this->m_StartIndex = 0;
         }
 
+        /// @brief Initializes the deque
         template<typename U = T>
         typename EnableIf<!IsTriviallyDestructible<U>::Value, void>::Type Initialize() {
             while(this->m_CurrentSize > 0) DestroyBack();
             this->m_StartIndex = 0;
         }
 
+        /// @brief Creates an element at the front of the deque
+        /// @param value The value to create the element with
         void CreateFront(ConstReferenceType value) {
             this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
             ::new(static_cast<void*>(&m_Buffer[this->m_StartIndex])) T(value);
             this->m_CurrentSize++;
         }
 
+        /// @brief Creates a range of elements at the front of the deque
+        /// @param first Iterator to the first element in the range to create
+        /// @param count The number of elements to create
         template<typename Iterator>
         void CreateFront(Iterator first, SizeType count) {
             if(count == 0) return;
@@ -1334,36 +1614,112 @@ namespace wstl {
             for(SizeType i = 0; i < count; i++, first++)
                 ::new(static_cast<void*>(&m_Buffer[this->m_StartIndex + i])) T(*first);
         }
-
+        
+        /// @brief Creates an element at the back of the deque
+        /// @param value The value to create the element with
         void CreateBack(ConstReferenceType value) {
             ::new(static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity])) T(value);
             this->m_CurrentSize++;
         }
 
         #ifdef __WSTL_CXX11__
+        /// @brief Creates an element at the front of the deque
+        /// @param value The value to create the element with
         void CreateFront(T&& value) {
             this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
             ::new(static_cast<void*>(&m_Buffer[this->m_StartIndex])) T(Move(value));
             this->m_CurrentSize++;
         }
 
+        /// @brief Creates an element at the back of the deque
+        /// @param value The value to create the element with
         void CreateBack(T&& value) {
             ::new(static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity])) T(Move(value));
             this->m_CurrentSize++;
         }
         #endif
 
+        /// @brief Destroys an element at the back of the deque
         void DestroyBack() {
             this->m_CurrentSize--;
             m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity].~T();
         }
 
+        /// @brief Destroys an element at the front of the deque
         void DestroyFront() {
             m_Buffer[this->m_StartIndex].~T();
             this->m_StartIndex = (this->m_StartIndex + 1) % this->m_BufferCapacity;
             this->m_CurrentSize--;
         }
     };
+
+    template<typename T, const size_t SIZE>
+    const __WSTL_CONSTEXPR__ typename Deque<T, SIZE>::SizeType Deque<T, SIZE>::m_BufferCapacity;
+
+    // Template deduction guide
+
+    #ifdef __WSTL_CXX17__
+    template<typename... T>
+    Deque(T...) -> Deque<CommonTypeType<T...>, sizeof...(T)>;
+    #endif
+
+    // Swap specialization
+
+    /// @brief Swaps content of two deques
+    /// @param a First deque
+    /// @param b Second deque
+    /// @ingroup deque
+    /// @see https://en.cppreference.com/w/cpp/utility/tuple/swap2
+    template<typename T, const size_t SIZE>
+    __WSTL_CONSTEXPR14__ 
+    inline void Swap(Deque<T, SIZE>& a, Deque<T, SIZE>& b) __WSTL_NOEXCEPT__ {
+        a.Swap(b);
+    }
+
+    // Make deque
+
+    #ifdef __WSTL_CXX11__
+    /// @brief Makes a deque out of the given values
+    /// @param ...values Values to make the deque with
+    /// @return A deque containing the given values
+    /// @ingroup deque
+    template<typename T, typename... Values>
+    constexpr auto MakeDeque(Values&&... values) {
+        return { Forward<T>(values)... };
+    }
+    #endif
+
+    // Comparison operators
+
+    template<typename T, const size_t SIZE>
+    inline bool operator==(const Deque<T, SIZE>& a, const Deque<T, SIZE>& b) {
+        return (a.Size() == b.Size()) && Equal(a.Begin(), a.End(), b.Begin());
+    }
+
+    template<typename T, const size_t SIZE>
+    inline bool operator!=(const Deque<T, SIZE>& a, const Deque<T, SIZE>& b) {
+        return !(a == b);
+    }
+
+    template<typename T, const size_t SIZE>
+    inline bool operator<(const Deque<T, SIZE>& a, const Deque<T, SIZE>& b) {
+        return LexicographicalCompare(a.Begin(), a.End(), b.Begin(), b.End());
+    }
+
+    template<typename T, const size_t SIZE>
+    inline bool operator<=(const Deque<T, SIZE>& a, const Deque<T, SIZE>& b) {
+        return !(b < a);
+    }
+
+    template<typename T, const size_t SIZE>
+    inline bool operator>(const Deque<T, SIZE>& a, const Deque<T, SIZE>& b) {
+        return b < a;
+    }
+
+    template<typename T, const size_t SIZE>
+    inline bool operator>=(const Deque<T, SIZE>& a, const Deque<T, SIZE>& b) {
+        return !(a < b);
+    }
 }
 
 #endif
