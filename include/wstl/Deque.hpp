@@ -10,11 +10,13 @@
 #define __WSTL_DEQUE_HPP__
 
 #include "private/Platform.hpp"
+#include "Container.hpp"
 #include "Iterator.hpp"
 #include "CircularIterator.hpp"
+#include "InitializerList.hpp"
 #include "StandardExceptions.hpp"
 #include "PlacementNew.hpp"
-#include <stddef.h>
+#include "Algorithm.hpp"
 
 
 /// @defgroup deque Deque
@@ -22,79 +24,21 @@
 /// @brief A double-ended queue with size defined at compile-time
 
 namespace wstl {
-    // Deque interface
-
-    /// @brief Interface for all deque-like containers
-    /// @tparam T Type of the element to store
-    /// @ingroup deque
-    template<typename T>
-    class IDeque {
-    public:
-        typedef T ValueType;
-        typedef size_t SizeType;
-        typedef ptrdiff_t DifferenceType;
-        typedef T& ReferenceType;
-        typedef const T& ConstReferenceType;
-        typedef T* PointerType;
-        typedef const T* ConstPointerType;
-
-        /// @brief Gets the current size of the deque
-        SizeType Size() const {
-            return m_CurrentSize;
-        }
-
-        /// @brief Checks if the deque is empty
-        bool Empty() const {
-            return m_CurrentSize == 0;
-        }
-
-        /// @brief Gets the maximum size of the deque
-        SizeType MaxSize() const {
-            return m_Capacity;
-        }
-
-        /// @brief Checks if the deque is full
-        bool Full() const {
-            return m_CurrentSize == m_Capacity;
-        }
-
-        /// @brief Gets the capacity of the deque
-        SizeType Capacity() const {
-            return m_Capacity;
-        }
-
-        /// @brief Gets the available space in the deque
-        SizeType Available() const {
-            return MaxSize() - Size();
-        }
-
-    protected:
-        /// @brief Protected constructor
-        /// @param capacity The maximum number of elements the deque can hold
-        IDeque(SizeType capacity) : m_Capacity(capacity), m_CurrentSize(0) {}
-
-        /// @brief Protected destructor
-        ~IDeque();
-
-        SizeType m_CurrentSize;
-        const SizeType m_Capacity;
-    };
-
     /// @brief A double-ended queue that supports pushing and popping elements from both ends
     /// @tparam T Type of the element to store in the deque
     /// @tparam SIZE The maximum number of elements the deque can hold
     /// @ingroup deque
     /// @see https://en.cppreference.com/w/cpp/container/deque
     template<typename T, const size_t SIZE>
-    class Deque : public IDeque<T> {
+    class Deque : public TypedContainerBase<T> {
     public:
-        typedef typename IDeque<T>::ValueType ValueType;
-        typedef typename IDeque<T>::SizeType SizeType;
-        typedef typename IDeque<T>::DifferenceType DifferenceType;
-        typedef typename IDeque<T>::ReferenceType ReferenceType;
-        typedef typename IDeque<T>::ConstReferenceType ConstReferenceType;
-        typedef typename IDeque<T>::PointerType PointerType;
-        typedef typename IDeque<T>::ConstPointerType ConstPointerType;
+        typedef typename TypedContainerBase<T>::ValueType ValueType;
+        typedef typename TypedContainerBase<T>::SizeType SizeType;
+        typedef typename TypedContainerBase<T>::DifferenceType DifferenceType;
+        typedef typename TypedContainerBase<T>::ReferenceType ReferenceType;
+        typedef typename TypedContainerBase<T>::ConstReferenceType ConstReferenceType;
+        typedef typename TypedContainerBase<T>::PointerType PointerType;
+        typedef typename TypedContainerBase<T>::ConstPointerType ConstPointerType;
 
         /// @brief Circular const iterator type for the deque
         class ConstIterator : public wstl::Iterator<RandomAccessIteratorTag, typename IteratorTraits<const T*>::ValueType> {
@@ -481,7 +425,7 @@ namespace wstl {
         typedef wstl::ReverseIterator<ConstIterator> ConstReverseIterator;
 
         /// @brief Default constructor
-        Deque() : IDeque<T>(SIZE), m_StartIndex(0) {
+        Deque() : TypedContainerBase<T>(SIZE), m_StartIndex(0) {
             Initialize();
         }
 
@@ -492,14 +436,14 @@ namespace wstl {
 
         /// @brief Copy constructor
         /// @param other The deque to copy from
-        Deque(const Deque& other) : IDeque<T>(other.SIZE), m_StartIndex(0) {
+        Deque(const Deque& other) : TypedContainerBase<T>(SIZE), m_StartIndex(0) {
             if(this != &other) Assign(other.Begin(), other.End());
         }
 
         #ifdef __WSTL_CXX11__
         /// @brief Move constructor
         /// @param other The deque to move from
-        Deque(Deque&& other) : IDeque<T>(other.SIZE), m_StartIndex(0) {
+        Deque(Deque&& other) : TypedContainerBase<T>(SIZE), m_StartIndex(0) {
             if(this != &other) {
                 Initialize();
 
@@ -513,21 +457,21 @@ namespace wstl {
         /// @param first Iterator to the first element in the range
         /// @param last Iterator to the element following the last element in the range
         template<typename InputIterator>
-        Deque(InputIterator first, InputIterator last) : IDeque<T>(SIZE), m_StartIndex(0) {
+        Deque(InputIterator first, InputIterator last) : TypedContainerBase<T>(SIZE), m_StartIndex(0) {
             Assign(first, last);
         }
 
         /// @brief Constructor that initializes the deque with a specific number of elements
         /// @param count The number of elements to initialize the deque with
         /// @param value The value to initialize each element with (default is ValueType())
-        explicit Deque(SizeType count, ConstReferenceType value = ValueType()) : IDeque<T>(SIZE), m_StartIndex(0) {
+        explicit Deque(SizeType count, ConstReferenceType value = ValueType()) : TypedContainerBase<T>(SIZE), m_StartIndex(0) {
             Assign(count, value);
         }
 
         #if defined(__WSTL_CXX11__) && !defined(__WSTL_NO_INITIALIZERLIST__)
         /// @brief Constructor that initializes the deque with an initializer list
         /// @param list The initializer list to initialize the deque with
-        Deque(InitializerList<T> list) : IDeque<T>(SIZE), m_StartIndex(0) {
+        Deque(InitializerList<T> list) : TypedContainerBase<T>(SIZE), m_StartIndex(0) {
             Assign(list);
         }
         #endif
