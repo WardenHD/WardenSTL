@@ -1511,7 +1511,7 @@ namespace wstl {
         
         /// @brief Swaps content of two deques
         /// @param other The deque to swap with
-        void Swap(Deque& other) __WSTL_NOEXCEPT__ {
+        void Swap(Deque& other) {
             wstl::Swap(m_Buffer, other.m_Buffer);
             wstl::Swap(m_StartIndex, other.m_StartIndex);
             wstl::Swap(this->m_CurrentSize, other.m_CurrentSize);
