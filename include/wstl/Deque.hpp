@@ -513,7 +513,7 @@ namespace wstl {
         template<typename InputIterator>
         typename EnableIf<!IsIntegral<InputIterator>::Value, void>::Type Assign(InputIterator first, InputIterator last) {
             Initialize();
-            for(; first != last; ++first) PushBack(*first);
+            for(; first != last; ++first) PushBack(__WSTL_MOVE__(*first));
         }
 
         /// @brief Assigns a specific number of elements to the deque
@@ -530,6 +530,7 @@ namespace wstl {
         /// @brief Assigns an initializer list to the deque
         /// @param list The initializer list to assign to the deque
         void Assign(InitializerList<T> list) {
+            __WSTL_ASSERT_RETURN__(list.Size() <= this->m_Capacity, LengthError("Deque is full", __FILE__, __LINE__));
             Initialize();
             for(typename InitializerList<T>::Iterator it = list.Begin(); it != list.End(); it++) PushBack(*it);
         }
@@ -812,7 +813,7 @@ namespace wstl {
             }
             else if(position == End()) {
                 // Insert at back
-                for(; first != last; first++) CreateBack(*first);
+                for(; first != last; first++) CreateBack(__WSTL_MOVE__(*first));
                 result = End() - count;
             }
             else {
@@ -989,6 +990,49 @@ namespace wstl {
         }
 
         #else
+        /// @brief Emplaces an element at specified position in the deque, constructing it in place
+        /// @param position The position to emplace the element at
+        /// @throws LengthError if the deque is full
+        /// @return Iterator to the newly emplaced element
+        template<typename Arg>
+        Iterator Emplace(ConstIterator position) {
+            Iterator pos = Begin() + Distance(ConstBegin(), position);
+
+            __WSTL_ASSERT_RETURNVALUE__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__), pos);
+
+            void* pointer;
+            
+            if(pos == Begin()) {
+                this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
+                this->m_CurrentSize++;
+                pointer = static_cast<void*>(&m_Buffer[this->m_StartIndex]);
+            }
+            else if(pos == End()) {
+                this->m_CurrentSize++;
+                pointer = static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity]);
+            }
+            else {
+                if(Distance(Begin(), pos) < Distance(pos, End() - 1)) {
+                    CreateFront(*Begin());
+                    Move(Begin() + 1, pos, Begin());
+
+                    (*--pos).~T();
+                    pointer = AddressOf(*pos);
+                }   
+                else {
+                    CreateBack(*(End() - 1));
+                    MoveBackward(pos, End() - 2, End() - 1);
+                    
+                    (*pos).~T();
+                    pointer = AddressOf(*pos);
+                }
+            }
+
+            ::new(pointer) T();
+
+            return pos;
+        }
+
         /// @brief Emplaces an element at specified position in the deque, constructing it in place
         /// @param position The position to emplace the element at
         /// @param arg The argument to pass to the constructor of the element
@@ -1312,6 +1356,17 @@ namespace wstl {
 
         #else
         /// @brief Emplaces an element at the back of the deque, constructing it in place
+        /// @throws LengthError if the deque is full and `__WSTL_CHECK_PUSHPOP__` is defined
+        void EmplaceBack() {
+            #ifdef __WSTL_CHECK_PUSHPOP__
+            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            #endif
+
+            ::new(static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity])) T();
+            this->m_CurrentSize++;
+        }
+
+        /// @brief Emplaces an element at the back of the deque, constructing it in place
         /// @param arg The argument to pass to the constructor of the element
         /// @throws LengthError if the deque is full and `__WSTL_CHECK_PUSHPOP__` is defined
         template<typename Arg>
@@ -1421,6 +1476,19 @@ namespace wstl {
 
         #else
         /// @brief Emplaces an element at the front of the deque, constructing it in place
+        /// @throws LengthError if the deque is full and `__WSTL_CHECK_PUSHPOP__` is defined
+        void EmplaceFront() {
+            #ifdef __WSTL_CHECK_PUSHPOP__
+            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            #endif
+
+            this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
+            ::new(static_cast<void*>(&m_Buffer[this->m_StartIndex])) T();
+            this->m_CurrentSize++;
+        }
+
+
+        /// @brief Emplaces an element at the front of the deque, constructing it in place
         /// @param arg The argument to pass to the constructor of the element
         /// @throws LengthError if the deque is full and `__WSTL_CHECK_PUSHPOP__` is defined
         template<typename Arg>
@@ -1508,13 +1576,42 @@ namespace wstl {
                 for(SizeType i = 0; i < newCount; i++) CreateBack(value);
             }
         }
-        
-        /// @brief Swaps content of two deques
+
+        /// @brief Swaps content of two deques, for trivial types
         /// @param other The deque to swap with
-        void Swap(Deque& other) {
+        template<typename U = T>
+        typename EnableIf<IsTriviallyCopyable<U>::Value, void>::Type Swap(Deque& other) {
             wstl::Swap(m_Buffer, other.m_Buffer);
             wstl::Swap(m_StartIndex, other.m_StartIndex);
             wstl::Swap(this->m_CurrentSize, other.m_CurrentSize);
+        }
+        
+        /// @brief Swaps content of two deques, for non-trivial types
+        /// @param other The deque to swap with
+        template<typename U = T>
+        typename EnableIf<!IsTriviallyCopyable<U>::Value, void>::Type Swap(Deque& other) {
+            SizeType minCount = Min(this->m_CurrentSize, other.m_CurrentSize);
+
+            for(SizeType i = 0; i < minCount; i++) {
+                T temp = other.Front();
+                other.PopFront();
+                other.PushBack(Front());
+                PopFront();
+                PushBack(temp);
+            }
+
+            if(this->m_CurrentSize > other.m_CurrentSize) {
+                for(SizeType i = other.m_CurrentSize; i < this->m_CurrentSize; i++) {
+                    other.PushBack(Front());
+                    PopFront();
+                }
+            }
+            else if(this->m_CurrentSize < other.m_CurrentSize) {
+                for(SizeType i = this->m_CurrentSize; i < other.m_CurrentSize; i++) {
+                    PushBack(other.Front());
+                    other.PopFront();
+                }
+            }
         }
     
     private:
@@ -1556,7 +1653,7 @@ namespace wstl {
             this->m_CurrentSize += count;
 
             for(SizeType i = 0; i < count; i++, first++)
-                ::new(static_cast<void*>(&m_Buffer[this->m_StartIndex + i])) T(*first);
+                ::new(static_cast<void*>(&m_Buffer[this->m_StartIndex + i])) T(__WSTL_MOVE__(*first));
         }
         
         /// @brief Creates an element at the back of the deque
