@@ -1,3 +1,8 @@
+// Part of WardenSTL - https://github.com/WardenHD/WardenSTL
+// Copyright (c) 2025 Artem Bezruchko (WardenHD)
+//
+// Licensed under the MIT License. See LICENSE file for details.
+
 #ifndef __WSTL_CONTAINER_HPP__
 #define __WSTL_CONTAINER_HPP__
 
