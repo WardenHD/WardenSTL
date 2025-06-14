@@ -1697,11 +1697,11 @@ namespace wstl {
     template<typename T, const size_t SIZE>
     const __WSTL_CONSTEXPR__ typename Deque<T, SIZE>::SizeType Deque<T, SIZE>::m_BufferCapacity;
 
-    // Template deduction guide
+    // Template deduction guides
 
     #ifdef __WSTL_CXX17__
-    template<typename... T>
-    Deque(T...) -> Deque<CommonTypeType<T...>, sizeof...(T)>;
+    template<typename T, typename... U>
+    Deque(T, U...) -> Deque<T, sizeof...(U) + 1>;
     #endif
 
     // Swap specialization
@@ -1721,12 +1721,22 @@ namespace wstl {
 
     #ifdef __WSTL_CXX11__
     /// @brief Makes a deque out of the given values
+    /// @tparam T Type of the elements
     /// @param ...values Values to make the deque with
     /// @return A deque containing the given values
     /// @ingroup deque
     template<typename T, typename... Values>
     constexpr auto MakeDeque(Values&&... values) {
-        return { Forward<T>(values)... };
+        return Deque<T, sizeof...(values)>({ Forward<T>(values)... });
+    }
+
+    /// @brief Makes a deque out of the given values
+    /// @param ...values Values to make the deque with
+    /// @return A deque containing the given values
+    /// @ingroup deque
+    template<typename... Values>
+    constexpr auto MakeDeque(Values&&... values) {
+        return Deque<CommonTypeType<Values...>, sizeof...(values)>({ Forward<CommonTypeType<Values...>>(values)... });
     }
     #endif
 

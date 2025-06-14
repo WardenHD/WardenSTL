@@ -285,8 +285,8 @@ namespace wstl {
     // Template deduction guide
 
     #ifdef __WSTL_CXX17__
-    template<typename... T>
-    Array(T...) -> Array<CommonTypeType<T...>, sizeof...(T)>;
+    template<typename T, typename... U>
+    Array(T, U...) -> Array<T, sizeof...(U) + 1>;
     #endif
 
     // Swap specialization
