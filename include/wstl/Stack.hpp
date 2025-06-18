@@ -45,7 +45,7 @@ namespace wstl {
         /// @param last Iterator to the element following the last element in the range
         template<typename InputIterator>
         Stack(InputIterator first, InputIterator last) : TypedContainerBase<T>(SIZE) {
-            for(; first != last; first++) ::new(&m_Buffer[this->m_CurrentSize++]) T(*first);
+            for(; first != last; ++first) ::new(&m_Buffer[this->m_CurrentSize++]) T(*first);
         }
 
         /// @brief Copy constructor
@@ -65,7 +65,7 @@ namespace wstl {
         /// @brief Constructor that initializes the stack with an initializer list
         /// @param list The initializer list to initialize the stack with
         Stack(InitializerList<T> list) : TypedContainerBase<T>(SIZE) {
-            for(typename InitializerList<T>::Iterator it = list.Begin(); it != list.End(); it++) 
+            for(typename InitializerList<T>::Iterator it = list.Begin(); it != list.End(); ++it) 
                 ::new(&m_Buffer[this->m_CurrentSize++]) T(__WSTL_MOVE__(*it));
         }
         #endif
@@ -98,7 +98,7 @@ namespace wstl {
             __WSTL_ASSERT_RETURNVALUE__(list.Size() <= this->m_Capacity, LengthError("Stack is full", __FILE__, __LINE__), *this);
             
             Initialize();
-            for(typename InitializerList<T>::Iterator it = list.Begin(); it != list.End(); it++) 
+            for(typename InitializerList<T>::Iterator it = list.Begin(); it != list.End(); ++it) 
                 ::new(&m_Buffer[this->m_CurrentSize++]) T(__WSTL_MOVE__(*it));
             
             return *this;
@@ -148,7 +148,7 @@ namespace wstl {
         typename EnableIf<!IsIntegral<InputIterator>::Value, void>::Type Push(InputIterator first, InputIterator last) {
             __WSTL_ASSERT_RETURN__(Distance(first, last) <= this->m_Capacity, LengthError("Stack is full", __FILE__, __LINE__));
 
-            for(; first != last; first++) ::new(&m_Buffer[this->m_CurrentSize++]) T(__WSTL_MOVE__(*first));
+            for(; first != last; ++first) ::new(&m_Buffer[this->m_CurrentSize++]) T(__WSTL_MOVE__(*first));
         }
 
         /// @brief Pushes a specific number of elements onto the stack
@@ -158,7 +158,7 @@ namespace wstl {
         void Push(SizeType count, ConstReferenceType value) {
             __WSTL_ASSERT_RETURN__(count <= this->m_Capacity - this->m_CurrentSize, LengthError("Stack is full", __FILE__, __LINE__));
 
-            for(SizeType i = 0; i < count; i++) ::new(&m_Buffer[this->m_CurrentSize++]) T(value);
+            for(SizeType i = 0; i < count; ++i) ::new(&m_Buffer[this->m_CurrentSize++]) T(value);
         }
 
         /// @brief Pushes elements from a container onto the stack
@@ -168,7 +168,7 @@ namespace wstl {
         void PushRange(const Container& container) {
             __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Stack is full", __FILE__, __LINE__));
 
-            for(SizeType i = 0; i < Size(container); i++) ::new(&m_Buffer[this->m_CurrentSize++]) T(*(Begin(container) + i));
+            for(SizeType i = 0; i < Size(container); ++i) ::new(&m_Buffer[this->m_CurrentSize++]) T(*(Begin(container) + i));
         }
 
         #ifdef __WSTL_CXX11__
@@ -179,7 +179,7 @@ namespace wstl {
         void PushRange(Container&& container) {
             __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Stack is full", __FILE__, __LINE__));
 
-            for(SizeType i = 0; i < Size(container); i++) ::new(&m_Buffer[this->m_CurrentSize++]) T(Move(*(Begin(container) + i)));
+            for(SizeType i = 0; i < Size(container); ++i) ::new(&m_Buffer[this->m_CurrentSize++]) T(Move(*(Begin(container) + i)));
         }
         #endif
 
@@ -281,7 +281,7 @@ namespace wstl {
         typename EnableIf<!IsTriviallyCopyable<U>::Value, void>::Type Swap(Stack& other) {
             SizeType minCount = Min(this->m_CurrentSize, other.m_CurrentSize);
 
-            for(SizeType i = 0; i < minCount; i++) {
+            for(SizeType i = 0; i < minCount; ++i) {
                 T temp = __WSTL_MOVE__(other.m_Buffer[i]);
                 other.m_Buffer[i].~T();
                 ::new(&other.m_Buffer[i]) T(__WSTL_MOVE__(m_Buffer[i]));
@@ -290,13 +290,13 @@ namespace wstl {
             }
 
             if(this->m_CurrentSize < other.m_CurrentSize) {
-                for(SizeType i = this->m_CurrentSize; i < other.m_CurrentSize; i++) {
+                for(SizeType i = this->m_CurrentSize; i < other.m_CurrentSize; ++i) {
                     ::new(&m_Buffer[i]) T(__WSTL_MOVE__(other.m_Buffer[i]));
                     other.m_Buffer[i].~T();
                 }
             }
             else if(this->m_CurrentSize > other.m_CurrentSize) {
-                for(SizeType i = other.m_CurrentSize; i < this->m_CurrentSize; i++) {
+                for(SizeType i = other.m_CurrentSize; i < this->m_CurrentSize; ++i) {
                     ::new(&other.m_Buffer[i]) T(__WSTL_MOVE__(m_Buffer[i]));
                     m_Buffer[i].~T();
                 }
@@ -310,13 +310,13 @@ namespace wstl {
 
         void Clone(const Stack& other) {
             Initialize();
-            for(SizeType i = 0; i < Size(other); i++) Push(other.m_Buffer[i]);
+            for(SizeType i = 0; i < Size(other); ++i) Push(other.m_Buffer[i]);
         }
 
         #ifdef __WSTL_CXX11__
         void Clone(Stack&& other) {
             Initialize();
-            for(SizeType i = 0; i < Size(other); i++) Push(Move(other.m_Buffer[i]));
+            for(SizeType i = 0; i < Size(other); ++i) Push(Move(other.m_Buffer[i]));
         }
         #endif
 

@@ -653,7 +653,7 @@ namespace wstl {
         typedef typename IteratorTraits<OutputIterator>::ValueType ValueType;
         OutputIterator result = resultFirst;
 
-        for(; first != last; first++, result++)
+        for(; first != last; ++first, ++result)
             ::new(static_cast<void*>(AddressOf(*result))) ValueType(*first);
         
         return resultFirst;
@@ -713,7 +713,7 @@ namespace wstl {
     typename EnableIf<!IsTriviallyConstructible<typename IteratorTraits<OutputIterator>::ValueType>::Value, OutputIterator>::Type 
     UninitializedFill(OutputIterator first, OutputIterator last, const T& value) {
         typedef typename IteratorTraits<OutputIterator>::ValueType ValueType;
-        for(; first != last; first++) 
+        for(; first != last; ++first) 
             ::new(static_cast<void*>(AddressOf(*first))) ValueType(value);
         
         return last;
@@ -764,7 +764,7 @@ namespace wstl {
         typedef typename IteratorTraits<OutputIterator>::ValueType ValueType;
         OutputIterator result = resultFirst;
 
-        for(; first != last; first++, result++) 
+        for(; first != last; ++first, ++result) 
             ::new(static_cast<void*>(AddressOf(*result))) ValueType(Move(*first));
 
         return resultFirst;
@@ -808,7 +808,7 @@ namespace wstl {
     UninitializedDefaultConstruct(OutputIterator first, OutputIterator last) {
         typedef typename IteratorTraits<OutputIterator>::ValueType ValueType;
 
-        for(; first != last; first++) ::new(static_cast<void*>(AddressOf(*first))) ValueType;
+        for(; first != last; ++first) ::new(static_cast<void*>(AddressOf(*first))) ValueType;
     }
 
     // Uninitialized default construct in range 
@@ -849,7 +849,7 @@ namespace wstl {
     typename EnableIf<!IsTriviallyConstructible<typename IteratorTraits<OutputIterator>::ValueType>::Value, void>::Type
     UninitializedValueConstruct(OutputIterator first, OutputIterator last) {
         typedef typename IteratorTraits<OutputIterator>::ValueType ValueType;
-        for(; first != last; first++) ::new(static_cast<void*>(AddressOf(*first))) ValueType();
+        for(; first != last; ++first) ::new(static_cast<void*>(AddressOf(*first))) ValueType();
     }
 
     // Uninitialized value construct in range
@@ -939,7 +939,7 @@ namespace wstl {
     template<typename Iterator>
     typename EnableIf<!IsTriviallyDestructible<typename IteratorTraits<Iterator>::ValueType>::Value, void>::Type 
     Destroy(Iterator first, Iterator last) {
-        for(; first != last; first++) DestroyAt(AddressOf(*first));
+        for(; first != last; ++first) DestroyAt(AddressOf(*first));
     }
 
     // Destroy in range
@@ -964,7 +964,7 @@ namespace wstl {
     template<typename Iterator, typename Size>
     typename EnableIf<!IsTriviallyDestructible<typename IteratorTraits<Iterator>::ValueType>::Value, Iterator>::Type 
     DestroyInRange(Iterator first, Size count) {
-        for(; count > 0; first++, count--) DestroyAt(AddressOf(*first));
+        for(; count > 0; ++first, --count) DestroyAt(AddressOf(*first));
         return first;
     }
 
