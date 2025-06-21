@@ -116,14 +116,14 @@ namespace wstl {
         static __WSTL_CONSTEXPR14__ size_t Length(const CharacterType* string) {
             size_t count = 0;
 
-            if(string != 0) while(*++string) count++;
+            if(string != 0) while(*++string) ++count;
             return count;
         }
 
         static __WSTL_CONSTEXPR14__ size_t Length(const CharacterType* string, size_t maxLength) {
             size_t count = 0;
 
-            if(string != 0) while(*++string && count < maxLength) count++;
+            if(string != 0) while(*++string && count < maxLength) ++count;
             return count;
         }
 
@@ -164,7 +164,7 @@ namespace wstl {
         }
 
         static __WSTL_CONSTEXPR14__ const CharacterType* Find(const CharacterType* pointer, size_t count, const CharacterType& c) {
-            for(size_t i = 0; i < count; i++, pointer++) if(*pointer == c) return pointer;
+            for(size_t i = 0; i < count; ++i, ++pointer) if(*pointer == c) return pointer;
             return 0;
         }
 
@@ -211,9 +211,9 @@ namespace wstl {
                 if(*a < *b) return -1;
                 if(*a > *b) return 1;
 
-                a++;
-                b++;
-                count--;
+                ++a;
+                ++b;
+                --count;
             }
 
             return 0;

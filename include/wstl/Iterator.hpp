@@ -149,20 +149,20 @@ namespace wstl {
         template<typename Iterator, typename Distance>
         __WSTL_CONSTEXPR14__ 
         inline void __Advance(Iterator& iterator, Distance count, OutputIteratorTag) {
-            while(--count) iterator++;
+            while(--count) ++iterator;
         }
 
         template<typename Iterator, typename Distance>
         __WSTL_CONSTEXPR14__ 
         inline void __Advance(Iterator& iterator, Distance count, ForwardIteratorTag) {
-            while(--count) iterator++;
+            while(--count) ++iterator;
         }
 
         template<typename Iterator, typename Distance>
         __WSTL_CONSTEXPR14__ 
         inline void __Advance(Iterator& iterator, Distance count, BidirectionalIteratorTag) {
-            if(count > 0) while(--count) iterator++;
-            else while(++count) iterator--;
+            if(count > 0) while(--count) ++iterator;
+            else while(++count) --iterator;
         }
 
         template<typename Iterator, typename Distance>
@@ -190,7 +190,7 @@ namespace wstl {
         __WSTL_CONSTEXPR14__ typename IteratorTraits<Iterator>::DifferenceType 
         __Distance(Iterator first, Iterator last, InputIteratorTag) {
             typename IteratorTraits<Iterator>::DifferenceType result = 0;
-            for(; first != last; result++, first++);
+            for(; first != last; ++result, ++first);
             return result;
         }   
 
@@ -534,7 +534,7 @@ namespace wstl {
         /// @brief Pre-increment operator - moves the iterator forward by one element
         /// @return Reference to the updated iterator
         __WSTL_CONSTEXPR14__ MoveIterator& operator++() {
-            m_Current++;
+            ++m_Current;
             return *this;
         }
 
@@ -542,14 +542,14 @@ namespace wstl {
         /// @return Reference to the iterator before incrementing
         __WSTL_CONSTEXPR14__ MoveIterator operator++(int) {
             MoveIterator temp = *this;
-            m_Current++;
+            ++m_Current;
             return temp;
         }
 
         /// @brief Pre-decrement operator - moves the iterator backwards by one element
         /// @return Reference to the updated iterator
         __WSTL_CONSTEXPR14__ MoveIterator& operator--() {
-            m_Current--;
+            --m_Current;
             return *this;
         }
 
@@ -557,7 +557,7 @@ namespace wstl {
         /// @return Reference to the iterator before decrementing
         __WSTL_CONSTEXPR14__ MoveIterator operator--(int) {
             MoveIterator temp = *this;
-            m_Current--;
+            --m_Current;
             return temp;
         }
 
@@ -681,7 +681,7 @@ namespace wstl {
         /// @return A reference to the current iterator
         __WSTL_CONSTEXPR14__ InsertIterator& operator=(const typename Container::ValueType& value) {
             m_Iterator = m_Container->Insert(m_Iterator, value);
-            m_Iterator++;
+            ++m_Iterator;
             return *this;
         }
 
@@ -693,7 +693,7 @@ namespace wstl {
         /// @since C++11
         __WSTL_CONSTEXPR14__ InsertIterator operator=(const typename Container::ValueType&& value) {
             m_Iterator = m_Container->Insert(m_Iterator, Move(value));
-            m_Iterator++;
+            ++m_Iterator;
             return *this;
         }
         #endif

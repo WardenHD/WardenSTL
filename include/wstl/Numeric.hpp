@@ -30,7 +30,7 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/algorithm/iota
     template<typename ForwardIterator, typename T>
     __WSTL_CONSTEXPR14__ void Iota(ForwardIterator first, ForwardIterator last, T value) {
-        for (; first != last; first++, value++) *first = value;
+        for (; first != last; ++first, ++value) *first = value;
     }
 
     // Accumulate
@@ -44,7 +44,7 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/algorithm/accumulate
     template<typename InputIterator, typename T>
     __WSTL_CONSTEXPR14__ T Accumulate(InputIterator first, InputIterator last, T initial) {
-        for(; first != last; first++) initial = __WSTL_MOVE__(initial) + *first;
+        for(; first != last; ++first) initial = __WSTL_MOVE__(initial) + *first;
         return initial;
     }
 
@@ -58,7 +58,7 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/algorithm/accumulate
     template<typename InputIterator, typename T, typename BinaryOperation>
     __WSTL_CONSTEXPR14__ T Accumulate(InputIterator first, InputIterator last, T initial, BinaryOperation operation) {
-        for(; first != last; first++) initial = operation(__WSTL_MOVE__(initial), *first);
+        for(; first != last; ++first) initial = operation(__WSTL_MOVE__(initial), *first);
         return initial;
     }
 
@@ -74,7 +74,7 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/algorithm/inner_product
     template<typename InputIterator1, typename InputIterator2, typename T>
     __WSTL_CONSTEXPR14__ T InnerProduct(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, T initial) {
-        for(; first1 != last1; first1++, first2++) initial = __WSTL_MOVE__(initial) + (*first1 * *first2);
+        for(; first1 != last1; ++first1, ++first2) initial = __WSTL_MOVE__(initial) + (*first1 * *first2);
         return initial;
     }
 
@@ -91,7 +91,7 @@ namespace wstl {
     template<typename InputIterator1, typename InputIterator2, typename T, typename BinaryOperation1, typename BinaryOperation2>
     __WSTL_CONSTEXPR14__ T InnerProduct(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, T initial, 
     BinaryOperation1 operation1, BinaryOperation2 operation2) {
-        for(; first1 != last1; first1++, first2++) initial = operation1(__WSTL_MOVE__(initial), operation2(*first1, *first2));
+        for(; first1 != last1; ++first1, ++first2) initial = operation1(__WSTL_MOVE__(initial), operation2(*first1, *first2));
         return initial;
     }
 
@@ -112,7 +112,7 @@ namespace wstl {
         Value accumulator = *first;
         *resultFirst++ = *first++;
 
-        for(; first != last; first++, resultFirst++) {
+        for(; first != last; ++first, ++resultFirst) {
             Value current = *first;
             *resultFirst = current - __WSTL_MOVE__(accumulator);
             accumulator = __WSTL_MOVE__(current);
@@ -138,7 +138,7 @@ namespace wstl {
         Value accumulator = *first;
         *resultFirst++ = *first++;
 
-        for(; first != last; first++, resultFirst++) {
+        for(; first != last; ++first, ++resultFirst) {
             Value current = *first;
             *resultFirst = operation(current, __WSTL_MOVE__(accumulator));
             accumulator = __WSTL_MOVE__(current);
@@ -163,7 +163,7 @@ namespace wstl {
         typename IteratorTraits<InputIterator>::ValueType sum = *first;
         *resultFirst++ = *first++;
 
-        for(; first != last; first++, resultFirst++) {
+        for(; first != last; ++first, ++resultFirst) {
             sum = __WSTL_MOVE__(sum) + *first;
             *resultFirst = sum;
         }
@@ -187,7 +187,7 @@ namespace wstl {
         typename IteratorTraits<InputIterator>::ValueType sum = *first;
         *resultFirst++ = *first++;
 
-        for(; first != last; first++, resultFirst++) {
+        for(; first != last; ++first, ++resultFirst) {
             sum = operation(__WSTL_MOVE__(sum), *first);
             *resultFirst = sum;
         }

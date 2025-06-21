@@ -151,7 +151,7 @@ namespace wstl {
     /// @ingroup utility
     /// @see https://en.cppreference.com/w/cpp/utility/swap
     __WSTL_CONSTEXPR14__ void Swap(T (&a)[N], T (&b)[N]) {
-        for (size_t i = 0; i < N; i++) Swap(a[i], b[i]);
+        for (size_t i = 0; i < N; ++i) Swap(a[i], b[i]);
     }
 }
 

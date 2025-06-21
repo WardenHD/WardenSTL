@@ -448,7 +448,7 @@ namespace wstl {
                 Initialize();
 
                 typename Deque::Iterator it = other.Begin();
-                for(; it != other.End(); it++) CreateBack(Move(*it));
+                for(; it != other.End(); ++it) CreateBack(Move(*it));
             }
         }
         #endif
@@ -491,7 +491,7 @@ namespace wstl {
                 Clear();
 
                 typename Deque::Iterator it = other.Begin();
-                for(; it != other.End(); it++) CreateBack(Move(*it));
+                for(; it != other.End(); ++it) CreateBack(Move(*it));
             }
 
             return *this;
@@ -523,7 +523,7 @@ namespace wstl {
         void Assign(SizeType count, ConstReferenceType value) {
             __WSTL_ASSERT_RETURN__(count <= this->m_Capacity, LengthError("Deque is full", __FILE__, __LINE__));
             Initialize();
-            for(; count > 0; count--) PushBack(value);
+            for(; count > 0; --count) PushBack(value);
         }
         
         #if defined(__WSTL_CXX11__) && !defined(__WSTL_NO_INITIALIZERLIST__)
@@ -532,7 +532,7 @@ namespace wstl {
         void Assign(InitializerList<T> list) {
             __WSTL_ASSERT_RETURN__(list.Size() <= this->m_Capacity, LengthError("Deque is full", __FILE__, __LINE__));
             Initialize();
-            for(typename InitializerList<T>::Iterator it = list.Begin(); it != list.End(); it++) PushBack(*it);
+            for(typename InitializerList<T>::Iterator it = list.Begin(); it != list.End(); ++it) PushBack(*it);
         }
         #endif
 
@@ -745,11 +745,11 @@ namespace wstl {
                     SizeType copyOld = distanceFront - createCopy;
 
                     // Create new values
-                    for(SizeType i = 0; i < createNew; i++) CreateFront(value);
+                    for(SizeType i = 0; i < createNew; ++i) CreateFront(value);
 
                     // Create copies of old values
                     Iterator from = Begin() + createCopy - 1 + createNew;
-                    for(SizeType i = 0; i < createCopy; i++, from--) CreateFront(*from);
+                    for(SizeType i = 0; i < createCopy; ++i, --from) CreateFront(*from);
 
                     // Move old values
                     from = result - copyOld;
@@ -769,10 +769,10 @@ namespace wstl {
                     SizeType copyOld = distanceBack - createCopy;
 
                     // Create new values
-                    for(SizeType i = 0; i < createNew; i++) CreateBack(value);
+                    for(SizeType i = 0; i < createNew; ++i) CreateBack(value);
 
                     // Create copies of old values
-                    for(SizeType i = 0; i < createCopy; i++) CreateBack(*(result + copyOld + i));
+                    for(SizeType i = 0; i < createCopy; ++i) CreateBack(*(result + copyOld + i));
 
                     // Move old values
                     MoveBackward(result, result + copyOld, result + count + copyOld);
@@ -813,7 +813,7 @@ namespace wstl {
             }
             else if(position == End()) {
                 // Insert at back
-                for(; first != last; first++) CreateBack(__WSTL_MOVE__(*first));
+                for(; first != last; ++first) CreateBack(__WSTL_MOVE__(*first));
                 result = End() - count;
             }
             else {
@@ -850,10 +850,10 @@ namespace wstl {
 
                     // Create new values
                     InputIterator it = first + (count - createNew);
-                    for(SizeType i = 0; i < createNew; i++, it++) CreateBack(*it);
+                    for(SizeType i = 0; i < createNew; ++i, ++it) CreateBack(*it);
 
                     // Create copies of old values
-                    for(SizeType i = 0; i < createCopy; i++) CreateBack(*(result + copyOld + i));
+                    for(SizeType i = 0; i < createCopy; ++i) CreateBack(*(result + copyOld + i));
 
                     // Move old values
                     MoveBackward(result, result + copyOld, result + count + copyOld);
@@ -891,7 +891,7 @@ namespace wstl {
             }
             else if(position == End()) {
                 // Insert at back
-                for(typename InitializerList<T>::Iterator it = list.Begin(); it != list.End(); it++) CreateBack(*it);
+                for(typename InitializerList<T>::Iterator it = list.Begin(); it != list.End(); ++it) CreateBack(*it);
                 result = End() - list.Size();
             }
             else {
@@ -927,10 +927,10 @@ namespace wstl {
 
                     // Create new values
                     typename InitializerList<T>::Iterator it = list.Begin() + (list.Size() - createNew);
-                    for(SizeType i = 0; i < createNew; i++, it++) CreateBack(*it);
+                    for(SizeType i = 0; i < createNew; ++i, ++it) CreateBack(*it);
 
                     // Create copies of old values
-                    for(SizeType i = 0; i < createCopy; i++) CreateBack(*(result + copyOld + i));
+                    for(SizeType i = 0; i < createCopy; ++i) CreateBack(*(result + copyOld + i));
 
                     // Move old values
                     MoveBackward(result, result + copyOld, result + list.Size() + copyOld);
@@ -960,11 +960,11 @@ namespace wstl {
             
             if(pos == Begin()) {
                 this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
-                this->m_CurrentSize++;
+                ++this->m_CurrentSize;
                 pointer = static_cast<void*>(&m_Buffer[this->m_StartIndex]);
             }
             else if(pos == End()) {
-                this->m_CurrentSize++;
+                ++this->m_CurrentSize;
                 pointer = static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity]);
             }
             else {
@@ -1004,11 +1004,11 @@ namespace wstl {
             
             if(pos == Begin()) {
                 this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
-                this->m_CurrentSize++;
+                ++this->m_CurrentSize;
                 pointer = static_cast<void*>(&m_Buffer[this->m_StartIndex]);
             }
             else if(pos == End()) {
-                this->m_CurrentSize++;
+                ++this->m_CurrentSize;
                 pointer = static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity]);
             }
             else {
@@ -1048,11 +1048,11 @@ namespace wstl {
             
             if(pos == Begin()) {
                 this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
-                this->m_CurrentSize++;
+                ++this->m_CurrentSize;
                 pointer = static_cast<void*>(&m_Buffer[this->m_StartIndex]);
             }
             else if(pos == End()) {
-                this->m_CurrentSize++;
+                ++this->m_CurrentSize;
                 pointer = static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity]);
             }
             else {
@@ -1093,11 +1093,11 @@ namespace wstl {
             
             if(pos == Begin()) {
                 this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
-                this->m_CurrentSize++;
+                ++this->m_CurrentSize;
                 pointer = static_cast<void*>(&m_Buffer[this->m_StartIndex]);
             }
             else if(pos == End()) {
-                this->m_CurrentSize++;
+                ++this->m_CurrentSize;
                 pointer = static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity]);
             }
             else {
@@ -1139,11 +1139,11 @@ namespace wstl {
             
             if(pos == Begin()) {
                 this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
-                this->m_CurrentSize++;
+                ++this->m_CurrentSize;
                 pointer = static_cast<void*>(&m_Buffer[this->m_StartIndex]);
             }
             else if(pos == End()) {
-                this->m_CurrentSize++;
+                ++this->m_CurrentSize;
                 pointer = static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity]);
             }
             else {
@@ -1192,7 +1192,7 @@ namespace wstl {
                 if(Distance(Begin(), position) <= Distance(position, End())) {
                     MoveBackward(Begin(), position, position + 1);
                     DestroyFront();
-                    position++;
+                    ++position;
                 }
                 else {
                     Move(position + 1, End(), position);
@@ -1228,7 +1228,7 @@ namespace wstl {
                 if(Distance(Begin(), result) <= Distance(result, End())) {
                     MoveBackward(Begin(), result, result + 1);
                     DestroyFront();
-                    result++;
+                    ++result;
                 }
                 else {
                     Move(result + 1, End(), result);
@@ -1254,24 +1254,24 @@ namespace wstl {
             );
 
             if(first == Begin()) {
-                for(SizeType i = 0; i < count; i++) DestroyFront();
+                for(SizeType i = 0; i < count; ++i) DestroyFront();
                 first = Begin();
             }
             else if(first == End() - count) {
-                for(SizeType i = 0; i < count; i++) DestroyBack();
+                for(SizeType i = 0; i < count; ++i) DestroyBack();
                 first = End();
             }
             else {
                 if(Distance(Begin(), first) < DifferenceType(this->m_CurrentSize / 2)) {
                     MoveBackward(Begin(), first, first + count);
 
-                    for(SizeType i = 0; i < count; i++) DestroyFront();
+                    for(SizeType i = 0; i < count; ++i) DestroyFront();
                     first += count;
                 }
                 else {
                     Move(first + count, End(), first);
 
-                    for(SizeType i = 0; i < count; i++) DestroyBack();
+                    for(SizeType i = 0; i < count; ++i) DestroyBack();
                 }
             }
 
@@ -1294,24 +1294,24 @@ namespace wstl {
             );
 
             if(result == Begin()) {
-                for(SizeType i = 0; i < count; i++) DestroyFront();
+                for(SizeType i = 0; i < count; ++i) DestroyFront();
                 result = Begin();
             }
             else if(result == End() - count) {
-                for(SizeType i = 0; i < count; i++) DestroyBack();
+                for(SizeType i = 0; i < count; ++i) DestroyBack();
                 result = End();
             }
             else {
                 if(Distance(Begin(), result) <= DifferenceType(this->m_CurrentSize / 2)) {
                     MoveBackward(Begin(), result, result + count);
 
-                    for(SizeType i = 0; i < count; i++) DestroyFront();
+                    for(SizeType i = 0; i < count; ++i) DestroyFront();
                     result += count;
                 }
                 else {
                     Move(result + count, End(), result);
                     
-                    for(SizeType i = 0; i < count; i++) DestroyBack();
+                    for(SizeType i = 0; i < count; ++i) DestroyBack();
                 }
             }
 
@@ -1351,7 +1351,7 @@ namespace wstl {
             #endif
 
             ::new(static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity])) T(Forward<Args>(args)...);
-            this->m_CurrentSize++;
+            ++this->m_CurrentSize;
         }
 
         #else
@@ -1363,7 +1363,7 @@ namespace wstl {
             #endif
 
             ::new(static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity])) T();
-            this->m_CurrentSize++;
+            ++this->m_CurrentSize;
         }
 
         /// @brief Emplaces an element at the back of the deque, constructing it in place
@@ -1376,7 +1376,7 @@ namespace wstl {
             #endif
 
             ::new(static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity])) T(arg);
-            this->m_CurrentSize++;
+            ++this->m_CurrentSize;
         }
 
         /// @brief Emplaces an element at the back of the deque, constructing it in place
@@ -1390,7 +1390,7 @@ namespace wstl {
             #endif
 
             ::new(static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity])) T(arg1, arg2);
-            this->m_CurrentSize++;
+            ++this->m_CurrentSize;
         }
 
         /// @brief Emplaces an element at the back of the deque, constructing it in place
@@ -1405,7 +1405,7 @@ namespace wstl {
             #endif
 
             ::new(static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity])) T(arg1, arg2, arg3);
-            this->m_CurrentSize++;
+            ++this->m_CurrentSize;
         }
         #endif
 
@@ -1471,7 +1471,7 @@ namespace wstl {
 
             this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
             ::new(static_cast<void*>(&m_Buffer[this->m_StartIndex])) T(Forward<Args>(args)...);
-            this->m_CurrentSize++;
+            ++this->m_CurrentSize;
         }
 
         #else
@@ -1484,7 +1484,7 @@ namespace wstl {
 
             this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
             ::new(static_cast<void*>(&m_Buffer[this->m_StartIndex])) T();
-            this->m_CurrentSize++;
+            ++this->m_CurrentSize;
         }
 
 
@@ -1499,7 +1499,7 @@ namespace wstl {
 
             this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
             ::new(static_cast<void*>(&m_Buffer[this->m_StartIndex])) T(arg);
-            this->m_CurrentSize++;
+            ++this->m_CurrentSize;
         }
 
         /// @brief Emplaces an element at the front of the deque, constructing it in place
@@ -1514,7 +1514,7 @@ namespace wstl {
 
             this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
             ::new(static_cast<void*>(&m_Buffer[this->m_StartIndex])) T(arg1, arg2);
-            this->m_CurrentSize++;
+            ++this->m_CurrentSize;
         }
 
         /// @brief Emplaces an element at the front of the deque, constructing it in place
@@ -1530,7 +1530,7 @@ namespace wstl {
 
             this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
             ::new(static_cast<void*>(&m_Buffer[this->m_StartIndex])) T(arg1, arg2, arg3);
-            this->m_CurrentSize++;
+            ++this->m_CurrentSize;
         }
         #endif
 
@@ -1573,7 +1573,7 @@ namespace wstl {
                 while(this->m_CurrentSize > count) DestroyBack();
             else if(count > this->m_CurrentSize) {
                 SizeType newCount = count - this->m_CurrentSize;
-                for(SizeType i = 0; i < newCount; i++) CreateBack(value);
+                for(SizeType i = 0; i < newCount; ++i) CreateBack(value);
             }
         }
 
@@ -1592,7 +1592,7 @@ namespace wstl {
         typename EnableIf<!IsTriviallyCopyable<U>::Value, void>::Type Swap(Deque& other) {
             SizeType minCount = Min(this->m_CurrentSize, other.m_CurrentSize);
 
-            for(SizeType i = 0; i < minCount; i++) {
+            for(SizeType i = 0; i < minCount; ++i) {
                 T temp = other.Front();
                 other.PopFront();
                 other.PushBack(Front());
@@ -1601,13 +1601,13 @@ namespace wstl {
             }
 
             if(this->m_CurrentSize > other.m_CurrentSize) {
-                for(SizeType i = other.m_CurrentSize; i < this->m_CurrentSize; i++) {
+                for(SizeType i = other.m_CurrentSize; i < this->m_CurrentSize; ++i) {
                     other.PushBack(Front());
                     PopFront();
                 }
             }
             else if(this->m_CurrentSize < other.m_CurrentSize) {
-                for(SizeType i = this->m_CurrentSize; i < other.m_CurrentSize; i++) {
+                for(SizeType i = this->m_CurrentSize; i < other.m_CurrentSize; ++i) {
                     PushBack(other.Front());
                     other.PopFront();
                 }
@@ -1639,7 +1639,7 @@ namespace wstl {
         void CreateFront(ConstReferenceType value) {
             this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
             ::new(static_cast<void*>(&m_Buffer[this->m_StartIndex])) T(value);
-            this->m_CurrentSize++;
+            ++this->m_CurrentSize;
         }
 
         /// @brief Creates a range of elements at the front of the deque
@@ -1652,7 +1652,7 @@ namespace wstl {
             this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - count) % this->m_BufferCapacity;
             this->m_CurrentSize += count;
 
-            for(SizeType i = 0; i < count; i++, first++)
+            for(SizeType i = 0; i < count; ++i, ++first)
                 ::new(static_cast<void*>(&m_Buffer[this->m_StartIndex + i])) T(__WSTL_MOVE__(*first));
         }
         
@@ -1660,7 +1660,7 @@ namespace wstl {
         /// @param value The value to create the element with
         void CreateBack(ConstReferenceType value) {
             ::new(static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity])) T(value);
-            this->m_CurrentSize++;
+            ++this->m_CurrentSize;
         }
 
         #ifdef __WSTL_CXX11__
@@ -1669,20 +1669,20 @@ namespace wstl {
         void CreateFront(T&& value) {
             this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
             ::new(static_cast<void*>(&m_Buffer[this->m_StartIndex])) T(Move(value));
-            this->m_CurrentSize++;
+            ++this->m_CurrentSize;
         }
 
         /// @brief Creates an element at the back of the deque
         /// @param value The value to create the element with
         void CreateBack(T&& value) {
             ::new(static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity])) T(Move(value));
-            this->m_CurrentSize++;
+            ++this->m_CurrentSize;
         }
         #endif
 
         /// @brief Destroys an element at the back of the deque
         void DestroyBack() {
-            this->m_CurrentSize--;
+            --this->m_CurrentSize;
             m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity].~T();
         }
 
@@ -1690,7 +1690,7 @@ namespace wstl {
         void DestroyFront() {
             m_Buffer[this->m_StartIndex].~T();
             this->m_StartIndex = (this->m_StartIndex + 1) % this->m_BufferCapacity;
-            this->m_CurrentSize--;
+            --this->m_CurrentSize;
         }
     };
 

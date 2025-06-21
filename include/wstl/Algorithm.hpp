@@ -29,7 +29,7 @@ namespace wstl {
     template<typename InputIterator, typename T>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__
     InputIterator Find(InputIterator first, InputIterator last, const T& value) {
-        for(; first != last; first++) if(*first == value) return first;
+        for(; first != last; ++first) if(*first == value) return first;
         return last;
     }
 
@@ -45,7 +45,7 @@ namespace wstl {
     template<typename InputIterator, typename UnaryPredicate>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__
     InputIterator FindIf(InputIterator first, InputIterator last, UnaryPredicate predicate) {
-        for(; first != last; first++) 
+        for(; first != last; ++first) 
             if(predicate(*first)) return first;
         return last;
     }
@@ -62,7 +62,7 @@ namespace wstl {
     template<typename InputIterator, typename UnaryPredicate>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__
     InputIterator FindIfNot(InputIterator first, InputIterator last, UnaryPredicate predicate) {
-        for(; first != last; first++) if(!predicate(*first)) return first;
+        for(; first != last; ++first) if(!predicate(*first)) return first;
         return last;
     }
 
@@ -122,7 +122,7 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/algorithm/for_each
     template<typename InputIterator, typename Function>
     __WSTL_CONSTEXPR14__ Function ForEach(InputIterator first, InputIterator last, Function function) {
-        for(; first != last; first++) function(*first);
+        for(; first != last; ++first) function(*first);
         return function;
     }
 
@@ -137,7 +137,7 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/algorithm/for_each_n
     template<typename InputIterator, typename Size, typename Function>
     inline __WSTL_CONSTEXPR14__ InputIterator ForEachInRange(InputIterator first, Size count, Function function) {
-        for(Size i = 0; i < count; i++, first++) function(*first);
+        for(Size i = 0; i < count; ++i, ++first) function(*first);
         return first;
     }
     
@@ -154,7 +154,7 @@ namespace wstl {
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__
     typename IteratorTraits<InputIterator>::DifferenceType Count(InputIterator first, InputIterator last, const T& value) {
         typename IteratorTraits<InputIterator>::DifferenceType count = 0;
-        for(; first != last; first++) if(*first == value) count++;
+        for(; first != last; ++first) if(*first == value) ++count;
         return count;
     }
 
@@ -171,7 +171,7 @@ namespace wstl {
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__
     typename IteratorTraits<InputIterator>::DifferenceType CountIf(InputIterator first, InputIterator last, UnaryPredicate predicate) {
         typename IteratorTraits<InputIterator>::DifferenceType count = 0;
-        for(; first != last; first++) if(predicate(*first)) count++;
+        for(; first != last; ++first) if(predicate(*first)) ++count;
         return count;
     }
 
@@ -187,7 +187,7 @@ namespace wstl {
     template<typename InputIterator1, typename InputIterator2>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__
     Pair<InputIterator1, InputIterator2> Mismatch(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2) {
-        while(first1 != last1 && *first1 == *first2) first1++, first2++;
+        while(first1 != last1 && *first1 == *first2) ++first1, ++first2;
         return MakePair(first1, first2);
     }
 
@@ -202,7 +202,7 @@ namespace wstl {
     template<typename InputIterator1, typename InputIterator2, typename BinaryPredicate>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ 
     Pair<InputIterator1, InputIterator2> Mismatch(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, BinaryPredicate predicate) {
-        while(first1 != last1 && predicate(*first1, *first2)) first1++, first2++;
+        while(first1 != last1 && predicate(*first1, *first2)) ++first1, ++first2;
         return MakePair(first1, first2);
     }
 
@@ -217,7 +217,7 @@ namespace wstl {
     template<typename InputIterator1, typename InputIterator2>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ 
     Pair<InputIterator1, InputIterator2> Mismatch(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2) {
-        while(first1 != last1 && first2 != last2 && *first1 == *first2) first1++, first2++;
+        while(first1 != last1 && first2 != last2 && *first1 == *first2) ++first1, ++first2;
         return MakePair(first1, first2);
     }
 
@@ -233,7 +233,7 @@ namespace wstl {
     template<typename InputIterator1, typename InputIterator2, typename BinaryPredicate>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ 
     Pair<InputIterator1, InputIterator2> Mismatch(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2, BinaryPredicate predicate) {
-        while(first1 != last1 && first2 != last2 && predicate(*first1, *first2)) first1++, first2++;
+        while(first1 != last1 && first2 != last2 && predicate(*first1, *first2)) ++first1, ++first2;
         return MakePair(first1, first2);
     }
 
@@ -250,9 +250,9 @@ namespace wstl {
     template<typename ForwardIterator1, typename ForwardIterator2>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__
     ForwardIterator1 Search(ForwardIterator1 first, ForwardIterator1 last, ForwardIterator2 sequenceFirst, ForwardIterator2 sequenceLast) {
-        for(; first != last; first++) {
+        for(; first != last; ++first) {
             ForwardIterator1 it = first;
-            for(ForwardIterator2 seq = sequenceFirst; ; it++, seq++) {
+            for(ForwardIterator2 seq = sequenceFirst; ; ++it, ++seq) {
                 if(seq == sequenceLast) return first;
                 if(it == last) return last;
                 if(!(*it == *seq)) break;
@@ -274,9 +274,9 @@ namespace wstl {
     template<typename ForwardIterator1, typename ForwardIterator2, typename BinaryPredicate>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__
     ForwardIterator1 Search(ForwardIterator1 first, ForwardIterator1 last, ForwardIterator2 sequenceFirst, ForwardIterator2 sequenceLast, BinaryPredicate predicate) {
-        for(; first != last; first++) {
+        for(; first != last; ++first) {
             ForwardIterator1 it = first;
-            for(ForwardIterator2 seq = sequenceFirst; ; it++, seq++) {
+            for(ForwardIterator2 seq = sequenceFirst; ; ++it, ++seq) {
                 if(seq == sequenceLast) return first;
                 if(it == last) return last;
                 if(!predicate(*it, *seq)) break;
@@ -304,13 +304,13 @@ namespace wstl {
         ForwardIterator end = first;
         Advance(end, Distance(first, last) - count + 1);
 
-        for(; first != end; first++) {
+        for(; first != end; ++first) {
             if(!(*first == value)) continue;
             
             ForwardIterator candidate = first;
             ForwardIterator it = first;
             Size i = 1;
-            for(++it; i < count; i++, it++) if(it == last || !(*it == value)) break;
+            for(++it; i < count; ++i, ++it) if(it == last || !(*it == value)) break;
 
             if(i == count) return candidate;
         }
@@ -335,13 +335,13 @@ namespace wstl {
         ForwardIterator end = first;
         Advance(end, Distance(first, last) - count + 1);
 
-        for(; first != end; first++) {
+        for(; first != end; ++first) {
             if(!predicate(*first, value)) continue;
             
             ForwardIterator candidate = first;
             ForwardIterator it = first;
             Size i = 1;
-            for(++it; i < count; i++, it++) if(it == last || !predicate(*it, value)) break;
+            for(++it; i < count; ++i, ++it) if(it == last || !predicate(*it, value)) break;
 
             if(i == count) return candidate;
         }
@@ -370,7 +370,7 @@ namespace wstl {
             if(it == last) break;
             result = it;
             first = result;
-            first++;
+            ++first;
         }   
             
         return result;
@@ -396,7 +396,7 @@ namespace wstl {
             if(it == last) break;
             result = it;
             first = result;
-            first++;
+            ++first;
         }   
             
         return result;
@@ -415,9 +415,9 @@ namespace wstl {
     template<typename InputIterator, typename ForwardIterator>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__
     InputIterator FindFirstOf(InputIterator first, InputIterator last, ForwardIterator sequenceFirst, ForwardIterator sequenceLast) {
-        for(; first != last; first++) {
+        for(; first != last; ++first) {
             ForwardIterator it = sequenceFirst;
-            for(; it != sequenceLast; it++) if(*first == *it) return first;
+            for(; it != sequenceLast; ++it) if(*first == *it) return first;
         }
 
         return last;
@@ -435,9 +435,9 @@ namespace wstl {
     template<typename InputIterator, typename ForwardIterator, typename BinaryPredicate>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__
     InputIterator FindFirstOf(InputIterator first, InputIterator last, ForwardIterator sequenceFirst, ForwardIterator sequenceLast, BinaryPredicate predicate) {
-        for(; first != last; first++) {
+        for(; first != last; ++first) {
             ForwardIterator it = sequenceFirst;
-            for(; it != sequenceLast; it++) if(predicate(*first, *it)) return first;
+            for(; it != sequenceLast; ++it) if(predicate(*first, *it)) return first;
         }
         
         return last;
@@ -457,7 +457,7 @@ namespace wstl {
         if(first == last) return last;
 
         ForwardIterator next = Next(first);
-        for(; next != last; next++, first++) if(*first == *next) return first;
+        for(; next != last; ++next, ++first) if(*first == *next) return first;
         return last;
     }
 
@@ -474,7 +474,7 @@ namespace wstl {
         if(first == last) return last;
 
         ForwardIterator next = Next(first);
-        for(; next != last; next++, first++) if(predicate(*first, *next)) return first;
+        for(; next != last; ++next, ++first) if(predicate(*first, *next)) return first;
         return last;
     }
 
@@ -490,7 +490,7 @@ namespace wstl {
     template<typename InputIterator, typename OutputIterator>
     __WSTL_CONSTEXPR14__
     OutputIterator Copy(InputIterator first, InputIterator last, OutputIterator resultFirst) {
-        for(; first != last; first++, resultFirst++) *resultFirst = *first;
+        for(; first != last; ++first, ++resultFirst) *resultFirst = *first;
         return resultFirst;
     }
 
@@ -507,7 +507,7 @@ namespace wstl {
     template<typename InputIterator, typename OutputIterator, typename UnaryPredicate>
     __WSTL_CONSTEXPR14__
     OutputIterator CopyIf(InputIterator first, InputIterator last, OutputIterator resultFirst, UnaryPredicate predicate) {
-        for(; first != last; first++) if(predicate(*first)) *resultFirst++ = *first;
+        for(; first != last; ++first) if(predicate(*first)) *resultFirst++ = *first;
         return resultFirst;
     }
 
@@ -523,7 +523,7 @@ namespace wstl {
     template<typename InputIterator, typename Size, typename OutputIterator>
     __WSTL_CONSTEXPR14__
     OutputIterator CopyInRange(InputIterator first, Size count, OutputIterator resultFirst) {
-        if(count > 0) for(Size i = 0; i != count; i++, resultFirst++, first++) *resultFirst = *first; 
+        if(count > 0) for(Size i = 0; i != count; ++i, ++resultFirst, ++first) *resultFirst = *first; 
         return resultFirst;
     }
 
@@ -553,7 +553,7 @@ namespace wstl {
     template<typename InputIterator, typename OutputIterator>
     __WSTL_CONSTEXPR14__
     OutputIterator Move(InputIterator first, InputIterator last, OutputIterator resultFirst) {
-        for(; first != last; first++, resultFirst++) *resultFirst = __WSTL_MOVE__(*first);
+        for(; first != last; ++first, ++resultFirst) *resultFirst = __WSTL_MOVE__(*first);
         return resultFirst;
     }
 
@@ -584,7 +584,7 @@ namespace wstl {
     template<typename ForwardIterator, typename T>
     __WSTL_CONSTEXPR14__ 
     void Fill(ForwardIterator first, ForwardIterator last, const T& value) {
-        for(; first != last; first++) *first = value;
+        for(; first != last; ++first) *first = value;
     }
 
     // Fill in range
@@ -598,7 +598,7 @@ namespace wstl {
     template<typename OutputIterator, typename Size, typename T>
     __WSTL_CONSTEXPR14__ 
     OutputIterator FillInRange(OutputIterator first, Size count, const T& value) {
-        if(count > 0) for(Size i = 0; i < count; i++, first++) *first = value;
+        if(count > 0) for(Size i = 0; i < count; ++i, ++first) *first = value;
         return first;
     }
 
@@ -615,7 +615,7 @@ namespace wstl {
     template<typename InputIterator, typename OutputIterator, typename UnaryOperation>
     __WSTL_CONSTEXPR14__
     OutputIterator Transform(InputIterator first, InputIterator last, OutputIterator resultFirst, UnaryOperation operation) {
-        for(; first != last; resultFirst++, first++) *resultFirst = operation(*first);
+        for(; first != last; ++resultFirst, ++first) *resultFirst = operation(*first);
         return resultFirst;
     }
     
@@ -631,7 +631,7 @@ namespace wstl {
     template<typename InputIterator1, typename InputIterator2, typename OutputIterator, typename BinaryOperation>
     __WSTL_CONSTEXPR14__
     OutputIterator Transform(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, OutputIterator resultFirst, BinaryOperation operation) {
-        for(; first1 != last1; resultFirst++, first1++, first2++) *resultFirst = operation(*first1, *first2);
+        for(; first1 != last1; ++resultFirst, ++first1, ++first2) *resultFirst = operation(*first1, *first2);
         return resultFirst;
     }
 
@@ -646,7 +646,7 @@ namespace wstl {
     template<typename ForwardIterator, typename Generator>
     __WSTL_CONSTEXPR14__ 
     void Generate(ForwardIterator first, ForwardIterator last, Generator generator) {
-        for(; first != last; first++) *first = generator();
+        for(; first != last; ++first) *first = generator();
     }
 
     // Generate in range
@@ -661,7 +661,7 @@ namespace wstl {
     template<typename OutputIterator, typename Size, typename Generator>
     __WSTL_CONSTEXPR14__ 
     OutputIterator GenerateInRange(OutputIterator first, Size count, Generator generator) {
-        if(count > 0) for(Size i = 0; i < count; i++, first++) *first = generator();
+        if(count > 0) for(Size i = 0; i < count; ++i, ++first) *first = generator();
         return first;
     }
 
@@ -718,7 +718,7 @@ namespace wstl {
     template<typename InputIterator, typename OutputIterator, typename T>
     __WSTL_CONSTEXPR14__
     OutputIterator RemoveCopy(InputIterator first, InputIterator last, OutputIterator resultFirst, const T& value) {
-        for(; first != last; first++) if(!(*first == value)) *resultFirst++ = *first;
+        for(; first != last; ++first) if(!(*first == value)) *resultFirst++ = *first;
         return resultFirst;
     }
 
@@ -733,7 +733,7 @@ namespace wstl {
     template<typename InputIterator, typename OutputIterator, typename UnaryPredicate>
     __WSTL_CONSTEXPR14__
     OutputIterator RemoveCopyIf(InputIterator first, InputIterator last, OutputIterator resultFirst, UnaryPredicate predicate) {
-        for(; first != last; first++) if(!predicate(*first)) *resultFirst++ = *first;
+        for(; first != last; ++first) if(!predicate(*first)) *resultFirst++ = *first;
         return resultFirst;
     }
 
@@ -749,7 +749,7 @@ namespace wstl {
     template<typename ForwardIterator, typename T>
     __WSTL_CONSTEXPR14__
     void Replace(ForwardIterator first, ForwardIterator last, const T& oldValue, const T& newValue) {
-        for(; first != last; first++) if(*first == oldValue) *first = newValue;
+        for(; first != last; ++first) if(*first == oldValue) *first = newValue;
     }
 
     // Replace if
@@ -764,7 +764,7 @@ namespace wstl {
     template<typename ForwardIterator, typename UnaryPredicate, typename T>
     __WSTL_CONSTEXPR14__
     void ReplaceIf(ForwardIterator first, ForwardIterator last, UnaryPredicate predicate, const T& newValue) {
-        for(; first != last; first++) if(predicate(*first)) *first = newValue;
+        for(; first != last; ++first) if(predicate(*first)) *first = newValue;
     }
 
     // Replace copy
@@ -781,7 +781,7 @@ namespace wstl {
     template<typename InputIterator, typename OutputIterator, typename T>
     __WSTL_CONSTEXPR14__
     OutputIterator ReplaceCopy(InputIterator first, InputIterator last, OutputIterator resultFirst, const T& oldValue, const T& newValue) {
-        for(; first != last; first++) *resultFirst++ = (*first == oldValue) ? newValue : *first;
+        for(; first != last; ++first) *resultFirst++ = (*first == oldValue) ? newValue : *first;
         return resultFirst;
     }
 
@@ -799,7 +799,7 @@ namespace wstl {
     template<typename InputIterator, typename OutputIterator, typename UnaryPredicate, typename T>
     __WSTL_CONSTEXPR14__
     OutputIterator ReplaceCopyIf(InputIterator first, InputIterator last, OutputIterator resultFirst, UnaryPredicate predicate, const T& newValue) {
-        for(; first != last; first++) *resultFirst++ = predicate(*first) ? newValue : *first;
+        for(; first != last; ++first) *resultFirst++ = predicate(*first) ? newValue : *first;
         return resultFirst;
     }
 
@@ -828,7 +828,7 @@ namespace wstl {
     template<typename ForwardIterator1, typename ForwardIterator2>
     __WSTL_CONSTEXPR14__ 
     ForwardIterator2 SwapRanges(ForwardIterator1 first1, ForwardIterator1 last1, ForwardIterator2 first2) {
-        for(; first1 != last1; first1++, first2++) IteratorSwap(first1, first2);
+        for(; first1 != last1; ++first1, ++first2) IteratorSwap(first1, first2);
         return first2;
     }
 
@@ -857,7 +857,7 @@ namespace wstl {
     template<typename BidirectionalIterator, typename OutputIterator>
     __WSTL_CONSTEXPR14__ 
     OutputIterator ReverseCopy(BidirectionalIterator first, BidirectionalIterator last, OutputIterator resultFirst) {
-        for(; first != last; resultFirst++) *resultFirst = *--last;
+        for(; first != last; ++resultFirst) *resultFirst = *--last;
         return resultFirst;
     }
 
@@ -994,7 +994,7 @@ namespace wstl {
     template<typename InputIterator, typename UnaryPredicate>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__
     bool IsPartitioned(InputIterator first, InputIterator last, UnaryPredicate predicate) {
-        for(; first != last; first++) if(!predicate(*first)) break;
+        for(; first != last; ++first) if(!predicate(*first)) break;
         return FindIf(first, last, predicate) == last;
     }
 
@@ -1022,7 +1022,7 @@ namespace wstl {
 
             --last;
             IteratorSwap(first, last);
-            first++;
+            ++first;
         }
 
         return first;
@@ -1043,10 +1043,10 @@ namespace wstl {
         first = FindIfNot(first, last, predicate);
         if(first == last) return;
 
-        for(ForwardIterator i = Next(first); i != last; i++)
+        for(ForwardIterator i = Next(first); i != last; ++i)
             if(predicate(*i)) {
                 IteratorSwap(i, first);
-                first++;
+                ++first;
             }
 
         return first;
@@ -1068,7 +1068,7 @@ namespace wstl {
     template<typename InputIterator, typename OutputIterator1, typename OutputIterator2, typename UnaryPredicate>
     __WSTL_CONSTEXPR14__
     Pair<OutputIterator1, OutputIterator2> PartitionCopy(InputIterator first, InputIterator last, OutputIterator1 resultFirstTrue, OutputIterator2 resultFirstFalse, UnaryPredicate predicate) {
-        for(; first != last; first++) {
+        for(; first != last; ++first) {
             if(predicate(*first)) *resultFirstTrue++ = *first;
             else *resultFirstFalse++ = *first;
         }
@@ -1136,7 +1136,7 @@ namespace wstl {
 
         ForwardIterator result = first;
 
-        for(; first != last; first++) if(compare(*first, *result)) result = first;
+        for(; first != last; ++first) if(compare(*first, *result)) result = first;
         return result;
     }
 
@@ -1220,7 +1220,7 @@ namespace wstl {
 
         ForwardIterator result = first;
 
-        for(; first != last; first++) if(compare(*result, *first)) result = first;
+        for(; first != last; ++first) if(compare(*result, *first)) result = first;
         return result;
     }
 
@@ -1303,7 +1303,7 @@ namespace wstl {
         ForwardIterator min = first;
         ForwardIterator max = first;
 
-        for(; first != last; first++) {
+        for(; first != last; ++first) {
             if(compare(*first, *min)) min = first;
             if(compare(*max, *first)) max = first;
         }
@@ -1419,7 +1419,7 @@ namespace wstl {
     template<typename InputIterator1, typename InputIterator2, typename BinaryPredicate>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__
     bool Equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, BinaryPredicate predicate) {
-        for(; first1 != last1; first1++, first2++)
+        for(; first1 != last1; ++first1, ++first2)
             if(!predicate(*first1, *first2)) return false;
         
         return true;
@@ -1435,7 +1435,7 @@ namespace wstl {
     template<typename InputIterator1, typename InputIterator2>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__
     bool Equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2) {
-        for(; first1 != last1; first1++, first2++)
+        for(; first1 != last1; ++first1, ++first2)
             if(!(*first1 == *first2)) return false;
         
         return true;
@@ -1453,7 +1453,7 @@ namespace wstl {
     template<typename InputIterator1, typename InputIterator2, typename BinaryPredicate>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__
     bool Equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2, BinaryPredicate predicate) {
-        for(; first1 != last1 && first2 != last2; first1++, first2++)
+        for(; first1 != last1 && first2 != last2; ++first1, ++first2)
             if(!predicate(*first1, *first2)) return false;
 
         return first1 == last1 && first2 == last2;
@@ -1470,7 +1470,7 @@ namespace wstl {
     template<typename InputIterator1, typename InputIterator2>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__
     bool Equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2) {
-        for(; first1 != last1 && first2 != last2; first1++, first2++)
+        for(; first1 != last1 && first2 != last2; ++first1, ++first2)
             if(!(*first1 == *first2)) return false;
 
         return first1 == last1 && first2 == last2;
@@ -1490,7 +1490,7 @@ namespace wstl {
     template<typename InputIterator1, typename InputIterator2, typename Compare>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__
     bool LexicographicalCompare(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2, Compare compare) {
-        for(; first1 != last1 && first2 != last2; first1++, first2++) {
+        for(; first1 != last1 && first2 != last2; ++first1, ++first2) {
             if(compare(*first1, *first2)) return true;
             if(compare(*first2, *first1)) return false;
         }
@@ -1677,7 +1677,7 @@ namespace wstl {
         typedef typename IteratorTraits<RandomAccessIterator>::DifferenceType DifferenceType;
         DifferenceType n = Distance(first, last);
 
-        for(DifferenceType parent = 0; parent < n; parent++) {
+        for(DifferenceType parent = 0; parent < n; ++parent) {
             DifferenceType left = 2 * parent + 1;
             DifferenceType right = 2 * parent + 2;
 
@@ -1806,10 +1806,10 @@ namespace wstl {
         RandomAccessIterator pivot = Previous(last);
         RandomAccessIterator i = first;
 
-        for(RandomAccessIterator j = first; j != pivot; j++) {
+        for(RandomAccessIterator j = first; j != pivot; ++j) {
             if (compare(*j, *pivot)) {
                 IteratorSwap(i, j);
-                i++;
+                ++i;
             }
         }
 
@@ -1844,7 +1844,7 @@ namespace wstl {
         if(Distance(first, last) <= 1) return;
         MakeHeap(first, middle, compare);
         
-        for(RandomAccessIterator i = middle; i != last; i++) {
+        for(RandomAccessIterator i = middle; i != last; ++i) {
             if(compare(*i, *first)) {
                 IteratorSwap(first, i);
                 PopHeap(first, middle, compare);
@@ -1883,11 +1883,11 @@ namespace wstl {
         if(Distance(resultFirst, resultLast) <= 0) return resultFirst;
 
         RandomAccessIterator resultEnd = resultFirst;
-        for(; first != last && resultEnd != resultLast; first++, resultEnd++) *resultEnd = *first;
+        for(; first != last && resultEnd != resultLast; ++first, ++resultEnd) *resultEnd = *first;
 
         MakeHeap(resultFirst, resultEnd, compare);
 
-        for(; first != last; first++) {
+        for(; first != last; ++first) {
             if(compare(*first, *resultFirst)) {
                 *resultFirst = *first;
                 PopHeap(resultFirst, resultEnd, compare);
@@ -1970,13 +1970,13 @@ namespace wstl {
         BidirectionalIterator first2 = middle;
 
         while(first1 != first2 && first2 != last) {
-            if(!compare(*first2, *first1)) first1++;
+            if(!compare(*first2, *first1)) ++first1;
             else {
                 typename IteratorTraits<BidirectionalIterator>::ValueType value = *first2;
                 Rotate(first1, first2, Next(first2));
                 *first1 = value;
-                first1++;
-                first2++;
+                ++first1;
+                ++first2;
             }
         }
     }
@@ -2006,7 +2006,7 @@ namespace wstl {
             __MergeSort(middle, last, temp, compare);
 
             Merge(first, middle, middle, last, temp);
-            for(RandomAccessIterator l = first; l != last; l++, temp++) *l = *temp;
+            for(RandomAccessIterator l = first; l != last; ++l, ++temp) *l = *temp;
         }
     }
 
@@ -2338,8 +2338,8 @@ namespace wstl {
     bool Includes(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2, Compare compare) {
         while(first2 != last2) {
             if(first1 == last1 || compare(*first2, *first1)) return false;
-            if(!compare(*first1, *first2)) first2++;
-            first1++;
+            if(!compare(*first1, *first2)) ++first2;
+            ++first1;
         }
 
         return true;
@@ -2376,10 +2376,10 @@ namespace wstl {
     OutputIterator SetDifference(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2, OutputIterator resultFirst, Compare compare) {
         while(first1 != last1) {
             if(first2 == last2 || compare(*first1, *first2)) *resultFirst++ = *first1++;
-            else if(compare(*first2, *first1)) first2++;
+            else if(compare(*first2, *first1)) ++first2;
             else {
-                first1++;
-                first2++;
+                ++first1;
+                ++first2;
             }
         }
 
@@ -2417,11 +2417,11 @@ namespace wstl {
     __WSTL_CONSTEXPR14__
     OutputIterator SetIntersection(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2, OutputIterator resultFirst, Compare compare) {
         while(first1 != last1 && first2 != last2) {
-            if(compare(*first1, *first2)) first1++;
-            else if(compare(*first2, *first1)) first2++;
+            if(compare(*first1, *first2)) ++first1;
+            else if(compare(*first2, *first1)) ++first2;
             else {
                 *resultFirst++ = *first1++;
-                first2++;
+                ++first2;
             }
         }
 
@@ -2462,8 +2462,8 @@ namespace wstl {
             if(compare(*first1, *first2)) *resultFirst++ = *first1++;
             else if(compare(*first2, *first1)) *resultFirst++ = *first2++;
             else {
-                first1++;
-                first2++;
+                ++first1;
+                ++first2;
             }
         }
 
@@ -2508,7 +2508,7 @@ namespace wstl {
             else if(compare(*first2, *first1)) *resultFirst++ = *first2++;
             else {
                 *resultFirst++ = *first1++;
-                first2++;
+                ++first2;
             }
         }
 
@@ -2552,7 +2552,7 @@ namespace wstl {
 
         if(len1 != Distance(first2, last2)) return false;
 
-        for(ForwardIterator1 it = first1; it != last1; it++) {
+        for(ForwardIterator1 it = first1; it != last1; ++it) {
             if(FindIf(first1, it, *it, BindFirst(predicate, *it)) != it) continue;
             if(CountIf(first1, last1, *it, BindFirst(predicate, *it)) != Count(first2, last2, *it, BindFirst(predicate, *it))) return false;
         }
@@ -2576,7 +2576,7 @@ namespace wstl {
 
         if(len1 != Distance(first2, last2)) return false;
 
-        for(ForwardIterator1 it = first1; it != last1; it++) {
+        for(ForwardIterator1 it = first1; it != last1; ++it) {
             if(Find(first1, it, *it) != it) continue;
             if(Count(first1, last1, *it) != Count(first2, last2, *it)) return false;
         }
@@ -2600,7 +2600,7 @@ namespace wstl {
         BidirectionalIterator i = Previous(last);
 
         while(true) {
-            i--;
+            --i;
             if (compare(*i, *Next(i))) {
                 BidirectionalIterator j = UpperBound(Next(i), last, *i, compare);
                 IteratorSwap(i, j);
@@ -2646,7 +2646,7 @@ namespace wstl {
         BidirectionalIterator i = Previous(last);
 
         while(true) {
-            i--;
+            --i;
             if (compare(*Next(i), *i)) {
                 BidirectionalIterator j = Previous(LowerBound(Next(i), last, *i, compare));
                 IteratorSwap(i, j);
@@ -2688,7 +2688,7 @@ namespace wstl {
     template<typename InputIterator, typename OutputIterator>
     __WSTL_CONSTEXPR14__
     OutputIterator CopySafe(InputIterator first, InputIterator last, OutputIterator resultFirst, OutputIterator resultLast) {
-        for(; first != last && resultFirst != resultLast; first++, resultFirst++) *resultFirst = *first;
+        for(; first != last && resultFirst != resultLast; ++first, ++resultFirst) *resultFirst = *first;
         return resultFirst;
     }
 
@@ -2702,7 +2702,7 @@ namespace wstl {
     template<typename InputIterator, typename OutputIterator>
     __WSTL_CONSTEXPR14__
     OutputIterator MoveSafe(InputIterator first, InputIterator last, OutputIterator resultFirst, OutputIterator resultLast) {
-        for(; first != last && resultFirst != resultLast; first++, resultFirst++) *resultFirst = __WSTL_MOVE__(*first);
+        for(; first != last && resultFirst != resultLast; ++first, ++resultFirst) *resultFirst = __WSTL_MOVE__(*first);
         return resultFirst;
     }
 }
