@@ -23,7 +23,7 @@ namespace wstl {
             /// @brief Constructor
             /// @param file File where the exception occurred
             /// @param line Line number where the exception occurred
-            LengthError(StringType message, StringType file, NumericType line) : Exception(message, file, line) {}
+            __WSTL_CONSTEXPR__ LengthError(StringType message, StringType file, NumericType line) : Exception(message, file, line) {}
     };
 
     /// @brief Exception thrown when accessed element is out of range
@@ -34,7 +34,7 @@ namespace wstl {
             /// @brief Constructor
             /// @param file File where the exception occurred
             /// @param line Line number where the exception occurred
-            OutOfRange(StringType message, StringType file, NumericType line) : Exception(message, file, line) {}
+            __WSTL_CONSTEXPR__ OutOfRange(StringType message, StringType file, NumericType line) : Exception(message, file, line) {}
     };
 }
 
