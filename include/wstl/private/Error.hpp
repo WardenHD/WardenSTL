@@ -19,7 +19,7 @@
 
 namespace wstl {
     namespace __private {
-        void __ErrorHandlerError(const Exception&);
+        static void __ErrorHandlerError(const Exception&);
     }
 }
 

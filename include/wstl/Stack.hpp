@@ -94,8 +94,9 @@ namespace wstl {
         #ifndef __WSTL_NO_INITIALIZERLIST__
         /// @brief Assignment operator 
         /// @param list The initializer list to assign to the stack
+        /// @throws LengthError if list size exceeds the stack's capacity
         Stack& operator=(InitializerList<T> list) {
-            __WSTL_ASSERT_RETURNVALUE__(list.Size() <= this->m_Capacity, LengthError("Stack is full", __FILE__, __LINE__), *this);
+            __WSTL_ASSERT_RETURNVALUE__(list.Size() <= this->m_Capacity, WSTL_MAKE_EXCEPTION(LengthError, "Stack is full"), *this);
             
             Initialize();
             for(typename InitializerList<T>::Iterator it = list.Begin(); it != list.End(); ++it) 
@@ -121,7 +122,7 @@ namespace wstl {
         /// @throws LengthError if the stack is full and `__WSTL_CHECK_PUSHPOP__` is defined
         void Push(ConstReferenceType value) {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Stack is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Stack is full"));
             #endif
 
             ::new(&m_Buffer[this->m_CurrentSize++]) T(value);
@@ -133,7 +134,7 @@ namespace wstl {
         /// @throws LengthError if the stack is full and `__WSTL_CHECK_PUSHPOP__` is defined
         void Push(T&& value) {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Stack is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Stack is full"));
             #endif
 
             ::new(&m_Buffer[this->m_CurrentSize++]) T(Move(value));
@@ -143,10 +144,12 @@ namespace wstl {
         /// @brief Pushes a range of elements onto the stack
         /// @param first Iterator to the first element in the range
         /// @param last Iterator to the element following the last element in the range
-        /// @throws LengthError if the stack is full
+        /// @throws LengthError if the stack is full and `__WSTL_CHECK_PUSHPOP__` is defined
         template<typename InputIterator>
         typename EnableIf<!IsIntegral<InputIterator>::Value, void>::Type Push(InputIterator first, InputIterator last) {
-            __WSTL_ASSERT_RETURN__(Distance(first, last) <= this->m_Capacity, LengthError("Stack is full", __FILE__, __LINE__));
+            #ifdef __WSTL_CHECK_PUSHPOP__
+            __WSTL_ASSERT_RETURN__(Distance(first, last) <= this->m_Capacity, WSTL_MAKE_EXCEPTION(LengthError, "Stack is full"));
+            #endif
 
             for(; first != last; ++first) ::new(&m_Buffer[this->m_CurrentSize++]) T(__WSTL_MOVE__(*first));
         }
@@ -154,19 +157,23 @@ namespace wstl {
         /// @brief Pushes a specific number of elements onto the stack
         /// @param count The number of elements to push
         /// @param value The value to push onto the stack
-        /// @throws LengthError if the stack is full
+        /// @throws LengthError if the stack is full and `__WSTL_CHECK_PUSHPOP__` is defined
         void Push(SizeType count, ConstReferenceType value) {
-            __WSTL_ASSERT_RETURN__(count <= this->m_Capacity - this->m_CurrentSize, LengthError("Stack is full", __FILE__, __LINE__));
+            #ifdef __WSTL_CHECK_PUSHPOP__
+            __WSTL_ASSERT_RETURN__(count <= this->m_Capacity - this->m_CurrentSize, WSTL_MAKE_EXCEPTION(LengthError, "Stack is full"));
+            #endif
 
             for(SizeType i = 0; i < count; ++i) ::new(&m_Buffer[this->m_CurrentSize++]) T(value);
         }
 
         /// @brief Pushes elements from a container onto the stack
         /// @param container The container to push elements from
-        /// @throws LengthError if the stack is full
+        /// @throws LengthError if the stack is full and `__WSTL_CHECK_PUSHPOP__` is defined
         template<typename Container>
         void PushRange(const Container& container) {
-            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Stack is full", __FILE__, __LINE__));
+            #ifdef __WSTL_CHECK_PUSHPOP__
+            __WSTL_ASSERT_RETURN__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Stack is full"));
+            #endif
 
             for(SizeType i = 0; i < Size(container); ++i) ::new(&m_Buffer[this->m_CurrentSize++]) T(*(Begin(container) + i));
         }
@@ -174,10 +181,12 @@ namespace wstl {
         #ifdef __WSTL_CXX11__
         /// @brief Pushes elements from a container onto the stack
         /// @param container The container to push elements from (rvalue reference)
-        /// @throws LengthError if the stack is full
+        /// @throws LengthError if the stack is full and `__WSTL_CHECK_PUSHPOP__` is defined
         template<typename Container>
         void PushRange(Container&& container) {
-            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Stack is full", __FILE__, __LINE__));
+            #ifdef __WSTL_CHECK_PUSHPOP__
+            __WSTL_ASSERT_RETURN__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Stack is full"));
+            #endif
 
             for(SizeType i = 0; i < Size(container); ++i) ::new(&m_Buffer[this->m_CurrentSize++]) T(Move(*(Begin(container) + i)));
         }
@@ -190,7 +199,7 @@ namespace wstl {
         template<typename... Args>
         void Emplace(Args&&... args) {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Stack is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Stack is full"));
             #endif
 
             ::new(&m_Buffer[this->m_CurrentSize++]) T(Forward<Args>(args)...);
@@ -200,7 +209,7 @@ namespace wstl {
         /// @throws LengthError if the stack is full and `__WSTL_CHECK_PUSHPOP__` is defined
         void Emplace() {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Stack is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Stack is full"));
             #endif
 
             ::new(&m_Buffer[this->m_CurrentSize++]) T();
@@ -212,7 +221,7 @@ namespace wstl {
         template<typename Arg>
         void Emplace(const Arg& arg) {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Stack is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Stack is full"));
             #endif
 
             ::new(&m_Buffer[this->m_CurrentSize++]) T(arg);
@@ -225,7 +234,7 @@ namespace wstl {
         template<typename Arg1, typename Arg2>
         void Emplace(const Arg1& arg1, const Arg2& arg2) {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Stack is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Stack is full"));
             #endif
 
             ::new(&m_Buffer[this->m_CurrentSize++]) T(arg1, arg2);
@@ -239,7 +248,7 @@ namespace wstl {
         template<typename Arg1, typename Arg2, typename Arg3>
         void Emplace(const Arg1& arg1, const Arg2& arg2, const Arg3& arg3) {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Stack is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Stack is full"));
             #endif
 
             ::new(&m_Buffer[this->m_CurrentSize++]) T(arg1, arg2, arg3);
@@ -251,7 +260,7 @@ namespace wstl {
         /// @throws LengthError if the stack is empty and `__WSTL_CHECK_PUSHPOP__` is defined
         void Pop(SizeType count = 1) {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT_RETURN__(count <= this->m_Capacity, LengthError("Stack is empty", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(count <= this->m_Capacity, WSTL_MAKE_EXCEPTION(LengthError, "Stack is empty"));
             #endif
 
             while(count-- > 0) m_Buffer[this->m_CurrentSize--].~T();

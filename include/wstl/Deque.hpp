@@ -456,6 +456,7 @@ namespace wstl {
         /// @brief Constructor that initializes the deque with a range of elements
         /// @param first Iterator to the first element in the range
         /// @param last Iterator to the element following the last element in the range
+        /// @throws LengthError if the range size exceeds the deque's capacity
         template<typename InputIterator>
         Deque(InputIterator first, InputIterator last) : TypedContainerBase<T>(SIZE), m_StartIndex(0) {
             Assign(first, last);
@@ -464,6 +465,7 @@ namespace wstl {
         /// @brief Constructor that initializes the deque with a specific number of elements
         /// @param count The number of elements to initialize the deque with
         /// @param value The value to initialize each element with (default is ValueType())
+        /// @throws LengthError if count exceeds the deque's capacity
         explicit Deque(SizeType count, ConstReferenceType value = ValueType()) : TypedContainerBase<T>(SIZE), m_StartIndex(0) {
             Assign(count, value);
         }
@@ -471,6 +473,7 @@ namespace wstl {
         #if defined(__WSTL_CXX11__) && !defined(__WSTL_NO_INITIALIZERLIST__)
         /// @brief Constructor that initializes the deque with an initializer list
         /// @param list The initializer list to initialize the deque with
+        /// @throws LengthError if list size exceeds the deque's capacity
         Deque(InitializerList<T> list) : TypedContainerBase<T>(SIZE), m_StartIndex(0) {
             Assign(list);
         }
@@ -500,6 +503,7 @@ namespace wstl {
         #ifndef __WSTL_NO_INITIALIZERLIST__
         /// @brief Assignment operator
         /// @param list The initializer list to assign to the deque
+        /// @throws LengthError if list size exceeds the deque's capacity
         Deque& operator=(InitializerList<T> list) {
             Assign(list);
             return *this;
@@ -521,7 +525,8 @@ namespace wstl {
         /// @param value The value to assign to each element
         /// @throws LengthError if the deque is full
         void Assign(SizeType count, ConstReferenceType value) {
-            __WSTL_ASSERT_RETURN__(count <= this->m_Capacity, LengthError("Deque is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(count <= this->m_Capacity, WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"));
+
             Initialize();
             for(; count > 0; --count) PushBack(value);
         }
@@ -529,8 +534,10 @@ namespace wstl {
         #if defined(__WSTL_CXX11__) && !defined(__WSTL_NO_INITIALIZERLIST__)
         /// @brief Assigns an initializer list to the deque
         /// @param list The initializer list to assign to the deque
+        /// @throws LengthError if list size exceeds the deque's capacity
         void Assign(InitializerList<T> list) {
-            __WSTL_ASSERT_RETURN__(list.Size() <= this->m_Capacity, LengthError("Deque is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(list.Size() <= this->m_Capacity, WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"));
+
             Initialize();
             for(typename InitializerList<T>::Iterator it = list.Begin(); it != list.End(); ++it) PushBack(*it);
         }
@@ -540,7 +547,7 @@ namespace wstl {
         /// @param position The position of the element to access
         /// @throws OutOfRange if the position is out of range
         ReferenceType At(SizeType position) {
-            __WSTL_ASSERT__(position < this->m_CurrentSize, OutOfRange("Deque index out of range", __FILE__, __LINE__));
+            __WSTL_ASSERT__(position < this->m_CurrentSize, WSTL_MAKE_EXCEPTION(OutOfRange, "Deque index out of range"));
             return m_Buffer[(this->m_StartIndex + position) % this->m_Capacity];
         }
 
@@ -548,7 +555,7 @@ namespace wstl {
         /// @param position The position of the element to access
         /// @throws OutOfRange if the position is out of range
         ConstReferenceType At(SizeType position) const {
-            __WSTL_ASSERT__(position < this->m_CurrentSize, OutOfRange("Deque index out of range", __FILE__, __LINE__));
+            __WSTL_ASSERT__(position < this->m_CurrentSize, WSTL_MAKE_EXCEPTION(OutOfRange, "Deque index out of range"));
             return m_Buffer[(this->m_StartIndex + position) % this->m_Capacity];
         }
 
@@ -655,26 +662,26 @@ namespace wstl {
         /// @return Iterator to the newly inserted element
         /// @throws LengthError if the deque is full
         Iterator Insert(ConstIterator position, ConstReferenceType value) {
-            Iterator pos = Begin() + Distance(ConstBegin(), position);
+            Iterator result = Begin() + Distance(ConstBegin(), position);
 
-            __WSTL_ASSERT_RETURNVALUE__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__), pos);
+            __WSTL_ASSERT_RETURNVALUE__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"), result);
             
-            if(pos == Begin()) CreateFront(value);
-            else if(pos == End()) CreateBack(value);
+            if(result == Begin()) CreateFront(value);
+            else if(result == End()) CreateBack(value);
             else {
-                if(Distance(Begin(), pos) < Distance(pos, End() - 1)) {
+                if(Distance(Begin(), result) < Distance(result, End() - 1)) {
                     CreateFront(*Begin());
-                    Move(Begin() + 1, pos, Begin());
-                    *--pos = value;
+                    Move(Begin() + 1, result, Begin());
+                    *--result = value;
                 }   
                 else {
                     CreateBack(*(End() - 1));
-                    MoveBackward(pos, End() - 2, End() - 1);
-                    *pos = value;
+                    MoveBackward(result, End() - 2, End() - 1);
+                    *result = value;
                 }
             }
 
-            return pos;
+            return result;
         }
 
         #ifdef __WSTL_CXX11__
@@ -684,27 +691,27 @@ namespace wstl {
         /// @return Iterator to the newly inserted element
         /// @throws LengthError if the deque is full
         Iterator Insert(ConstIterator position, T&& value) {
-            Iterator pos = Begin() + Distance(ConstBegin(), position);
+            Iterator result = Begin() + Distance(ConstBegin(), position);
 
-            __WSTL_ASSERT_RETURNVALUE__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__), pos);
+            __WSTL_ASSERT_RETURNVALUE__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"), result);
 
-            if(pos == Begin()) CreateFront(Move(value));
-            else if(pos == End()) CreateBack(Move(value));
+            if(result == Begin()) CreateFront(Move(value));
+            else if(result == End()) CreateBack(Move(value));
             else {
-                if(Distance(Begin(), pos) < Distance(pos, End() - 1)) {
+                if(Distance(Begin(), result) < Distance(result, End() - 1)) {
                     CreateFront(*Begin());
-                    Move(Begin() + 1, pos, Begin());
-                    pos--;
-                    *pos = Move(value);
+                    Move(Begin() + 1, result, Begin());
+                    result--;
+                    *result = Move(value);
                 }   
                 else {
                     CreateBack(*(End() - 1));
-                    MoveBackward(pos, End() - 2, End() - 1);
-                    *pos = Move(value);
+                    MoveBackward(result, End() - 2, End() - 1);
+                    *result = Move(value);
                 }
             }
 
-            return pos;
+            return result;
         }
         #endif
 
@@ -717,11 +724,7 @@ namespace wstl {
         Iterator Insert(ConstIterator position, SizeType count, ConstReferenceType value) {
             Iterator result = Begin() + Distance(ConstBegin(), position);
 
-            __WSTL_ASSERT_RETURNVALUE__(
-                count <= this->m_Capacity - this->m_CurrentSize,
-                LengthError("Deque is full", __FILE__, __LINE__),
-                result
-            );
+            __WSTL_ASSERT_RETURNVALUE__(count <= this->m_Capacity - this->m_CurrentSize, WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"), result);
 
             SizeType distanceFront = Distance(Begin(), result);
             SizeType distanceBack = Distance(result, End());
@@ -797,11 +800,7 @@ namespace wstl {
             Iterator result = Begin() + Distance(ConstBegin(), position);
             SizeType count = Distance(first, last);
 
-            __WSTL_ASSERT_RETURNVALUE__(
-                count <= this->m_Capacity - this->m_CurrentSize,
-                LengthError("Deque is full", __FILE__, __LINE__),
-                result
-            );
+            __WSTL_ASSERT_RETURNVALUE__(count <= this->m_Capacity - this->m_CurrentSize, WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"), result);
 
             SizeType distanceFront = Distance(Begin(), result);
             SizeType distanceBack = Distance(result, End());
@@ -875,11 +874,7 @@ namespace wstl {
         Iterator Insert(ConstIterator position, InitializerList<T> list) {
             Iterator result = Begin() + Distance(ConstBegin(), position);
 
-            __WSTL_ASSERT_RETURNVALUE__(
-                list.Size() <= this->m_Capacity - this->m_CurrentSize,
-                LengthError("Deque is full", __FILE__, __LINE__),
-                result
-            );
+            __WSTL_ASSERT_RETURNVALUE__(list.Size() <= this->m_Capacity - this->m_CurrentSize, WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"), result);
 
             SizeType distanceFront = Distance(Begin(), result);
             SizeType distanceBack = Distance(result, End());
@@ -952,41 +947,41 @@ namespace wstl {
         /// @return Iterator to the newly emplaced element
         template<typename... Args>
         Iterator Emplace(ConstIterator position, Args&&... args) {
-            Iterator pos = Begin() + Distance(ConstBegin(), position);
+            Iterator result = Begin() + Distance(ConstBegin(), position);
 
-            __WSTL_ASSERT_RETURNVALUE__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__), pos);
+            __WSTL_ASSERT_RETURNVALUE__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"), result);
 
             void* pointer;
             
-            if(pos == Begin()) {
+            if(result == Begin()) {
                 this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
                 ++this->m_CurrentSize;
                 pointer = static_cast<void*>(&m_Buffer[this->m_StartIndex]);
             }
-            else if(pos == End()) {
+            else if(result == End()) {
                 ++this->m_CurrentSize;
                 pointer = static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity]);
             }
             else {
-                if(Distance(Begin(), pos) < Distance(pos, End() - 1)) {
+                if(Distance(Begin(), result) < Distance(result, End() - 1)) {
                     CreateFront(*Begin());
-                    Move(Begin() + 1, pos, Begin());
+                    Move(Begin() + 1, result, Begin());
 
-                    (*--pos).~T();
-                    pointer = AddressOf(*pos);
+                    (*--result).~T();
+                    pointer = AddressOf(*result);
                 }   
                 else {
                     CreateBack(*(End() - 1));
-                    MoveBackward(pos, End() - 2, End() - 1);
+                    MoveBackward(result, End() - 2, End() - 1);
                     
-                    (*pos).~T();
-                    pointer = AddressOf(*pos);
+                    (*result).~T();
+                    pointer = AddressOf(*result);
                 }
             }
 
             ::new(pointer) T(Forward<Args>(args)...);
 
-            return pos;
+            return result;
         }
 
         #else
@@ -996,41 +991,41 @@ namespace wstl {
         /// @return Iterator to the newly emplaced element
         template<typename Arg>
         Iterator Emplace(ConstIterator position) {
-            Iterator pos = Begin() + Distance(ConstBegin(), position);
+            Iterator result = Begin() + Distance(ConstBegin(), position);
 
-            __WSTL_ASSERT_RETURNVALUE__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__), pos);
+            __WSTL_ASSERT_RETURNVALUE__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"), result);
 
             void* pointer;
             
-            if(pos == Begin()) {
+            if(result == Begin()) {
                 this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
                 ++this->m_CurrentSize;
                 pointer = static_cast<void*>(&m_Buffer[this->m_StartIndex]);
             }
-            else if(pos == End()) {
+            else if(result == End()) {
                 ++this->m_CurrentSize;
                 pointer = static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity]);
             }
             else {
-                if(Distance(Begin(), pos) < Distance(pos, End() - 1)) {
+                if(Distance(Begin(), result) < Distance(result, End() - 1)) {
                     CreateFront(*Begin());
-                    Move(Begin() + 1, pos, Begin());
+                    Move(Begin() + 1, result, Begin());
 
-                    (*--pos).~T();
-                    pointer = AddressOf(*pos);
+                    (*--result).~T();
+                    pointer = AddressOf(*result);
                 }   
                 else {
                     CreateBack(*(End() - 1));
-                    MoveBackward(pos, End() - 2, End() - 1);
+                    MoveBackward(result, End() - 2, End() - 1);
                     
-                    (*pos).~T();
-                    pointer = AddressOf(*pos);
+                    (*result).~T();
+                    pointer = AddressOf(*result);
                 }
             }
 
             ::new(pointer) T();
 
-            return pos;
+            return result;
         }
 
         /// @brief Emplaces an element at specified position in the deque, constructing it in place
@@ -1040,41 +1035,41 @@ namespace wstl {
         /// @return Iterator to the newly emplaced element
         template<typename Arg>
         Iterator Emplace(ConstIterator position, const Arg& arg) {
-            Iterator pos = Begin() + Distance(ConstBegin(), position);
+            Iterator result = Begin() + Distance(ConstBegin(), position);
 
-            __WSTL_ASSERT_RETURNVALUE__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__), pos);
+            __WSTL_ASSERT_RETURNVALUE__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"), result);
 
             void* pointer;
             
-            if(pos == Begin()) {
+            if(result == Begin()) {
                 this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
                 ++this->m_CurrentSize;
                 pointer = static_cast<void*>(&m_Buffer[this->m_StartIndex]);
             }
-            else if(pos == End()) {
+            else if(result == End()) {
                 ++this->m_CurrentSize;
                 pointer = static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity]);
             }
             else {
-                if(Distance(Begin(), pos) < Distance(pos, End() - 1)) {
+                if(Distance(Begin(), result) < Distance(result, End() - 1)) {
                     CreateFront(*Begin());
-                    Move(Begin() + 1, pos, Begin());
+                    Move(Begin() + 1, result, Begin());
 
-                    (*--pos).~T();
-                    pointer = AddressOf(*pos);
+                    (*--result).~T();
+                    pointer = AddressOf(*result);
                 }   
                 else {
                     CreateBack(*(End() - 1));
-                    MoveBackward(pos, End() - 2, End() - 1);
+                    MoveBackward(result, End() - 2, End() - 1);
                     
-                    (*pos).~T();
-                    pointer = AddressOf(*pos);
+                    (*result).~T();
+                    pointer = AddressOf(*result);
                 }
             }
 
             ::new(pointer) T(arg);
 
-            return pos;
+            return result;
         }
 
         /// @brief Emplaces an element at specified position in the deque, constructing it in place
@@ -1085,41 +1080,41 @@ namespace wstl {
         /// @return Iterator to the newly emplaced element
         template<typename Arg1, typename Arg2>
         Iterator Emplace(ConstIterator position, const Arg1& arg1, const Arg2& arg2) {
-            Iterator pos = Begin() + Distance(ConstBegin(), position);
+            Iterator result = Begin() + Distance(ConstBegin(), position);
 
-            __WSTL_ASSERT_RETURNVALUE__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__), pos);
+            __WSTL_ASSERT_RETURNVALUE__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"), result);
 
             void* pointer;
             
-            if(pos == Begin()) {
+            if(result == Begin()) {
                 this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
                 ++this->m_CurrentSize;
                 pointer = static_cast<void*>(&m_Buffer[this->m_StartIndex]);
             }
-            else if(pos == End()) {
+            else if(result == End()) {
                 ++this->m_CurrentSize;
                 pointer = static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity]);
             }
             else {
-                if(Distance(Begin(), pos) < Distance(pos, End() - 1)) {
+                if(Distance(Begin(), result) < Distance(result, End() - 1)) {
                     CreateFront(*Begin());
-                    Move(Begin() + 1, pos, Begin());
+                    Move(Begin() + 1, result, Begin());
 
-                    (*--pos).~T();
-                    pointer = AddressOf(*pos);
+                    (*--result).~T();
+                    pointer = AddressOf(*result);
                 }   
                 else {
                     CreateBack(*(End() - 1));
-                    MoveBackward(pos, End() - 2, End() - 1);
+                    MoveBackward(result, End() - 2, End() - 1);
                     
-                    (*pos).~T();
-                    pointer = AddressOf(*pos);
+                    (*result).~T();
+                    pointer = AddressOf(*result);
                 }
             }
 
             ::new(pointer) T(arg1, arg2);
 
-            return pos;
+            return result;
         }
 
         /// @brief Emplaces an element at specified position in the deque, constructing it in place
@@ -1131,41 +1126,41 @@ namespace wstl {
         /// @return Iterator to the newly emplaced element
         template<typename Arg1, typename Arg2, typename Arg3>
         Iterator Emplace(ConstIterator position, const Arg1& arg1, const Arg2& arg2, const Arg3& arg3) {
-            Iterator pos = Begin() + Distance(ConstBegin(), position);
+            Iterator result = Begin() + Distance(ConstBegin(), position);
 
-            __WSTL_ASSERT_RETURNVALUE__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__), pos);
+            __WSTL_ASSERT_RETURNVALUE__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"), result);
 
             void* pointer;
             
-            if(pos == Begin()) {
+            if(result == Begin()) {
                 this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
                 ++this->m_CurrentSize;
                 pointer = static_cast<void*>(&m_Buffer[this->m_StartIndex]);
             }
-            else if(pos == End()) {
+            else if(result == End()) {
                 ++this->m_CurrentSize;
                 pointer = static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity]);
             }
             else {
-                if(Distance(Begin(), pos) < Distance(pos, End() - 1)) {
+                if(Distance(Begin(), result) < Distance(result, End() - 1)) {
                     CreateFront(*Begin());
-                    Move(Begin() + 1, pos, Begin());
+                    Move(Begin() + 1, result, Begin());
 
-                    (*--pos).~T();
-                    pointer = AddressOf(*pos);
+                    (*--result).~T();
+                    pointer = AddressOf(*result);
                 }   
                 else {
                     CreateBack(*(End() - 1));
-                    MoveBackward(pos, End() - 2, End() - 1);
+                    MoveBackward(result, End() - 2, End() - 1);
                     
-                    (*pos).~T();
-                    pointer = AddressOf(*pos);
+                    (*result).~T();
+                    pointer = AddressOf(*result);
                 }
             }
 
             ::new(pointer) T(arg1, arg2, arg3);
 
-            return pos;
+            return result;
         }
         #endif
 
@@ -1176,7 +1171,7 @@ namespace wstl {
         Iterator Erase(Iterator position) {
             __WSTL_ASSERT_RETURNVALUE__(
                 Distance(Begin(), position) <= DifferenceType(this->m_CurrentSize), 
-                OutOfRange("Deque index out of range", __FILE__, __LINE__), 
+                WSTL_MAKE_EXCEPTION(OutOfRange, "Deque index out of range"), 
                 position
             );
 
@@ -1212,8 +1207,8 @@ namespace wstl {
 
             __WSTL_ASSERT_RETURNVALUE__(
                 Distance(Begin(), result) <= DifferenceType(this->m_CurrentSize), 
-                OutOfRange("Deque index out of range", __FILE__, __LINE__), 
-                result
+                WSTL_MAKE_EXCEPTION(OutOfRange, "Deque index out of range"), 
+                position
             );
 
             if(result == Begin()) {
@@ -1249,7 +1244,7 @@ namespace wstl {
 
             __WSTL_ASSERT_RETURNVALUE__(
                 (Distance(Begin(), first) <= DifferenceType(this->m_CurrentSize)) && (Distance(Begin(), last) <= DifferenceType(this->m_CurrentSize)), 
-                OutOfRange("Deque index out of range", __FILE__, __LINE__), 
+                WSTL_MAKE_EXCEPTION(OutOfRange, "Deque index out of range"), 
                 first
             );
 
@@ -1289,7 +1284,7 @@ namespace wstl {
 
             __WSTL_ASSERT_RETURNVALUE__(
                 (Distance(ConstBegin(), first) <= DifferenceType(this->m_CurrentSize)) && (Distance(ConstBegin(), last) <= DifferenceType(this->m_CurrentSize)), 
-                OutOfRange("Deque index out of range", __FILE__, __LINE__), 
+                WSTL_MAKE_EXCEPTION(OutOfRange, "Deque index out of range"), 
                 result
             );
 
@@ -1323,8 +1318,9 @@ namespace wstl {
         /// @throws LengthError if the deque is full and `__WSTL_CHECK_PUSHPOP__` is defined
         void PushBack(ConstReferenceType value) {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"));
             #endif
+
             CreateBack(value);
         }
 
@@ -1334,8 +1330,9 @@ namespace wstl {
         /// @throws LengthError if the deque is full and `__WSTL_CHECK_PUSHPOP__` is defined
         void PushBack(T&& value) {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"));
             #endif
+            
             CreateBack(Forward<T>(value));
         }
         #endif
@@ -1347,7 +1344,7 @@ namespace wstl {
         template<typename... Args>
         void EmplaceBack(Args&&... args) {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"));
             #endif
 
             ::new(static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity])) T(Forward<Args>(args)...);
@@ -1359,7 +1356,7 @@ namespace wstl {
         /// @throws LengthError if the deque is full and `__WSTL_CHECK_PUSHPOP__` is defined
         void EmplaceBack() {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"));
             #endif
 
             ::new(static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity])) T();
@@ -1372,7 +1369,7 @@ namespace wstl {
         template<typename Arg>
         void EmplaceBack(const Arg& arg) {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"));
             #endif
 
             ::new(static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity])) T(arg);
@@ -1386,7 +1383,7 @@ namespace wstl {
         template<typename Arg1, typename Arg2>
         void EmplaceBack(const Arg1& arg1, const Arg2& arg2) {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"));
             #endif
 
             ::new(static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity])) T(arg1, arg2);
@@ -1401,7 +1398,7 @@ namespace wstl {
         template<typename Arg1, typename Arg2, typename Arg3>
         void EmplaceBack(const Arg1& arg1, const Arg2& arg2, const Arg3& arg3) {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"));
             #endif
 
             ::new(static_cast<void*>(&m_Buffer[(this->m_StartIndex + this->m_CurrentSize) % this->m_BufferCapacity])) T(arg1, arg2, arg3);
@@ -1432,8 +1429,9 @@ namespace wstl {
         /// @throws OutOfRange if the deque is empty and `__WSTL_CHECK_PUSHPOP__` is defined
         void PopBack() {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT_RETURN__(!this->Empty(), OutOfRange("Deque is empty", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Empty(), WSTL_MAKE_EXCEPTION(OutOfRange, "Deque is empty"));
             #endif
+            
             DestroyBack();
         }
 
@@ -1442,8 +1440,9 @@ namespace wstl {
         /// @throws LengthError if the deque is full and `__WSTL_CHECK_PUSHPOP__` is defined
         void PushFront(ConstReferenceType value) {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"));
             #endif
+
             CreateFront(value);
         }
 
@@ -1453,8 +1452,9 @@ namespace wstl {
         /// @throws LengthError if the deque is full and `__WSTL_CHECK_PUSHPOP__` is defined
         void PushFront(T&& value) {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"));
             #endif
+
             CreateFront(Forward<T>(value));
         }
         #endif
@@ -1466,7 +1466,7 @@ namespace wstl {
         template<typename... Args>
         void EmplaceFront(Args&&... args) {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"));
             #endif
 
             this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
@@ -1479,7 +1479,7 @@ namespace wstl {
         /// @throws LengthError if the deque is full and `__WSTL_CHECK_PUSHPOP__` is defined
         void EmplaceFront() {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"));
             #endif
 
             this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
@@ -1494,7 +1494,7 @@ namespace wstl {
         template<typename Arg>
         void EmplaceFront(const Arg& arg) {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"));
             #endif
 
             this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
@@ -1509,7 +1509,7 @@ namespace wstl {
         template<typename Arg1, typename Arg2>
         void EmplaceFront(const Arg1& arg1, const Arg2& arg2) {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"));
             #endif
 
             this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
@@ -1525,7 +1525,7 @@ namespace wstl {
         template<typename Arg1, typename Arg2, typename Arg3>
         void EmplaceFront(const Arg1& arg1, const Arg2& arg2, const Arg3& arg3) {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT_RETURN__(!this->Full(), LengthError("Deque is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"));
             #endif
 
             this->m_StartIndex = (this->m_StartIndex + this->m_BufferCapacity - 1) % this->m_BufferCapacity;
@@ -1538,8 +1538,9 @@ namespace wstl {
         /// @throws OutOfRange if the deque is empty and `__WSTL_CHECK_PUSHPOP__` is defined
         void PopFront() {
             #ifdef __WSTL_CHECK_PUSHPOP__
-            __WSTL_ASSERT_RETURN__(!this->Empty(), OutOfRange("Deque is empty", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(!this->Empty(), WSTL_MAKE_EXCEPTION(OutOfRange, "Deque is empty"));
             #endif
+
             DestroyFront();
         }
 
@@ -1567,7 +1568,7 @@ namespace wstl {
         /// @param value The value to fill new elements with, defaults to default constructed value of T
         /// @throws LengthError if the deque is full
         void Resize(SizeType count, ConstReferenceType value = ValueType()) {
-            __WSTL_ASSERT_RETURN__(count <= this->m_Capacity, LengthError("Deque is full", __FILE__, __LINE__));
+            __WSTL_ASSERT_RETURN__(count <= this->m_Capacity, WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"));
 
             if(count < this->m_CurrentSize) 
                 while(this->m_CurrentSize > count) DestroyBack();

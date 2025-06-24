@@ -53,7 +53,7 @@ namespace wstl {
         /// @return Reference to the element at the specified index
         /// @throws IndexOutOfRange if the index is out of range
         __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ReferenceType At(SizeType index) {
-            __WSTL_ASSERT__(index < N, OutOfRange(__FILE__, __LINE__));
+            __WSTL_ASSERT__(index < N,  WSTL_MAKE_EXCEPTION(OutOfRange));
             return __m_Data[index];
         }
 
@@ -62,7 +62,7 @@ namespace wstl {
         /// @return Const reference to the element at the specified index
         /// @throws IndexOutOfRange if the index is out of range
         __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ConstReferenceType At(SizeType index) const {
-            __WSTL_ASSERT__(index < N, OutOfRange(__FILE__, __LINE__));
+            __WSTL_ASSERT__(index < N, WSTL_MAKE_EXCEPTION(OutOfRange));
             return __m_Data[index];
         }
 

@@ -211,7 +211,7 @@ namespace wstl {
     };
 
     namespace __private {
-        void __ErrorHandlerError(const Exception& exception) {
+        static void __ErrorHandlerError(const Exception& exception) {
             ErrorHandler::Error(exception);
         }
     }

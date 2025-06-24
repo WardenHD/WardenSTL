@@ -24,10 +24,30 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/utility/functional/bad_function_call
     class BadFunctionCall : public Exception {
     public:
+        #ifdef __WSTL_EXCEPTION_LOCATION__
         /// @brief Constructor
         /// @param file The name of the source file where the exception occurred
         /// @param line The line number in the source file where the exception occurred
         BadFunctionCall(StringType file, NumericType line) : Exception("Bad function call", file, line) {}
+
+        /// @brief Constructor with a message
+        /// @param message The message describing the exception
+        /// @param file The name of the source file where the exception occurred
+        /// @param line The line number in the source file where the exception occurred
+        BadFunctionCall(StringType message, StringType file, NumericType line) : Exception(message, file, line) {}
+        #else
+        /// @brief Default constructor
+        BadFunctionCall() : Exception("Bad function call") {}
+
+        /// @brief Constructor with message
+        /// @param message The exception message
+        BadFunctionCall(StringType message) : Exception(message) {}
+        #endif
+
+        /// @copydoc Exception::Name()
+        virtual StringType Name() const __WSTL_NOEXCEPT__ __WSTL_OVERRIDE__ {
+            return "BadFunctionCall";
+        }
     };
 
     // Unary function
@@ -164,8 +184,7 @@ namespace wstl {
         }
 
         virtual Return operator()(Args&&... args) const override {
-            __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), BadFunctionCall(__FILE__, __LINE__), 
-                static_cast<Return>(-1));
+            __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), WSTL_MAKE_EXCEPTION(BadFunctionCall), static_cast<Return>(-1));
             return (*m_Function)(Forward<Args>(args)...);
         }
 
@@ -236,8 +255,7 @@ namespace wstl {
         }
 
         virtual Return operator()(Args&&... args) const override {
-            __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), BadFunctionCall(__FILE__, __LINE__), 
-                static_cast<Return>(-1));
+            __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), WSTL_MAKE_EXCEPTION(BadFunctionCall), static_cast<Return>(-1));
             return (m_Object->*m_Function)(Forward<Args>(args)...);
         }
 
@@ -313,8 +331,7 @@ namespace wstl {
         }
 
         __WSTL_CONSTEXPR14__ operator bool() const {
-            __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), BadFunctionCall(__FILE__, __LINE__), 
-                static_cast<Return>(-1));
+            __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), WSTL_MAKE_EXCEPTION(BadFunctionCall), static_cast<Return>(-1));
             return (m_Function != nullptr) && (m_Object != nullptr);
         }
 
@@ -416,8 +433,7 @@ namespace wstl {
         }
 
         virtual Return operator()(const Arg1& arg1, const Arg2& arg2) const {
-            __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), BadFunctionCall(__FILE__, __LINE__), 
-                static_cast<Return>(-1));
+            __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), WSTL_MAKE_EXCEPTION(BadFunctionCall), static_cast<Return>(-1));
             return (*m_Function)(arg1, arg2);
         }
 
@@ -467,8 +483,7 @@ namespace wstl {
         }
 
         virtual Return operator()(const Arg1& arg1, const Arg2& arg2) const {
-            __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), BadFunctionCall(__FILE__, __LINE__), 
-                static_cast<Return>(-1));
+            __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), WSTL_MAKE_EXCEPTION(BadFunctionCall), static_cast<Return>(-1));
             return (m_Object->*m_Function)(arg1, arg2);
         }
 
@@ -519,8 +534,7 @@ namespace wstl {
         }
 
         virtual Return operator()(const Arg1& arg1, const Arg2& arg2) const {
-            __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), BadFunctionCall(__FILE__, __LINE__), 
-                static_cast<Return>(-1));
+            __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), WSTL_MAKE_EXCEPTION(BadFunctionCall), static_cast<Return>(-1));
             return (m_Object->*m_Function)(arg1, arg2);
         }
 
@@ -618,8 +632,7 @@ namespace wstl {
         }
 
         virtual Return operator()(const Arg& arg) const {
-            __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), BadFunctionCall(__FILE__, __LINE__), 
-                static_cast<Return>(-1));
+            __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), WSTL_MAKE_EXCEPTION(BadFunctionCall), static_cast<Return>(-1));
             return (*m_Function)(arg);
         }
 
@@ -670,8 +683,7 @@ namespace wstl {
         }
 
         virtual Return operator()(const Arg& arg) const override {
-            __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), BadFunctionCall(__FILE__, __LINE__), 
-                static_cast<Return>(-1));
+            __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), WSTL_MAKE_EXCEPTION(BadFunctionCall), static_cast<Return>(-1));
             return (m_Object->*m_Function)(arg);
         }
 
@@ -723,8 +735,7 @@ namespace wstl {
         }
 
         virtual Return operator()(const Arg& arg) const override {
-            __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), BadFunctionCall(__FILE__, __LINE__), 
-                static_cast<Return>(-1));
+            __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), WSTL_MAKE_EXCEPTION(BadFunctionCall), static_cast<Return>(-1));
             return (m_Object->*m_Function)(arg);
         }
 
@@ -822,8 +833,7 @@ namespace wstl {
         }
 
         virtual Return operator()() const {
-            __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), BadFunctionCall(__FILE__, __LINE__), 
-                static_cast<Return>(-1));
+            __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), WSTL_MAKE_EXCEPTION(BadFunctionCall), static_cast<Return>(-1));
             return (*m_Function)();
         }
 
@@ -874,8 +884,7 @@ namespace wstl {
         }
 
         virtual Return operator()() const {
-            __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), BadFunctionCall(__FILE__, __LINE__), 
-                static_cast<Return>(-1));
+            __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), WSTL_MAKE_EXCEPTION(BadFunctionCall), static_cast<Return>(-1));
             return (m_Object->*m_Function)();
         }
 
@@ -927,8 +936,7 @@ namespace wstl {
         }
 
         virtual Return operator()() const {
-            __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), BadFunctionCall(__FILE__, __LINE__), 
-                static_cast<Return>(-1));
+            __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), WSTL_MAKE_EXCEPTION(BadFunctionCall), static_cast<Return>(-1));
             return (m_Object->*m_Function)();
         }
 
