@@ -16,8 +16,9 @@ namespace wstl {
         BumpAllocator(void* base, size_t limit) : m_Base(reinterpret_cast<uint8_t*>(base)),
             m_Allocated(0), m_Limit(limit) {}
 
+        /// @copydoc Allocator::Allocate(size_t)
         virtual void* Allocate(size_t size) __WSTL_OVERRIDE__ {
-            __WSTL_ASSERT_RETURNVALUE__(m_Allocated + size <= m_Limit, BadAllocation("BumpAllocator: Allocation exceeds limit", __FILE__, __LINE__), NullPointer);
+            __WSTL_ASSERT_RETURNVALUE__(m_Allocated + size <= m_Limit, WSTL_MAKE_EXCEPTION(BadAllocation, "BumpAllocator: Allocation exceeds limit"), NullPointer);
 
             void* result = m_Base + m_Allocated;
             m_Allocated += size;
