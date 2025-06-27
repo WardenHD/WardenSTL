@@ -1800,9 +1800,9 @@ namespace wstl {
 
     namespace __private {
         #ifdef __WSTL_CXX11__
-        template<typename T, typename U>
+        template<typename T, typename U, typename = decltype(DeclareValue<T&>() = DeclareValue<U&>(), void())>
         static constexpr bool __TestAssignable(int) {
-            return sizeof(decltype(DeclareValue<T&>() = DeclareValue<U&>(), void())) > 0;
+            return true;
         }   
 
         template<typename, typename>
