@@ -86,8 +86,8 @@ namespace wstl {
         /// @brief Move constructor for pair
         /// @param pair Pair to move from
         template<typename U1, typename U2>
-        constexpr Tuple(Pair<U1, U2>&& pair) : m_Head(Forward<U1>(pair.First)), 
-            m_Tail(Forward<U2>(pair.Second)) {}
+        constexpr Tuple(Pair<U1, U2>&& pair) : m_Head(Move(pair.First)), 
+            m_Tail(Move(pair.Second)) {}
 
         /// @brief Assignment operator - assigns with the same types
         /// @param other Tuple to assign from
@@ -105,10 +105,9 @@ namespace wstl {
         template<typename UHead, typename... UTail, typename = EnableIfType<
         IsAssignable<Head, UHead>::Value && IsAssignable<Tuple<Tail...>, Tuple<UTail...>>::Value>>
         __WSTL_CONSTEXPR14__ Tuple& operator=(const Tuple<UHead, UTail...>& other) {
-            if(this != &other) {
-                m_Head = other.m_Head;
-                m_Tail = other.m_Tail;
-            }
+            m_Head = other.m_Head;
+            m_Tail = other.m_Tail;
+            
             return *this;
         }
 
@@ -129,10 +128,9 @@ namespace wstl {
         template<typename UHead, typename... UTail, typename = EnableIfType<
         IsAssignable<Head, UHead>::Value && IsAssignable<Tuple<Tail...>, Tuple<UTail...>>::Value>>
         __WSTL_CONSTEXPR14__ Tuple& operator=(Tuple<UHead, UTail...>&& other) __WSTL_NOEXCEPT__ {
-            if(this != &other) {
-                m_Head = Move(other.m_Head);
-                m_Tail = Move(other.m_Tail);
-            }
+            m_Head = Move(other.m_Head);
+            m_Tail = Move(other.m_Tail);
+
             return *this;
         }
         

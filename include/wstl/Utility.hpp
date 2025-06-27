@@ -111,7 +111,7 @@ namespace wstl {
 
         /// @brief Copy constructor - copies from pair of the same types
         /// @param other Pair to copy from
-        __WSTL_CONSTEXPR14__ Pair(const Pair<T1, T2>& other) : First(other.First), Second(other.Second) {}
+        __WSTL_CONSTEXPR14__ Pair(const Pair& other) : First(other.First), Second(other.Second) {}
 
         /// @brief Templated copy constructor - copies from pair of potentially different types
         /// @param other Pair to copy from
@@ -130,7 +130,7 @@ namespace wstl {
         /// @brief Move constructor - moves from pair of the same types
         /// @param other Pair to move from
         /// @since C++11
-        __WSTL_CONSTEXPR14__ Pair(Pair<T1, T2>&& other) : First(Move(other.First)), 
+        __WSTL_CONSTEXPR14__ Pair(Pair&& other) : First(Move(other.First)), 
             Second(Move(other.Second)) {}
 
         /// @brief Templated move constructor - moves from pair of potentially different types
@@ -143,16 +143,19 @@ namespace wstl {
 
         /// @brief Swaps content of two pairs
         /// @param other Pair to swap contents with
-        __WSTL_CONSTEXPR14__ void Swap(Pair<T1, T2>& other) {
+        __WSTL_CONSTEXPR14__ void Swap(Pair& other) __WSTL_NOEXCEPT_EXPR__(noexcept(wstl::Swap(First, other.First)) && noexcept(wstl::Swap(Second, other.Second))) {
             wstl::Swap(First, other.First);
             wstl::Swap(Second, other.Second);
         }
         
         /// @brief Copy assignment operator - with the same types
         /// @param other Pair to assign from
-        __WSTL_CONSTEXPR14__ Pair<T1, T2>& operator=(const Pair<T1, T2>& other) {
-            First = other.First;
-            Second = other.Second;
+        __WSTL_CONSTEXPR14__ Pair& operator=(const Pair& other) {
+            if(this != &other) {
+                First = other.First;
+                Second = other.Second;
+            }
+            
             return *this;
         }   
 
@@ -161,7 +164,7 @@ namespace wstl {
         /// @tparam U2 Type of the second object
         /// @param other Pair to assign from
         template<typename U1, typename U2>
-        __WSTL_CONSTEXPR14__ Pair<U1, U2>& operator=(const Pair<U1, U2>& other) {
+        __WSTL_CONSTEXPR14__ Pair& operator=(const Pair<U1, U2>& other) {
             First = other.First;
             Second = other.Second;
             return *this;
@@ -171,9 +174,12 @@ namespace wstl {
         /// @brief Move assignment operator - assigns using move semantics with the same types
         /// @param other Pair to move from
         /// @since C++11
-        __WSTL_CONSTEXPR14__ Pair<T1, T2>& operator=(const Pair<T1, T2>&& other) {
-            First = Forward(other.First);
-            Second = Forward(other.Second);
+        __WSTL_CONSTEXPR14__ Pair& operator=(const Pair&& other) __WSTL_NOEXCEPT_EXPR__(IsNothrowMoveAssignable<T1>::Value && IsNothrowMoveAssignable<T2>::Value) {
+            if(this != &other) {
+                First = Move(other.First);
+                Second = Move(other.Second);
+            }
+
             return *this;
         }
 
@@ -184,9 +190,9 @@ namespace wstl {
         /// @param other Pair to move from
         /// @since C++11
         template<typename U1, typename U2>
-        __WSTL_CONSTEXPR14__ Pair<U1, U2>& operator=(const Pair<U1, U2>&& other) {
-            First = Forward(other.First);
-            Second = Forward(other.Second);
+        __WSTL_CONSTEXPR14__ Pair& operator=(const Pair<U1, U2>&& other) {
+            First = Move(other.First);
+            Second = Move(other.Second);
             return *this;
         }
         #endif

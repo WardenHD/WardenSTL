@@ -154,20 +154,28 @@ namespace wstl {
         /// @brief Move constructor
         /// @param other The object to move from
         UniquePointer(UniquePointer&& other) __WSTL_NOEXCEPT__ {
-            if(&other != this) {
+            if(this != &other) {
                 m_Pointer = other.Release();
                 m_Deleter = Move(other.m_Deleter);
             }
         }
+        
+        /// @brief Templated move constructor
+        /// @param other The object to move from
+        template<typename U, typename E>
+        UniquePointer(UniquePointer<U, E>&& other) __WSTL_NOEXCEPT__ 
+            : m_Pointer(other.Release()), m_Deleter(Forward<E>(other.GetDeleter())) {}
+
         #else
         /// @brief Copy constructor
         /// @param other The object to copy from
         UniquePointer(UniquePointer& other) __WSTL_NOEXCEPT__ {
-            if(&other != this) {
+            if(this != &other) {
                 m_Pointer = other.Release();
                 m_Deleter = other.m_Deleter;
             }
         }
+        
         #endif
 
         /// @brief Parameterized constructor
@@ -183,17 +191,54 @@ namespace wstl {
         /// @param deleter The deleter used to destroy the object
         UniquePointer(PointerType pointer, typename RemoveReference<Deleter>::Type&& deleter) __WSTL_NOEXCEPT__ 
             : m_Pointer(pointer), m_Deleter(Move(deleter)) {}
-        
-        /// @brief Templated move constructor
-        /// @param other The object to move from
-        template<typename U, typename E>
-        UniquePointer(UniquePointer<U, E>&& other) __WSTL_NOEXCEPT__ 
-            : m_Pointer(other.Release()), m_Deleter(Forward<E>(other.m_Deleter)) {}
         #endif
 
         /// @brief Destructor
         ~UniquePointer() {
             if(m_Pointer != NullPointer) deleter(m_Pointer);
+        }
+
+        #ifdef __WSTL_CXX11__
+        /// @brief Move assignment operator
+        /// @param other The object to move from
+        UniquePointer& operator=(UniquePointer&& other) __WSTL_NOEXCEPT__ {
+            if(&other != this) {
+                Reset(other.Release());
+                m_Deleter = Move(other.m_Deleter);
+            }
+
+            return *this;
+        }
+
+        /// @brief Templated move assignment operator
+        /// @param other The object to move from
+        template<typename U, typename E>
+        UniquePointer& operator=(UniquePointer<U, E>&& other) __WSTL_NOEXCEPT__ {
+            if(&other != this) {
+                Reset(NullPointer);
+                m_Pointer = other.Release();
+                m_Deleter = Forward<E>(other.m_Deleter);
+            }
+                
+            return *this;
+        }
+        #else
+        /// @brief Copy assignment operator
+        /// @param other The object to copy from
+        UniquePointer& operator=(UniquePointer& other) __WSTL_NOEXCEPT__ {
+            if(&other != this) {
+                Reset(other.Release());
+                m_Deleter = other.m_Deleter;
+            }
+
+            return *this;
+        }
+        #endif
+
+        /// @brief Assignment operator, assigns a null pointer
+        UniquePointer& operator=(wstl::NullPointerType) __WSTL_NOEXCEPT__ {
+            if(m_Pointer) Reset(__WSTL_NULLPTR__);
+            return *this;
         }
 
         /// @brief Releases the ownership of the managed object
@@ -238,49 +283,6 @@ namespace wstl {
         /// @brief Returns true if the pointer is not null
         explicit operator bool() const __WSTL_NOEXCEPT__ {
             return m_Pointer != NullPointer;
-        }
-
-        #ifdef __WSTL_CXX11__
-        /// @brief Move assignment operator
-        /// @param other The object to move from
-        UniquePointer& operator=(UniquePointer&& other) __WSTL_NOEXCEPT__ {
-            if(&other != this) {
-                Reset(other.Release());
-                m_Deleter = Move(other.m_Deleter);
-            }
-
-            return *this;
-        }
-
-        /// @brief Templated move assignment operator
-        /// @param other The object to move from
-        template<typename U, typename E>
-        UniquePointer& operator=(UniquePointer<U, E>&& other) __WSTL_NOEXCEPT__ {
-            if(&other != this) {
-                Reset(NullPointer);
-                m_Pointer = other.Release();
-                m_Deleter = Forward<E>(other.m_Deleter);
-            }
-                
-            return *this;
-        }
-        #else
-        /// @brief Copy assignment operator
-        /// @param other The object to copy from
-        UniquePointer& operator=(UniquePointer& other) __WSTL_NOEXCEPT__ {
-            if(&other != this) {
-                Reset(other.Release());
-                m_Deleter = other.m_Deleter;
-            }
-
-            return *this;
-        }
-        #endif
-
-        /// @brief Assignment operator, assigns a null pointer
-        UniquePointer& operator=(wstl::NullPointerType) __WSTL_NOEXCEPT__ {
-            if(m_Pointer) Reset(__WSTL_NULLPTR__);
-            return *this;
         }
 
         /// @brief Dereference operator
@@ -332,20 +334,28 @@ namespace wstl {
         /// @brief Move constructor
         /// @param other The object to move from
         UniquePointer(UniquePointer&& other) __WSTL_NOEXCEPT__ {
-            if(&other != this) {
+            if(this != &other) {
                 m_Pointer = other.Release();
                 m_Deleter = Move(other.m_Deleter);
             }
         }
+
+        /// @brief Templated move constructor
+        /// @param other The object to move from
+        template<typename U, typename E>
+        UniquePointer(UniquePointer<U, E>&& other) __WSTL_NOEXCEPT__ 
+            : m_Pointer(other.Release()), m_Deleter(Forward<E>(other.m_Deleter)) {}
+
         #else
         /// @brief Copy constructor
         /// @param other The object to copy from
         UniquePointer(UniquePointer& other) __WSTL_NOEXCEPT__ {
-            if(&other != this) {
+            if(this != &other) {
                 m_Pointer = other.Release();
                 m_Deleter = other.m_Deleter;
             }
         }
+
         #endif
 
         /// @brief Parameterized constructor
@@ -361,17 +371,54 @@ namespace wstl {
         /// @param deleter The deleter to use to destroy the object
         UniquePointer(PointerType pointer, typename RemoveReference<Deleter>::Type&& deleter) __WSTL_NOEXCEPT__ 
             : m_Pointer(pointer), m_Deleter(deleter) {}
-        
-        /// @brief Templated move constructor
-        /// @param other The object to move from
-        template<typename U, typename E>
-        UniquePointer(UniquePointer<U, E>&& other) __WSTL_NOEXCEPT__ 
-            : m_Pointer(other.Release()), m_Deleter(Forward<E>(other.m_Deleter)) {}
         #endif
         
         /// @brief Destructor
         ~UniquePointer() {
             if(m_Pointer != __WSTL_NULLPTR__) deleter(m_Pointer);
+        }
+
+        #ifdef __WSTL_CXX11__
+        /// @brief Move assignment operator
+        /// @param other The object to move from
+        UniquePointer& operator=(UniquePointer&& other) __WSTL_NOEXCEPT__ {
+            if(&other != this) {
+                Reset(other.Release());
+                m_Deleter = Move(other.m_Deleter);
+            }
+
+            return *this;
+        }
+
+        /// @brief Templated move assignment operator
+        /// @param other The object to move from
+        template<typename U, typename E>
+        UniquePointer& operator=(UniquePointer<U, E>&& other) __WSTL_NOEXCEPT__ {
+            if(&other != this) {
+                Reset(NullPointer);
+                m_Pointer = other.Release();
+                m_Deleter = Forward<E>(other.m_Deleter);
+            }
+                
+            return *this;
+        }
+        #else
+        /// @brief Copy assignment operator
+        /// @param other The object to copy from
+        UniquePointer& operator=(UniquePointer& other) __WSTL_NOEXCEPT__ {
+            if(&other != this) {
+                Reset(other.Release());
+                m_Deleter = other.m_Deleter;
+            }
+
+            return *this;
+        }
+        #endif
+
+        /// @brief Assignment operator, assigns a null pointer
+        UniquePointer& operator=(NullPointerType) __WSTL_NOEXCEPT__ {
+            Reset(NullPointer);
+            return *this;
         }
 
         /// @brief Releases the ownership of the managed object
@@ -423,49 +470,6 @@ namespace wstl {
         /// @brief Returns true if the pointer is not null
         explicit operator bool() const __WSTL_NOEXCEPT__ {
             return m_Pointer != NullPointer;
-        }
-
-        #ifdef __WSTL_CXX11__
-        /// @brief Move assignment operator
-        /// @param other The object to move from
-        UniquePointer& operator=(UniquePointer&& other) __WSTL_NOEXCEPT__ {
-            if(&other != this) {
-                Reset(other.Release());
-                m_Deleter = Move(other.m_Deleter);
-            }
-
-            return *this;
-        }
-
-        /// @brief Templated move assignment operator
-        /// @param other The object to move from
-        template<typename U, typename E>
-        UniquePointer& operator=(UniquePointer<U, E>&& other) __WSTL_NOEXCEPT__ {
-            if(&other != this) {
-                Reset(NullPointer);
-                m_Pointer = other.Release();
-                m_Deleter = Forward<E>(other.m_Deleter);
-            }
-                
-            return *this;
-        }
-        #else
-        /// @brief Copy assignment operator
-        /// @param other The object to copy from
-        UniquePointer& operator=(UniquePointer& other) __WSTL_NOEXCEPT__ {
-            if(&other != this) {
-                Reset(other.Release());
-                m_Deleter = other.m_Deleter;
-            }
-
-            return *this;
-        }
-        #endif
-
-        /// @brief Assignment operator, assigns a null pointer
-        UniquePointer& operator=(NullPointerType) __WSTL_NOEXCEPT__ {
-            Reset(NullPointer);
-            return *this;
         }
 
         /// @brief Dereference operator

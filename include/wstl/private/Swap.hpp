@@ -18,7 +18,6 @@
 #endif
 
 
-/// @brief Main namespace of WardenSTL library
 namespace wstl {
     #ifdef __WSTL_CXX11__
     // Move
