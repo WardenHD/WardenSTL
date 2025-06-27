@@ -87,48 +87,48 @@ namespace wstl {
     /// @note In C++98 it supports maximum two arguments
     /// @ingroup functional
     template<typename Signature>
-    class IFunction;
+    class FunctionInterface;
 
     #ifdef __WSTL_CXX11__
     template<typename Signature>
-    class IFunction;
+    class FunctionInterface;
 
     template<typename Return, typename... Args>
-    class IFunction<Return(Args...)> {
+    class FunctionInterface<Return(Args...)> {
     public:
         typedef Return ResultType;
 
-        virtual ~IFunction() {}
+        virtual ~FunctionInterface() {}
 
         virtual Return operator()(Args...) const = 0;
     };
     #else
     template<typename Return, typename Arg1, typename Arg2>
-    class IFunction<Return(Arg1, Arg2)> {
+    class FunctionInterface<Return(Arg1, Arg2)> {
     public:
         typedef Return ResultType;
 
-        virtual ~IFunction() {}
+        virtual ~FunctionInterface() {}
 
         virtual Return operator()(Arg1, Arg2) const = 0;
     };
 
     template<typename Return, typename Arg>
-    class IFunction<Return(Arg)> {
+    class FunctionInterface<Return(Arg)> {
     public:
         typedef Return ResultType;
 
-        virtual ~IFunction() {}
+        virtual ~FunctionInterface() {}
 
         virtual Return operator()(Arg) const = 0;
     };
 
     template<typename Return>
-    class IFunction<Return()> {
+    class FunctionInterface<Return()> {
     public:
         typedef Return ResultType;
 
-        virtual ~IFunction() {}
+        virtual ~FunctionInterface() {}
 
         virtual Return operator()() const = 0;
     };
@@ -149,7 +149,7 @@ namespace wstl {
     // Function (many parameters)
     
     template<typename Return, typename... Args>
-    class Function<Return(Args...)> : public IFunction<Return(Args...)> {
+    class Function<Return(Args...)> : public FunctionInterface<Return(Args...)> {
     public:
         __WSTL_CONSTEXPR14__ Function() __WSTL_NOEXCEPT__ : m_Function(nullptr) {}
 
@@ -203,7 +203,7 @@ namespace wstl {
     // Member
 
     template<typename Object, typename Return, typename... Args>
-    class Function<Return(Args...), Object> : public IFunction<Return(Args...)> {
+    class Function<Return(Args...), Object> : public FunctionInterface<Return(Args...)> {
     public:
         typedef Object ObjectType;
         
@@ -275,7 +275,7 @@ namespace wstl {
     // Const member
 
     template<typename Object, typename Return, typename... Args>
-    class Function<Return(Args...), const Object> : public IFunction<Return(Args...)> {
+    class Function<Return(Args...), const Object> : public FunctionInterface<Return(Args...)> {
     public:
         typedef const Object ObjectType;
 
@@ -410,7 +410,7 @@ namespace wstl {
 
     #else
     template<typename Return, typename Arg1, typename Arg2>
-    class Function<Return(Arg1, Arg2)> : public IFunction<Return(Arg1, Arg2)> {
+    class Function<Return(Arg1, Arg2)> : public FunctionInterface<Return(Arg1, Arg2)> {
     public:
         Function() __WSTL_NOEXCEPT__ : m_Function(NullPointer) {}
 
@@ -452,7 +452,7 @@ namespace wstl {
     // Member 
 
     template<typename Object, typename Return, typename Arg1, typename Arg2>
-    class Function<Return(Arg1, Arg2), Object> : public IFunction<Return(Arg1, Arg2)> {
+    class Function<Return(Arg1, Arg2), Object> : public FunctionInterface<Return(Arg1, Arg2)> {
     public:
         typedef Object ObjectType;
 
@@ -503,7 +503,7 @@ namespace wstl {
     // Const member
 
     template<typename Object, typename Return, typename Arg1, typename Arg2>
-    class Function<Return(Arg1, Arg2), const Object> : public IFunction<Return(Arg1, Arg2)> {
+    class Function<Return(Arg1, Arg2), const Object> : public FunctionInterface<Return(Arg1, Arg2)> {
     public:
         typedef const Object ObjectType;
 
@@ -609,7 +609,7 @@ namespace wstl {
     // Function (1 argument)
 
     template<typename Return, typename Arg>
-    class Function<Return(Arg)> : public IFunction<Return(Arg)> {
+    class Function<Return(Arg)> : public FunctionInterface<Return(Arg)> {
     public:
         Function() __WSTL_NOEXCEPT__ : m_Function(NullPointer) {}
 
@@ -651,7 +651,7 @@ namespace wstl {
     // Member
 
     template<typename Object, typename Return, typename Arg>
-    class Function<Return(Arg), Object> : public IFunction<Return(Arg)> {
+    class Function<Return(Arg), Object> : public FunctionInterface<Return(Arg)> {
     public:
         typedef Object ObjectType;
 
@@ -703,7 +703,7 @@ namespace wstl {
     // Const member
 
     template<typename Object, typename Return, typename Arg>
-    class Function<Return(Arg), const Object> : public IFunction<Return(Arg)> {
+    class Function<Return(Arg), const Object> : public FunctionInterface<Return(Arg)> {
     public:
         typedef const Object ObjectType;
 
@@ -810,7 +810,7 @@ namespace wstl {
     // Function (no arguments)
 
     template<typename Return>
-    class Function<Return()> : public IFunction<Return()> {
+    class Function<Return()> : public FunctionInterface<Return()> {
     public:
         Function() __WSTL_NOEXCEPT__ : m_Function(NullPointer) {}
 
@@ -852,7 +852,7 @@ namespace wstl {
     // Member
 
     template<typename Object, typename Return>
-    class Function<Return(), Object> : public IFunction<Return()> {
+    class Function<Return(), Object> : public FunctionInterface<Return()> {
     public:
         typedef Object ObjectType;
 
@@ -904,7 +904,7 @@ namespace wstl {
     // Const member
 
     template<typename Object, typename Return>
-    class Function<Return(), const Object> : public IFunction<Return()> {
+    class Function<Return(), const Object> : public FunctionInterface<Return()> {
     public:
         typedef const Object ObjectType;
 
