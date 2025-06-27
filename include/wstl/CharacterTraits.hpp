@@ -99,11 +99,11 @@ namespace wstl {
     template<typename T>
     class CharacterTraits : public __private::__CharacterTraitsTypes<T> {
     public:
-        typedef typename __CharacterTraitsTypes<T>::CharacterType CharacterType;
-        typedef typename __CharacterTraitsTypes<T>::IntegerType IntegerType;
-        typedef typename __CharacterTraitsTypes<T>::OffsetType OffsetType;
-        typedef typename __CharacterTraitsTypes<T>::PositionType PositionType;
-        typedef typename __CharacterTraitsTypes<T>::StateType StateType;
+        typedef typename __private::__CharacterTraitsTypes<T>::CharacterType CharacterType;
+        typedef typename __private::__CharacterTraitsTypes<T>::IntegerType IntegerType;
+        typedef typename __private::__CharacterTraitsTypes<T>::OffsetType OffsetType;
+        typedef typename __private::__CharacterTraitsTypes<T>::PositionType PositionType;
+        typedef typename __private::__CharacterTraitsTypes<T>::StateType StateType;
 
         static __WSTL_CONSTEXPR__ bool Equal(CharacterType a, CharacterType b) {
             return a == b;
