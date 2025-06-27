@@ -36,9 +36,7 @@ namespace wstl {
         typedef typename TypedContainerBase<T>::ConstPointerType ConstPointerType;
 
         /// @brief Default constructor
-        Stack() : TypedContainerBase<T>(SIZE) {
-            Initialize();
-        }
+        Stack() : TypedContainerBase<T>(SIZE) {}
 
         /// @brief Constructor that initializes the stack with a range of elements
         /// @param first Iterator to the first element in the range
