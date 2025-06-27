@@ -67,9 +67,12 @@ namespace wstl {
 
             #ifdef __WSTL_CXX11__
             __WSTL_CONSTEXPR14__ __CircularIteratorCommon& operator=(__CircularIteratorCommon&& other) {
-                m_Begin = Move(other.m_Begin);
-                m_End = Move(other.m_End);
-                m_Current = Move(other.m_Current);
+                if(this != &other) {
+                    m_Begin = Move(other.m_Begin);
+                    m_End = Move(other.m_End);
+                    m_Current = Move(other.m_Current);
+                }
+                
                 return *this;
             }
 
