@@ -84,11 +84,11 @@ namespace wstl {
 
     #define __WSTL_COUNT_ARGS__(...) __WSTL_EXPAND__(__WSTL_COUNT_ARGS_IMPL__(__VA_ARGS__, 3,2,1,0))
     #define __WSTL_COUNT_ARGS_IMPL__(_1,_2,_3,N,...) N
+    
+    #define __WSTL_MAKE_EXCEPTION_IMPL__(count, ...) __WSTL_MAKE_EXCEPTION_##count(__VA_ARGS__)
+    #define __WSTL_MAKE_EXCEPTION_IMPL2__(count, ...) __WSTL_MAKE_EXCEPTION_IMPL__(count, __VA_ARGS__)
 
     #define WSTL_MAKE_EXCEPTION(...) __WSTL_MAKE_EXCEPTION_IMPL2__(__WSTL_COUNT_ARGS__(__VA_ARGS__), __VA_ARGS__) 
-
-    #define __WSTL_MAKE_EXCEPTION_IMPL2__(count, ...) __WSTL_MAKE_EXCEPTION_IMPL__(count, __VA_ARGS__)
-    #define __WSTL_MAKE_EXCEPTION_IMPL__(count, ...) __WSTL_MAKE_EXCEPTION_##count(__VA_ARGS__)
 }
 
 #endif
