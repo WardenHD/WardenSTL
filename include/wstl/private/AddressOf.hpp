@@ -1,3 +1,12 @@
+// Part of WardenSTL - https://github.com/WardenHD/WardenSTL
+// Copyright (c) 2025 Artem Bezruchko (WardenHD)
+//
+// This file is based on the Embedded Template Library (ETL)'s address_of implementation,
+// licensed under the MIT License, with minor modifications made for WardenSTL.
+//
+// Licensed under the MIT License. See LICENSE file for full details.
+
+
 #ifndef __WSTL_ADDRESSOF_HPP__
 #define __WSTL_ADDRESSOF_HPP__
 

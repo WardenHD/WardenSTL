@@ -1,7 +1,7 @@
 // Part of WardenSTL - https://github.com/WardenHD/WardenSTL
 // Copyright (c) 2025 Artem Bezruchko (WardenHD)
 //
-// This file is inspired by the Embedded Template Library (ETL)'s limits utilities,
+// This file is inspired by the Embedded Template Library (ETL)'s array container implementation,
 // and some concepts and functions have been adapted for WardenSTL.
 //
 // Licensed under the MIT License. See LICENSE file for details.
