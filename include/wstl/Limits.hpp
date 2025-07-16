@@ -313,7 +313,7 @@ namespace wstl {
     template<>
     class NumericLimits<signed char> : public __private::__IntegralLimitsCommon<> {
     public:
-        static const __WSTL_CONSTEXPR__ int Digits = (CHAR_BIT * sizeof(char)) - 1;
+        static const __WSTL_CONSTEXPR__ int Digits = (CHAR_BIT * sizeof(signed char)) - 1;
         static const __WSTL_CONSTEXPR__ int Digits10 = __WSTL_LOG10_2__(Digits);
         static const __WSTL_CONSTEXPR__ bool IsSigned = true;
         static const __WSTL_CONSTEXPR__ bool IsModulo = false;
@@ -334,7 +334,7 @@ namespace wstl {
     template<>
     class NumericLimits<unsigned char> : public __private::__IntegralLimitsCommon<> {
     public:
-        static const __WSTL_CONSTEXPR__ int Digits = (CHAR_BIT * sizeof(char));
+        static const __WSTL_CONSTEXPR__ int Digits = (CHAR_BIT * sizeof(unsigned char));
         static const __WSTL_CONSTEXPR__ int Digits10 = __WSTL_LOG10_2__(Digits);
         static const __WSTL_CONSTEXPR__ bool IsSigned = false;
         static const __WSTL_CONSTEXPR__ bool IsModulo = true;
@@ -464,7 +464,7 @@ namespace wstl {
     template<>
     class NumericLimits<unsigned short> : public __private::__IntegralLimitsCommon<> {
     public:
-        static const __WSTL_CONSTEXPR__ int Digits = (CHAR_BIT * sizeof(short));
+        static const __WSTL_CONSTEXPR__ int Digits = (CHAR_BIT * sizeof(unsigned short));
         static const __WSTL_CONSTEXPR__ int Digits10 = __WSTL_LOG10_2__(Digits);
         static const __WSTL_CONSTEXPR__ bool IsSigned = false;
         static const __WSTL_CONSTEXPR__ bool IsModulo = true;
@@ -506,7 +506,7 @@ namespace wstl {
     template<>
     class NumericLimits<unsigned int> : public __private::__IntegralLimitsCommon<> {
     public:
-        static const __WSTL_CONSTEXPR__ int Digits = (CHAR_BIT * sizeof(int));
+        static const __WSTL_CONSTEXPR__ int Digits = (CHAR_BIT * sizeof(unsigned int));
         static const __WSTL_CONSTEXPR__ int Digits10 = __WSTL_LOG10_2__(Digits);
         static const __WSTL_CONSTEXPR__ bool IsSigned = false;
         static const __WSTL_CONSTEXPR__ bool IsModulo = true;
@@ -548,7 +548,7 @@ namespace wstl {
     template<>
     class NumericLimits<unsigned long> : public __private::__IntegralLimitsCommon<> {
     public:
-        static const __WSTL_CONSTEXPR__ int Digits = (CHAR_BIT * sizeof(long));
+        static const __WSTL_CONSTEXPR__ int Digits = (CHAR_BIT * sizeof(unsigned long));
         static const __WSTL_CONSTEXPR__ int Digits10 = __WSTL_LOG10_2__(Digits);
         static const __WSTL_CONSTEXPR__ bool IsSigned = false;
         static const __WSTL_CONSTEXPR__ bool IsModulo = true;
