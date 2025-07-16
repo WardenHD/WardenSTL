@@ -341,8 +341,8 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/utility/tuple/make_tuple
     template<typename... Types>
     __WSTL_CONSTEXPR14__
-    inline Tuple<Types...> MakeTuple(Types&&... args) {
-        return Tuple<Types...>(Forward<Types>(args)...);
+    inline auto MakeTuple(Types&&... args) {
+        return Tuple<UnwrapReferenceDecayType<Types>...>(Forward<Types>(args)...);
     }
 
     // Tie

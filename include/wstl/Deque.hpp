@@ -1726,18 +1726,19 @@ namespace wstl {
     /// @param ...values Values to make the deque with
     /// @return A deque containing the given values
     /// @ingroup deque
-    template<typename T, typename... Values>
-    constexpr auto MakeDeque(Values&&... values) {
-        return Deque<T, sizeof...(values)>({ Forward<T>(values)... });
+    template<typename T, typename First, typename... Rest>
+    constexpr auto MakeDeque(First&& first, Rest&&... rest) {
+        return Deque<T, sizeof...(rest) + 1>({ Forward<First>(first), Forward<Rest>(rest)... });
     }
 
     /// @brief Makes a deque out of the given values
     /// @param ...values Values to make the deque with
     /// @return A deque containing the given values
     /// @ingroup deque
-    template<typename... Values>
-    constexpr auto MakeDeque(Values&&... values) {
-        return Deque<CommonTypeType<Values...>, sizeof...(values)>({ Forward<CommonTypeType<Values...>>(values)... });
+    template<typename First, typename... Rest>
+    constexpr auto MakeDeque(First&& first, Rest&&... rest) {
+        using T = CommonTypeType<First, Rest...>;
+        return Deque<T, sizeof...(rest) + 1>({ Forward<First>(first), Forward<Rest>(rest)... });
     }
     #endif
 

@@ -366,18 +366,19 @@ namespace wstl {
     /// @param values Values to initialize the stack with
     /// @return A stack containing the given values
     /// @ingroup stack
-    template<typename T, typename... Values>
-    constexpr auto MakeStack(Values&&... values) {
-        return Stack<T, sizeof...(values)>({ Forward<T>(values)... });
+    template<typename T, typename First, typename... Rest>
+    constexpr auto MakeStack(First&& first, Rest&&... rest) {
+        return Stack<T, sizeof...(rest) + 1>({ Forward<First>(first), Forward<Rest>(rest)... });
     }
 
     /// @brief Makes a stack out of the given values
     /// @param values Values to initialize the stack with
     /// @return A stack containing the given values
     /// @ingroup stack
-    template<typename... Values>
-    constexpr auto MakeStack(Values&&... values) {
-        return Stack<CommonTypeType<Values...>, sizeof...(values)>({ Forward<CommonTypeType<Values...>>(values)... });
+    template<typename First, typename... Rest>
+    constexpr auto MakeStack(First&& first, Rest&&... rest) {
+        using T = CommonTypeType<First, Rest...>;
+        return Stack<T, sizeof...(rest) + 1>({ Forward<T>(first), Forward<T>(rest)... });
     }
     #endif
 }
