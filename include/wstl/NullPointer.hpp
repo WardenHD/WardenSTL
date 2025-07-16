@@ -19,7 +19,7 @@
 
 namespace wstl {
     #ifndef __WSTL_CXX11__
-    class nullptr_t {
+    class NullPointerType {
     public:
         template<class T>
         inline operator T*() const { return 0; }
@@ -27,22 +27,23 @@ namespace wstl {
         template<class T, class U>
         inline operator T U::*() const { return 0; }
 
-        inline bool operator==(nullptr_t) const { return true; }
-        inline bool operator!=(nullptr_t) const { return false; }
+        inline bool operator==(NullPointerType) const { return true; }
+        inline bool operator!=(NullPointerType) const { return false; }
 
     private:
         void operator&() const __WSTL_DELETE__;
     };
 
-    #define __WSTL_NULLPTR__ nullptr_t()
+    #define __WSTL_NULLPTR__ NullPointerType()
     #else
-    using nullptr_t = decltype(nullptr);
+    using NullPointerType = decltype(nullptr);
     #define __WSTL_NULLPTR__ nullptr
     #endif
     
-    static const nullptr_t NullPointer = __WSTL_NULLPTR__;
-    /// @brief Type alias of `nullptr_t` for consistent naming
-    typedef nullptr_t NullPointerType;
+    static const __WSTL_CONSTEXPR__ NullPointerType NullPointer = __WSTL_NULLPTR__;
+    
+    /// @brief Type alias for STL naming support
+    typedef NullPointerType nullptr_t;
 }
 
 #endif

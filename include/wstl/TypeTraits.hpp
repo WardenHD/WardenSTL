@@ -18,10 +18,10 @@
 
 namespace wstl {
     #ifdef __WSTL_CXX11__
+    /// @brief Type alias for STL naming support
     template<typename...>
     using void_t = void;
 
-    /// @brief Type alias of `void_t` for consistent naming
     template<typename...>
     using VoidType = void;
     #endif
