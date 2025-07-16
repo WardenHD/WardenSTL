@@ -41,7 +41,7 @@ namespace wstl {
             #endif
 
             /// @copydoc Exception::Name()
-            virtual StringType Name() const __WSTL_NOEXCEPT__ __WSTL_OVERRIDE__ {
+            __WSTL_CONSTEXPR20__ virtual StringType Name() const __WSTL_NOEXCEPT__ __WSTL_OVERRIDE__ {
                 return "LengthError";
             }
     };
@@ -71,8 +71,38 @@ namespace wstl {
             #endif
 
             /// @copydoc Exception::Name()
-            virtual StringType Name() const __WSTL_NOEXCEPT__ __WSTL_OVERRIDE__ {
+            __WSTL_CONSTEXPR20__ virtual StringType Name() const __WSTL_NOEXCEPT__ __WSTL_OVERRIDE__ {
                 return "OutOfRange";
+            }
+    };
+
+    /// @brief Exception thrown when a bad cast is attempted
+    /// @ingroup standard_exceptions
+    /// @see https://en.cppreference.com/w/cpp/error/out_of_range
+    class BadCast : public Exception {
+        public:
+            #ifdef __WSTL_EXCEPTION_LOCATION__
+            /// @brief Constructor
+            /// @param file File where the exception occurred
+            /// @param line Line number where the exception occurred
+            __WSTL_CONSTEXPR__ BadCast(StringType file, NumericType line) : Exception("Bad cast", file, line) {}
+
+            /// @brief Constructor
+            /// @param file File where the exception occurred
+            /// @param line Line number where the exception occurred
+            __WSTL_CONSTEXPR__ OutOfRange(StringType message, StringType file, NumericType line) : Exception(message, file, line) {}
+            #else
+            /// @brief Constructor
+            __WSTL_CONSTEXPR__ BadCast() : Exception("Bad cast") {}
+
+            /// @brief Constructor with a message
+            /// @param message Message describing the exception
+            __WSTL_CONSTEXPR__ BadCast(StringType message) : Exception(message) {}
+            #endif
+
+            /// @copydoc Exception::Name()
+            __WSTL_CONSTEXPR20__ virtual StringType Name() const __WSTL_NOEXCEPT__ __WSTL_OVERRIDE__ {
+                return "BadCast";
             }
     };
 }
