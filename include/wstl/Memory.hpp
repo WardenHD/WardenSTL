@@ -144,7 +144,7 @@ namespace wstl {
         typedef T& ReferenceType;
         
         /// @brief Default constructor
-        __WSTL_CONSTEXPR__ UniquePointer() : m_Pointer(NullPointer) __WSTL_NOEXCEPT__ {}
+        __WSTL_CONSTEXPR__ UniquePointer() : m_Pointer(__WSTL_NULLPTR__) __WSTL_NOEXCEPT__ {}
 
         /// @brief Parameterized constructor
         /// @param pointer The pointer to the object being managed
@@ -195,7 +195,7 @@ namespace wstl {
 
         /// @brief Destructor
         ~UniquePointer() {
-            if(m_Pointer != NullPointer) deleter(m_Pointer);
+            if(m_Pointer != __WSTL_NULLPTR__) deleter(m_Pointer);
         }
 
         #ifdef __WSTL_CXX11__
@@ -215,7 +215,7 @@ namespace wstl {
         template<typename U, typename E>
         UniquePointer& operator=(UniquePointer<U, E>&& other) __WSTL_NOEXCEPT__ {
             if(&other != this) {
-                Reset(NullPointer);
+                Reset(__WSTL_NULLPTR__);
                 m_Pointer = other.Release();
                 m_Deleter = Forward<E>(other.m_Deleter);
             }
@@ -245,17 +245,17 @@ namespace wstl {
         /// @return The pointer to the object being managed
         PointerType Release() __WSTL_NOEXCEPT__ {
             PointerType value = m_Pointer;
-            m_Pointer = NullPointer;    
+            m_Pointer = __WSTL_NULLPTR__;    
             return value;
         }
 
         /// @brief Resets the managed object to a new pointer
         void Reset(PointerType pointer = PointerType()) __WSTL_NOEXCEPT__ {
-            if(m_Pointer == NullPointer || pointer != m_Pointer) {
+            if(m_Pointer == __WSTL_NULLPTR__ || pointer != m_Pointer) {
                 PointerType value = m_Pointer;
                 m_Pointer = pointer;
 
-                if(value != NullPointer) m_Deleter(value);
+                if(value != __WSTL_NULLPTR__) m_Deleter(value);
             }
         }
 
@@ -282,7 +282,7 @@ namespace wstl {
 
         /// @brief Returns true if the pointer is not null
         explicit operator bool() const __WSTL_NOEXCEPT__ {
-            return m_Pointer != NullPointer;
+            return m_Pointer != __WSTL_NULLPTR__;
         }
 
         /// @brief Dereference operator
@@ -395,7 +395,7 @@ namespace wstl {
         template<typename U, typename E>
         UniquePointer& operator=(UniquePointer<U, E>&& other) __WSTL_NOEXCEPT__ {
             if(&other != this) {
-                Reset(NullPointer);
+                Reset(__WSTL_NULLPTR__);
                 m_Pointer = other.Release();
                 m_Deleter = Forward<E>(other.m_Deleter);
             }
@@ -417,7 +417,7 @@ namespace wstl {
 
         /// @brief Assignment operator, assigns a null pointer
         UniquePointer& operator=(NullPointerType) __WSTL_NOEXCEPT__ {
-            Reset(NullPointer);
+            Reset(__WSTL_NULLPTR__);
             return *this;
         }
 
@@ -425,7 +425,7 @@ namespace wstl {
         /// @return The pointer to the object being managed
         PointerType Release() __WSTL_NOEXCEPT__ {
             PointerType value = m_Pointer;
-            m_Pointer = NullPointer;    
+            m_Pointer = __WSTL_NULLPTR__;    
             return value;
         }
 
@@ -437,12 +437,12 @@ namespace wstl {
                 PointerType value = m_Pointer;
                 m_Pointer = pointer;
 
-                if(value != NullPointer) m_Deleter(value);
+                if(value != __WSTL_NULLPTR__) m_Deleter(value);
             }
         }
 
         /// @brief Resets the managed object to a null pointer
-        void Reset(NullPointerType = NullPointer) __WSTL_NOEXCEPT__ {
+        void Reset(NullPointerType = __WSTL_NULLPTR__) __WSTL_NOEXCEPT__ {
             Reset(PointerType());
         }
 
@@ -469,7 +469,7 @@ namespace wstl {
 
         /// @brief Returns true if the pointer is not null
         explicit operator bool() const __WSTL_NOEXCEPT__ {
-            return m_Pointer != NullPointer;
+            return m_Pointer != __WSTL_NULLPTR__;
         }
 
         /// @brief Dereference operator
