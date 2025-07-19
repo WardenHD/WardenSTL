@@ -35,7 +35,7 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/types/integral_constant
     template <typename T, T V>
     struct IntegralConstant {
-        static const T Value = V;
+        static const __WSTL_CONSTEXPR__ T Value = V;
 
         typedef T ValueType;
         typedef IntegralConstant<T, V> Type; 
