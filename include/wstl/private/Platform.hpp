@@ -22,6 +22,10 @@
 /// A set of mathematical templates
 /// @ingroup wstl
 
+/// @defgroup binary Binary
+/// A set of binary templates
+/// @ingroup wstl
+
 /// @brief Main namespace of WardenSTL library
 /// @ingroup wstl
 namespace wstl {
