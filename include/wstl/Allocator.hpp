@@ -26,20 +26,12 @@ namespace wstl {
         /// @brief Constructor
         /// @param file File where the exception occurred
         /// @param line Line number where the exception occurred
-        __WSTL_CONSTEXPR__ BadAllocation(StringType file, NumericType line) : Exception("Bad allocation", file, line) {}
-
-        /// @brief Constructor with a message
-        /// @param message The exception message
-        /// @param file File where the exception occurred
-        /// @param line Line number where the exception occurred
-        __WSTL_CONSTEXPR__ BadAllocation(StringType message, StringType file, NumericType line) : Exception(message, file, line) {}
+        /// @param message The exception message, default is `Bad allocation`
+        __WSTL_CONSTEXPR__ BadAllocation(StringType file, NumericType line, StringType message = "Bad allocation") : Exception(file, line, message) {}
         #else
         /// @brief Constructor
-        __WSTL_CONSTEXPR__ BadAllocation() : Exception("Bad allocation") {}
-
-        /// @brief Constructor with a message
-        /// @param message The exception message
-        __WSTL_CONSTEXPR__ BadAllocation(StringType message) : Exception(message) {}
+        /// @param message The exception message, default is `Bad allocation`
+        __WSTL_CONSTEXPR__ BadAllocation(StringType message = "Bad allocation") : Exception(message) {}
         #endif
 
         /// @copydoc Exception::Name()

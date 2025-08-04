@@ -18,26 +18,18 @@ namespace wstl {
     /// @brief Exception thrown when exceeding the length of a container
     /// @ingroup standard_exceptions
     /// @see https://en.cppreference.com/w/cpp/error/length_error
-    class LengthError : public Exception {
+    class LengthError __WSTL_FINAL__ : public Exception {
         public:
             #ifdef __WSTL_EXCEPTION_LOCATION__
             /// @brief Constructor
             /// @param file File where the exception occurred
             /// @param line Line number where the exception occurred
-            __WSTL_CONSTEXPR__ LengthError(StringType file, NumericType line) : Exception("Length error", file, line) {}
-
-            /// @brief Constructor with message
-            /// @param message Message describing the exception
-            /// @param file File where the exception occurred
-            /// @param line Line number where the exception occurred
-            __WSTL_CONSTEXPR__ LengthError(StringType message, StringType file, NumericType line) : Exception(message, file, line) {}
+            /// @param message Message describing the exception, default is `Length error`
+            __WSTL_CONSTEXPR__ LengthError(StringType file, NumericType line, StringType message = "Length error") : Exception(file, line, message) {}
             #else
-            /// @brief Constructor
-            __WSTL_CONSTEXPR__ LengthError() : Exception("Length error") {}
-
             /// @brief Constructor with message
-            /// @param message Message describing the exception
-            __WSTL_CONSTEXPR__ LengthError(StringType message) : Exception(message) {}
+            /// @param message Message describing the exception, default is `Length error`
+            __WSTL_CONSTEXPR__ LengthError(StringType message = "Length error") : Exception(message) {}
             #endif
 
             /// @copydoc Exception::Name()
@@ -49,25 +41,18 @@ namespace wstl {
     /// @brief Exception thrown when accessed element is out of range
     /// @ingroup standard_exceptions
     /// @see https://en.cppreference.com/w/cpp/error/out_of_range
-    class OutOfRange : public Exception {
+    class OutOfRange __WSTL_FINAL__ : public Exception {
         public:
             #ifdef __WSTL_EXCEPTION_LOCATION__
             /// @brief Constructor
             /// @param file File where the exception occurred
             /// @param line Line number where the exception occurred
-            __WSTL_CONSTEXPR__ OutOfRange(StringType file, NumericType line) : Exception("Out of range", file, line) {}
-
-            /// @brief Constructor
-            /// @param file File where the exception occurred
-            /// @param line Line number where the exception occurred
-            __WSTL_CONSTEXPR__ OutOfRange(StringType message, StringType file, NumericType line) : Exception(message, file, line) {}
+            /// @param message Message describing the exception, default is `Out of range`
+            __WSTL_CONSTEXPR__ OutOfRange(StringType file, NumericType line, StringType message = "Out of range") : Exception(file, line, message) {}
             #else
             /// @brief Constructor
-            __WSTL_CONSTEXPR__ OutOfRange() : Exception("Out of range") {}
-
-            /// @brief Constructor with a message
-            /// @param message Message describing the exception
-            __WSTL_CONSTEXPR__ OutOfRange(StringType message) : Exception(message) {}
+            /// @param message Message describing the exception, default is `Out of range`
+            __WSTL_CONSTEXPR__ OutOfRange(StringType message = "Out of range") : Exception(message) {}
             #endif
 
             /// @copydoc Exception::Name()
@@ -79,30 +64,46 @@ namespace wstl {
     /// @brief Exception thrown when a bad cast is attempted
     /// @ingroup standard_exceptions
     /// @see https://en.cppreference.com/w/cpp/error/out_of_range
-    class BadCast : public Exception {
+    class BadCast __WSTL_FINAL__ : public Exception {
         public:
             #ifdef __WSTL_EXCEPTION_LOCATION__
             /// @brief Constructor
             /// @param file File where the exception occurred
             /// @param line Line number where the exception occurred
-            __WSTL_CONSTEXPR__ BadCast(StringType file, NumericType line) : Exception("Bad cast", file, line) {}
-
-            /// @brief Constructor
-            /// @param file File where the exception occurred
-            /// @param line Line number where the exception occurred
-            __WSTL_CONSTEXPR__ OutOfRange(StringType message, StringType file, NumericType line) : Exception(message, file, line) {}
+            /// @param message Message describing the exception, default is `Bad cast`
+            __WSTL_CONSTEXPR__ BadCast(StringType file, NumericType line, StringType message = "Bad cast") : Exception(file, line, message) {}
             #else
-            /// @brief Constructor
-            __WSTL_CONSTEXPR__ BadCast() : Exception("Bad cast") {}
-
             /// @brief Constructor with a message
-            /// @param message Message describing the exception
-            __WSTL_CONSTEXPR__ BadCast(StringType message) : Exception(message) {}
+            /// @param message Message describing the exception, default is `Bad cast`
+            __WSTL_CONSTEXPR__ BadCast(StringType message = "Bad cast") : Exception(message) {}
             #endif
 
             /// @copydoc Exception::Name()
             __WSTL_CONSTEXPR20__ virtual StringType Name() const __WSTL_NOEXCEPT__ __WSTL_OVERRIDE__ {
                 return "BadCast";
+            }
+    };
+
+    /// @brief Exception thrown when a logic error occurs
+    /// @ingroup standard_exceptions
+    /// @see https://en.cppreference.com/w/cpp/error/logic_error
+    class LogicError __WSTL_FINAL__ : public Exception {
+        public:
+            #ifdef __WSTL_EXCEPTION_LOCATION__
+            /// @brief Constructor
+            /// @param file File where the exception occurred
+            /// @param line Line number where the exception occurred
+            /// @param message Message describing the exception, default is `Logic error`
+            __WSTL_CONSTEXPR__ LogicError(StringType file, NumericType line, StringType message = "Logic error") : Exception(file, line, message) {}
+            #else
+            /// @brief Constructor
+            /// @param message Message describing the exception, default is `Logic error`
+            __WSTL_CONSTEXPR__ LogicError(StringType message = "Logic error") : Exception(message) {}
+            #endif
+
+            /// @copydoc Exception::Name()
+            __WSTL_CONSTEXPR20__ virtual StringType Name() const __WSTL_NOEXCEPT__ __WSTL_OVERRIDE__ {
+                return "LogicError";
             }
     };
 }

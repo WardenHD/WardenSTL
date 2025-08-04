@@ -22,26 +22,18 @@ namespace wstl {
     /// @brief Exception class for invalid function calls
     /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/bad_function_call
-    class BadFunctionCall : public Exception {
+    class BadFunctionCall __WSTL_FINAL__ : public Exception {
     public:
         #ifdef __WSTL_EXCEPTION_LOCATION__
         /// @brief Constructor
         /// @param file The name of the source file where the exception occurred
         /// @param line The line number in the source file where the exception occurred
-        BadFunctionCall(StringType file, NumericType line) : Exception("Bad function call", file, line) {}
-
-        /// @brief Constructor with a message
-        /// @param message The message describing the exception
-        /// @param file The name of the source file where the exception occurred
-        /// @param line The line number in the source file where the exception occurred
-        BadFunctionCall(StringType message, StringType file, NumericType line) : Exception(message, file, line) {}
+        /// @param message The message describing the exception, default is `Bad function call`
+        BadFunctionCall(StringType file, NumericType line, StringType message = "Bad function call") : Exception(file, line, message) {}
         #else
-        /// @brief Default constructor
-        BadFunctionCall() : Exception("Bad function call") {}
-
-        /// @brief Constructor with message
-        /// @param message The exception message
-        BadFunctionCall(StringType message) : Exception(message) {}
+        /// @brief Constructor
+        /// @param message The exception message, default is `Bad function call`
+        BadFunctionCall(StringType message = "Bad function call") : Exception(message) {}
         #endif
 
         /// @copydoc Exception::Name()

@@ -24,11 +24,11 @@ namespace wstl {
 
         #ifdef __WSTL_EXCEPTION_LOCATION__
         /// @brief Constructor
-        /// @param message The exception message
         /// @param file File (usually __FILE__)
         /// @param line Line number (usually __LINE__)
+        /// @param message The exception message
         /// @note This is only available if __WSTL_EXCEPTION_LOCATION__ is defined
-        __WSTL_CONSTEXPR__ Exception(StringType message, StringType file, NumericType line)
+        __WSTL_CONSTEXPR__ Exception(StringType file, NumericType line, StringType message)
             : m_Message(message), m_Line(line), m_Filename(file) {}
 
         #else 
@@ -74,7 +74,7 @@ namespace wstl {
 
     #ifdef __WSTL_EXCEPTION_LOCATION__
     #define __WSTL_MAKE_EXCEPTION_1(exception) exception(__FILE__, __LINE__)
-    #define __WSTL_MAKE_EXCEPTION_2(exception, message) exception(message, __FILE__, __LINE__)
+    #define __WSTL_MAKE_EXCEPTION_2(exception, message) exception(__FILE__, __LINE__, message)
     #else
     #define __WSTL_MAKE_EXCEPTION_1(exception) exception()
     #define __WSTL_MAKE_EXCEPTION_2(exception, message) exception(message)
