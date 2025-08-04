@@ -848,7 +848,7 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/numeric/rotl
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsUnsigned<T>::Value, T>::Type RotateLeft(T value, int shift) __WSTL_NOEXCEPT__ {
-        const int n = NumericLimits<T>::Digits;
+        const __WSTL_CONSTEXPR14__ int n = NumericLimits<T>::Digits;
         const int r = ((shift % n) + n) % n;
         return (value << r) | (value >> (n - r));
     }
