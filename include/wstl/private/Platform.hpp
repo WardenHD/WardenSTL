@@ -22,6 +22,10 @@
 /// A set of mathematical templates
 /// @ingroup wstl
 
+/// @defgroup hash Hash
+/// A set of hash templates
+/// @ingroup maths
+
 /// @defgroup binary Binary
 /// A set of binary templates
 /// @ingroup wstl
@@ -41,6 +45,10 @@ namespace wstl {
     /// @brief Namespace that holds compile-time equivalents of functions
     /// @ingroup wstl
     namespace compile {}
+
+    /// @brief Namespace that holds hash functions
+    /// @ingroup hash
+    namespace hash {}
 }
 
 // C++ version defines
