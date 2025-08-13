@@ -18,6 +18,7 @@
 #include "CircularIterator.hpp"
 #include "Byte.hpp"
 #include "StandardExceptions.hpp"
+#include "Hash.hpp"
 #include <stddef.h>
 
 
@@ -677,6 +678,15 @@ namespace wstl {
     template<typename T, size_t Extent>
     Span(const Span<T, Extent>&) -> Span<T, Extent>;
     #endif
+
+    // Hash specialization
+
+    template<typename T, size_t Extent>
+    struct Hash<Span<T, Extent> > {
+        __WSTL_CONSTEXPR14__ size_t operator()(const Span<T>& view) {
+            return __private::__GenericHash<size_t>(reinterpret_cast<const uint8_t*>(view.Data()), reinterpret_cast<const uint8_t*>(view.Data()) + view.Size());
+        }
+    };
 
     // Comparison operators
 
