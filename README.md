@@ -5,9 +5,9 @@ in it. It aims to support C++98/03 and bring some functions from newer versions,
 ## Main Features
  - No dynamic memory allocation
  - No RTTI
- - Fixed size containers (will be added soon)
- - CRC calculations
- - Checksum & hash functions (will be added soon)
+ - Fixed size containers (in progress)
+ - CRC calculations (will be added soon)
+ - Checksum & hash functions (in progress)
  - Error handling
  - Templates for buffers, streams (will be added soon)
  - Very small usage of virtual functions. They are used only if they are really needed
