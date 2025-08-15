@@ -11,7 +11,7 @@
 
 
 namespace wstl {
-    /// @brief Base class for hashers
+    /// @brief Base class for hash/checksum algorithms
     /// @tparam Derived The derived class that implements the hashing logic
     /// @tparam THash The type of the hash value, typically an unsigned integer type
     /// @tparam TValue The type of the value being hashed, typically an unsigned integer type
