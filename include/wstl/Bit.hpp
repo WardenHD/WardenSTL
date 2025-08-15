@@ -160,7 +160,7 @@ namespace wstl {
     /// @ingroup binary
     /// @see https://en.cppreference.com/w/cpp/numeric/countl_zero
     template<typename T>
-    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 1, int>::Type CountLeftZero(T value) __WSTL_NOEXCEPT__ {
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 1, uint_least8_t>::Type CountLeftZero(T value) __WSTL_NOEXCEPT__ {
         if(value == 0) return 8;
 
         int count = 0;
@@ -189,7 +189,7 @@ namespace wstl {
     /// @ingroup binary
     /// @see https://en.cppreference.com/w/cpp/numeric/countl_zero
     template<typename T>
-    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 2, int>::Type CountLeftZero(T value) __WSTL_NOEXCEPT__ {
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 2, uint_least8_t>::Type CountLeftZero(T value) __WSTL_NOEXCEPT__ {
         if(value == 0) return 16;
 
         int count = 0;
@@ -223,7 +223,7 @@ namespace wstl {
     /// @ingroup binary
     /// @see https://en.cppreference.com/w/cpp/numeric/countl_zero
     template<typename T>
-    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 4, int>::Type CountLeftZero(T value) __WSTL_NOEXCEPT__ {
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 4, uint_least8_t>::Type CountLeftZero(T value) __WSTL_NOEXCEPT__ {
         if(value == 0) return 32;
 
         int count = 0;
@@ -262,7 +262,7 @@ namespace wstl {
     /// @ingroup binary
     /// @see https://en.cppreference.com/w/cpp/numeric/countl_zero
     template<typename T>
-    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 8, int>::Type CountLeftZero(T value) __WSTL_NOEXCEPT__ {
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 8, uint_least8_t>::Type CountLeftZero(T value) __WSTL_NOEXCEPT__ {
         if(value == 0) return 64;
 
         int count = 0;
@@ -306,7 +306,7 @@ namespace wstl {
     /// @ingroup binary
     /// @see https://en.cppreference.com/w/cpp/numeric/countl_zero
     template<typename T>
-    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsSigned<T>::Value, int>::Type CountLeftZero(T value) __WSTL_NOEXCEPT__ {
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsSigned<T>::Value, uint_least8_t>::Type CountLeftZero(T value) __WSTL_NOEXCEPT__ {
         typedef typename MakeUnsigned<T>::Type U;  
         return CountLeftZero<U>(static_cast<U>(value));
     }
@@ -323,7 +323,7 @@ namespace wstl {
     /// @ingroup binary
     /// @see https://en.cppreference.com/w/cpp/numeric/countr_zero
     template<typename T>
-    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 1, int>::Type CountRightZero(T value) __WSTL_NOEXCEPT__ {
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 1, uint_least8_t>::Type CountRightZero(T value) __WSTL_NOEXCEPT__ {
         if(value == 0) return 8;
 
         int count = 0;
@@ -352,7 +352,7 @@ namespace wstl {
     /// @ingroup binary
     /// @see https://en.cppreference.com/w/cpp/numeric/countr_zero
     template<typename T>
-    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 2, int>::Type CountRightZero(T value) __WSTL_NOEXCEPT__ {
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 2, uint_least8_t>::Type CountRightZero(T value) __WSTL_NOEXCEPT__ {
         if(value == 0) return 16;
 
         int count = 0;
@@ -386,7 +386,7 @@ namespace wstl {
     /// @ingroup binary
     /// @see https://en.cppreference.com/w/cpp/numeric/countr_zero
     template<typename T>
-    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 4, int>::Type CountRightZero(T value) __WSTL_NOEXCEPT__ {
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 4, uint_least8_t>::Type CountRightZero(T value) __WSTL_NOEXCEPT__ {
         if(value == 0) return 32;
 
         int count = 0;
@@ -425,7 +425,7 @@ namespace wstl {
     /// @ingroup binary
     /// @see https://en.cppreference.com/w/cpp/numeric/countr_zero
     template<typename T>
-    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 8, int>::Type CountRightZero(T value) __WSTL_NOEXCEPT__ {
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 8, uint_least8_t>::Type CountRightZero(T value) __WSTL_NOEXCEPT__ {
         if(value == 0) return 64;
 
         int count = 0;
@@ -469,7 +469,7 @@ namespace wstl {
     /// @ingroup binary
     /// @see https://en.cppreference.com/w/cpp/numeric/countr_zero
     template<typename T>
-    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsSigned<T>::Value, int>::Type CountRightZero(T value) __WSTL_NOEXCEPT__ {
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsSigned<T>::Value, uint_least8_t>::Type CountRightZero(T value) __WSTL_NOEXCEPT__ {
         return CountRightZero(static_cast<typename MakeUnsigned<T>::Type>(value));
     }
 
@@ -485,7 +485,7 @@ namespace wstl {
     /// @ingroup binary
     /// @see https://en.cppreference.com/w/cpp/numeric/countl_one
     template<typename T>
-    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 1, int>::Type CountLeftOne(T value) __WSTL_NOEXCEPT__ {
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 1, uint_least8_t>::Type CountLeftOne(T value) __WSTL_NOEXCEPT__ {
         if(value == 0xFFU) return 8;
 
         int count = 0;
@@ -514,7 +514,7 @@ namespace wstl {
     /// @ingroup binary
     /// @see https://en.cppreference.com/w/cpp/numeric/countl_one
     template<typename T>
-    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 2, int>::Type CountLeftOne(T value) __WSTL_NOEXCEPT__ {
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 2, uint_least8_t>::Type CountLeftOne(T value) __WSTL_NOEXCEPT__ {
         if(value == 0xFFFFU) return 16;
 
         int count = 0;
@@ -548,7 +548,7 @@ namespace wstl {
     /// @ingroup binary
     /// @see https://en.cppreference.com/w/cpp/numeric/countl_one
     template<typename T>
-    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 4, int>::Type CountLeftOne(T value) __WSTL_NOEXCEPT__ {
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 4, uint_least8_t>::Type CountLeftOne(T value) __WSTL_NOEXCEPT__ {
         if(value == 0xFFFFFFFFUL) return 32;
 
         int count = 0;
@@ -587,7 +587,7 @@ namespace wstl {
     /// @ingroup binary
     /// @see https://en.cppreference.com/w/cpp/numeric/countl_one
     template<typename T>
-    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 8, int>::Type CountLeftOne(T value) __WSTL_NOEXCEPT__ {
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 8, uint_least8_t>::Type CountLeftOne(T value) __WSTL_NOEXCEPT__ {
         if(value == 0xFFFFFFFFFFFFFFFFULL) return 64;
 
         int count = 0;
@@ -631,7 +631,7 @@ namespace wstl {
     /// @ingroup binary
     /// @see https://en.cppreference.com/w/cpp/numeric/countl_one
     template<typename T>
-    inline __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsSigned<T>::Value, int>::Type CountLeftOne(T value) __WSTL_NOEXCEPT__ {
+    inline __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsSigned<T>::Value, uint_least8_t>::Type CountLeftOne(T value) __WSTL_NOEXCEPT__ {
         return CountLeftOne(static_cast<typename MakeUnsigned<T>::Type>(value));
     }
 
@@ -647,7 +647,7 @@ namespace wstl {
     /// @ingroup binary
     /// @see https://en.cppreference.com/w/cpp/numeric/countr_one
     template<typename T>
-    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 1, int>::Type CountRightOne(T value) __WSTL_NOEXCEPT__ {
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 1, uint_least8_t>::Type CountRightOne(T value) __WSTL_NOEXCEPT__ {
         if(value == 0xFFU) return 8;
 
         int count = 0;
@@ -676,7 +676,7 @@ namespace wstl {
     /// @ingroup binary
     /// @see https://en.cppreference.com/w/cpp/numeric/countr_one
     template<typename T>
-    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 2, int>::Type CountRightOne(T value) __WSTL_NOEXCEPT__ {
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 2, uint_least8_t>::Type CountRightOne(T value) __WSTL_NOEXCEPT__ {
         if(value == 0xFFFFU) return 16;
 
         int count = 0;
@@ -710,7 +710,7 @@ namespace wstl {
     /// @ingroup binary
     /// @see https://en.cppreference.com/w/cpp/numeric/countr_one
     template<typename T>
-    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 4, int>::Type CountRightOne(T value) __WSTL_NOEXCEPT__ {
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 4, uint_least8_t>::Type CountRightOne(T value) __WSTL_NOEXCEPT__ {
         if(value == 0xFFFFFFFFUL) return 32;
 
         int count = 0;
@@ -749,7 +749,7 @@ namespace wstl {
     /// @ingroup binary
     /// @see https://en.cppreference.com/w/cpp/numeric/countr_one
     template<typename T>
-    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 8, int>::Type CountRightOne(T value) __WSTL_NOEXCEPT__ {
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 8, uint_least8_t>::Type CountRightOne(T value) __WSTL_NOEXCEPT__ {
         if(value == 0xFFFFFFFFFFFFFFFFUL) return 32;
 
         int count = 0;
@@ -793,7 +793,7 @@ namespace wstl {
     /// @ingroup binary
     /// @see https://en.cppreference.com/w/cpp/numeric/countr_one
     template<typename T>
-    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsSigned<T>::Value, int>::Type CountRightOne(T value) __WSTL_NOEXCEPT__ {
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsSigned<T>::Value, uint_least8_t>::Type CountRightOne(T value) __WSTL_NOEXCEPT__ {
         return CountRightOne(static_cast<typename MakeUnsigned<T>::Type>(value));
     }
 
@@ -807,7 +807,7 @@ namespace wstl {
     /// @ingroup binary
     /// @see https://en.cppreference.com/w/cpp/numeric/bit_width
     template<typename T>
-    __WSTL_CONSTEXPR14__ typename EnableIf<IsUnsigned<T>::Value, int>::Type BitWidth(T value) __WSTL_NOEXCEPT__ {
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsUnsigned<T>::Value, uint_least8_t>::Type BitWidth(T value) __WSTL_NOEXCEPT__ {
         return NumericLimits<T>::Digits - CountLeftZero(value);
     }
 
@@ -880,11 +880,11 @@ namespace wstl {
     /// @ingroup binary
     /// @see https://en.cppreference.com/w/cpp/numeric/popcount
     template<typename T>
-    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 1, int>::Type PopulationCount(T value) __WSTL_NOEXCEPT__ {
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 1, uint_least8_t>::Type PopulationCount(T value) __WSTL_NOEXCEPT__ {
         value -= ((value >> 1) & 0x55);
         value = (value & 0x33) + ((value >> 2) & 0x33);
         value = (value + (value >> 4)) & 0x0F;
-        return static_cast<int>(value); 
+        return static_cast<uint_least8_t>(value); 
     }
 
     // 2-byte
@@ -896,12 +896,12 @@ namespace wstl {
     /// @ingroup binary
     /// @see https://en.cppreference.com/w/cpp/numeric/popcount
     template<typename T>
-    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 2, int>::Type PopulationCount(T value) __WSTL_NOEXCEPT__ {
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 2, uint_least8_t>::Type PopulationCount(T value) __WSTL_NOEXCEPT__ {
         value -= ((value >> 1) & 0x5555U);
         value = (value & 0x3333U) + ((value >> 2) & 0x3333U);
         value = (value + (value >> 4)) & 0x0F0FU;
         value = (value + (value >> 8)) & 0x00FFU;
-        return static_cast<int>(value);
+        return static_cast<uint_least8_t>(value);
     }
 
     // 4-byte
@@ -913,11 +913,11 @@ namespace wstl {
     /// @ingroup binary
     /// @see https://en.cppreference.com/w/cpp/numeric/popcount
     template<typename T>
-    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 4, int>::Type PopulationCount(T value) __WSTL_NOEXCEPT__ {
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 4, uint_least8_t>::Type PopulationCount(T value) __WSTL_NOEXCEPT__ {
         value -= ((value >> 1) & 0x55555555U);
         value = (value & 0x33333333U) + ((value >> 2) & 0x33333333U);
         value = (value + (value >> 4)) & 0x0F0F0F0FU;
-        return static_cast<int>((value * 0x01010101U) >> 24);
+        return static_cast<uint_least8_t>((value * 0x01010101U) >> 24);
     }
 
     // 8-byte
@@ -929,12 +929,122 @@ namespace wstl {
     /// @ingroup binary
     /// @see https://en.cppreference.com/w/cpp/numeric/popcount
     template<typename T>
-    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 8, int>::Type PopulationCount(T value) __WSTL_NOEXCEPT__ {
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 8, uint_least8_t>::Type PopulationCount(T value) __WSTL_NOEXCEPT__ {
         value -= (value >> 1) & 0x5555555555555555ULL;
         value = (value & 0x3333333333333333ULL) + ((value >> 2) & 0x3333333333333333ULL);
         value = (value + (value >> 4)) & 0x0F0F0F0F0F0F0F0FULL;
         value *= 0x0101010101010101ULL;
-        return static_cast<int>(value >> 56);
+        return static_cast<uint_least8_t>(value >> 56);
+    }
+
+    // Parity
+
+    // 1-byte
+
+    /// @brief Computes the parity of an unsigned integral value - for 1-byte types
+    /// @tparam T Type of the value, must be an unsigned integral type
+    /// @param value The value to compute parity for
+    /// @return The parity of the value (0 for even number of 1 bits, 1 for odd number of 1 bits)
+    /// @ingroup binary
+    template<typename T>
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 1, uint_least8_t>::Type Parity(T value) __WSTL_NOEXCEPT__ {
+        value ^= value >> 4U;
+        value &= 0x0FU;
+        return (0x6996U >> value) & 1U;
+    }
+
+    // 2-byte
+
+    /// @brief Computes the parity of an unsigned integral value - for 2-byte types
+    /// @tparam T Type of the value, must be an unsigned integral type
+    /// @param value The value to compute parity for
+    /// @return The parity of the value (0 for even number of 1 bits, 1 for odd number of 1 bits)
+    /// @ingroup binary
+    template<typename T>
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 2, uint_least8_t>::Type Parity(T value) __WSTL_NOEXCEPT__ {
+        value ^= value >> 8U;
+        value ^= value >> 4U;
+        value &= 0x0FU;
+        return (0x6996U >> value) & 1U;
+    }
+
+    // 4-byte
+
+    /// @brief Computes the parity of an unsigned integral value - for 4-byte types
+    /// @tparam T Type of the value, must be an unsigned integral type
+    /// @param value The value to compute parity for
+    /// @return The parity of the value (0 for even number of 1 bits, 1 for odd number of 1 bits)
+    /// @ingroup binary
+    template<typename T>
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 4, uint_least8_t>::Type Parity(T value) __WSTL_NOEXCEPT__ {
+        value ^= value >> 16U;
+        value ^= value >> 8U;
+        value ^= value >> 4U;
+        value &= 0x0FU;
+        return (0x6996U >> value) & 1U;
+    }
+
+    // 8-byte
+
+    /// @brief Computes the parity of an unsigned integral value - for 8-byte types
+    /// @tparam T Type of the value, must be an unsigned integral type
+    /// @param value The value to compute parity for
+    /// @return The parity of the value (0 for even number of 1 bits, 1 for odd number of 1 bits)
+    /// @ingroup binary
+    template<typename T>
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 8, uint_least8_t>::Type Parity(T value) __WSTL_NOEXCEPT__ {
+        value ^= value >> 32U;
+        value ^= value >> 16U;
+        value ^= value >> 8U;
+        value ^= value >> 4U;
+        value &= 0x0FU;
+        return (0x69966996UL >> value) & 1U;
+    }
+
+    // For signed types
+
+    /// @brief Computes the parity of a signed integral value
+    /// @tparam T Type of the value, must be an integral signed type
+    /// @param value The value to compute parity for
+    /// @return The parity of the value (0 for even number of 1 bits, 1 for odd number of 1 bits)
+    /// @ingroup binary
+    template<typename T>
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsSigned<T>::Value, uint_least8_t>::Type Parity(T value) __WSTL_NOEXCEPT__ {
+        return Parity(static_cast<typename MakeUnsigned<T>::Type>(value));
+    }
+
+    // Set flag
+
+    /// @brief Sets a specific flag in an object
+    /// @param object The object to modify
+    /// @param flag The flag to set
+    /// @ingroup binary
+    template<typename T>
+    __WSTL_CONSTEXPR14__ inline void SetFlag(T& object, T flag) __WSTL_NOEXCEPT__ {
+        object |= flag;
+    }
+
+    // Unset flag
+
+    /// @brief Unsets a specific flag in an object
+    /// @param object The object to modify
+    /// @param flag The flag to unset
+    /// @ingroup binary
+    template<typename T>
+    __WSTL_CONSTEXPR14__ inline void UnsetFlag(T& object, T flag) __WSTL_NOEXCEPT__ {
+        object &= ~flag;
+    }
+
+    // Test flag
+
+    /// @brief Tests if a specific flag is set in an object
+    /// @param object The object to check
+    /// @param flag The flag to test
+    /// @return True if the flag is set, false otherwise
+    /// @ingroup binary
+    template<typename T>
+    __WSTL_CONSTEXPR14__ inline bool TestFlag(const T& object, T flag) __WSTL_NOEXCEPT__ {
+        return (object & flag) != 0;
     }
 }
 
