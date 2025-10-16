@@ -88,6 +88,10 @@ namespace wstl {
     #define __WSTL_MAKE_EXCEPTION_IMPL__(count, ...) __WSTL_MAKE_EXCEPTION_##count(__VA_ARGS__)
     #define __WSTL_MAKE_EXCEPTION_IMPL2__(count, ...) __WSTL_MAKE_EXCEPTION_IMPL__(count, __VA_ARGS__)
 
+    /// @brief Macro for making exception constructor with arguments
+    /// @param exception Exception class name
+    /// @param message (optional) Exception message
+    /// @ingroup exception
     #define WSTL_MAKE_EXCEPTION(...) __WSTL_MAKE_EXCEPTION_IMPL2__(__WSTL_COUNT_ARGS__(__VA_ARGS__), __VA_ARGS__) 
 }
 
