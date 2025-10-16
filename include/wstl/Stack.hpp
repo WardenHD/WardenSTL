@@ -345,19 +345,6 @@ namespace wstl {
     Stack(T, U...) -> Stack<T, sizeof...(U) + 1>;
     #endif
 
-    // Swap specialization
-
-    /// @brief Swaps the values of two stacks
-    /// @param a First stack to swap
-    /// @param b Second stack to swap
-    /// @ingroup stack
-    /// @see https://en.cppreference.com/w/cpp/container/stack/swap2.html
-    template<typename T, const size_t SIZE>
-    __WSTL_CONSTEXPR14__ 
-    inline void Swap(Stack<T, SIZE>& a, Stack<T, SIZE>& b) __WSTL_NOEXCEPT__ {
-        a.Swap(b);
-    }
-
     // Make stack
 
     #ifdef __WSTL_CXX11__

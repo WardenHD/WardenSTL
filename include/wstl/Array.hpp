@@ -289,18 +289,6 @@ namespace wstl {
     Array(T, U...) -> Array<T, sizeof...(U) + 1>;
     #endif
 
-    // Swap specialization
-
-    /// @brief Swaps the contents of two arrays
-    /// @param a The first array
-    /// @param b The second array
-    /// @ingroup array
-    /// @see https://en.cppreference.com/w/cpp/container/array/swap2
-    template<typename T, size_t N>
-    __WSTL_CONSTEXPR14__ inline void Swap(Array<T, N>& a, Array<T, N>& b) __WSTL_NOEXCEPT__ {
-        a.Swap(b);
-    }
-
     // Tuple element specialization
 
     template<size_t I, typename T, size_t N>

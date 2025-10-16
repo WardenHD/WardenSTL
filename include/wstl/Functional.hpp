@@ -336,20 +336,6 @@ namespace wstl {
         Return (Object::*m_Function)(Args...) const;
     };
 
-    // Swap specialization
-
-    template<typename Return, typename... Args>
-    __WSTL_CONSTEXPR14__ 
-    inline void Swap(Function<Return(Args...)>& a, Function<Return(Args...)>& b) __WSTL_NOEXCEPT__ {
-        a.Swap(b);
-    }
-
-    template<typename Object, typename Return, typename... Args>
-    __WSTL_CONSTEXPR14__ 
-    inline void Swap(Function<Return(Args...), Object>& a, Function<Return(Args...), Object>& b) __WSTL_NOEXCEPT__ {
-        a.Swap(b);
-    }
-
     // Comparison operators with NullPointerType (nullptr_t)
 
     template<typename Return, typename... Args>
@@ -543,18 +529,6 @@ namespace wstl {
         Return (Object::*m_Function)(Arg1, Arg2) const;
     };
 
-    // Swap specialization
-
-    template<typename Return, typename Arg1, typename Arg2> 
-    inline void Swap(Function<Return(Arg1, Arg2)>& a, Function<Return(Arg1, Arg2)>& b) __WSTL_NOEXCEPT__ {
-        a.Swap(b);
-    }
-
-    template<typename Object, typename Return, typename Arg1, typename Arg2> 
-    inline void Swap(Function<Return(Arg1, Arg2), Object>& a, Function<Return(Arg1, Arg2), Object>& b) __WSTL_NOEXCEPT__ {
-        a.Swap(b);
-    }
-
     // Comparison operators with NullPointerType (nullptr_t)
 
     template<typename Return, typename Arg1, typename Arg2> 
@@ -744,18 +718,6 @@ namespace wstl {
         Return (Object::*m_Function)(Arg) const;
     };
 
-    // Swap specialization
-
-    template<typename Return, typename Arg> 
-    inline void Swap(Function<Return(Arg)>& a, Function<Return(Arg)>& b) __WSTL_NOEXCEPT__ {
-        a.Swap(b);
-    }
-
-    template<typename Object, typename Return, typename Arg>
-    inline void Swap(Function<Return(Arg), Object>& a, Function<Return(Arg), Object>& b) __WSTL_NOEXCEPT__ {
-        a.Swap(b);
-    }
-
     // Comparison operators with NullPointerType (nullptr_t)
 
     template<typename Return, typename Arg> 
@@ -944,18 +906,6 @@ namespace wstl {
         const Object* m_Object;
         Return (Object::*m_Function)() const;
     };
-
-    // Swap specialization
-
-    template<typename Return> 
-    inline void Swap(Function<Return()>& a, Function<Return()>& b) __WSTL_NOEXCEPT__ {
-        a.Swap(b);
-    }
-
-    template<typename Object, typename Return> 
-    inline void Swap(Function<Return(), Object>& a, Function<Return(), Object>& b) __WSTL_NOEXCEPT__ {
-        a.Swap(b);
-    }
 
     // Comparison operators with NullPointerType (nullptr_t)
 

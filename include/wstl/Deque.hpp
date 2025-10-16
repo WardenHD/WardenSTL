@@ -1705,19 +1705,6 @@ namespace wstl {
     Deque(T, U...) -> Deque<T, sizeof...(U) + 1>;
     #endif
 
-    // Swap specialization
-
-    /// @brief Swaps content of two deques
-    /// @param a First deque
-    /// @param b Second deque
-    /// @ingroup deque
-    /// @see https://en.cppreference.com/w/cpp/utility/tuple/swap2
-    template<typename T, const size_t SIZE>
-    __WSTL_CONSTEXPR14__ 
-    inline void Swap(Deque<T, SIZE>& a, Deque<T, SIZE>& b) __WSTL_NOEXCEPT__ {
-        a.Swap(b);
-    }
-
     // Make deque
 
     #ifdef __WSTL_CXX11__

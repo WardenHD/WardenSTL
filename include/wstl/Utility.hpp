@@ -214,7 +214,7 @@ namespace wstl {
 
     template<size_t Index, typename T1, typename T2>
     struct TupleElement<Index, Pair<T1, T2> > {
-        StaticAssert(Index < 2, "wstl::Pair has only 2 elements!");
+        StaticAssert((Index < 2), "wstl::Pair has only 2 elements!");
     };
 
     template<typename T1, typename T2>
@@ -287,19 +287,6 @@ namespace wstl {
         return Move(pair.Second);
     }
     #endif
-
-    // Swap specialization
-
-    template<typename T1, typename T2>
-    /// @brief Swaps content of two pairs
-    /// @param a First pair
-    /// @param b Second pair
-    /// @ingroup utility
-    /// @see https://en.cppreference.com/w/cpp/utility/pair/swap2
-    __WSTL_CONSTEXPR14__
-    inline void Swap(Pair<T1, T2>& a, Pair<T1, T2>& b) __WSTL_NOEXCEPT__ {
-        a.Swap(b);
-    }
 
     // Comparison operators for Pair
 

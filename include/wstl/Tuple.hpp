@@ -193,19 +193,6 @@ namespace wstl {
     Tuple(T...) -> Tuple<T...>;
     #endif
 
-    // Swap specialization
-
-    template<typename... Types>
-    /// @brief Swaps content of two tuples
-    /// @param a First tuple
-    /// @param b Second tuple
-    /// @ingroup tuple
-    /// @see https://en.cppreference.com/w/cpp/utility/tuple/swap2
-    __WSTL_CONSTEXPR14__ 
-    inline void Swap(Tuple<Types...>& a, Tuple<Types...>& b) __WSTL_NOEXCEPT__ {
-        a.Swap(b);
-    }
-
     // Tuple element specialization
 
     template<typename Head, typename... Tail>

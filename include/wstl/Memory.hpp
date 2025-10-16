@@ -498,19 +498,6 @@ namespace wstl {
         UniquePointer& operator=(const UniquePointer&) __WSTL_DELETE__;
     };
 
-    // Swap specialization
-
-    /// @brief Swaps the contents of two `UniquePointer` objects
-    /// @param a The first object to swap
-    /// @param b The second object to swap
-    /// @ingroup memory
-    /// @see https://en.cppreference.com/w/cpp/memory/unique_ptr/swap2
-    template<typename T, typename D>
-    __WSTL_CONSTEXPR14__
-    inline void Swap(UniquePointer<T, D>& a, UniquePointer<T, D>& b) __WSTL_NOEXCEPT__ {
-        a.Swap(b);
-    }
-
     // Make unique
 
     namespace __private {
