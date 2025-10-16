@@ -1013,6 +1013,165 @@ namespace wstl {
         return Parity(static_cast<typename MakeUnsigned<T>::Type>(value));
     }
 
+    // Reverse bits
+
+    namespace compile {
+        /// @brief Reverses the bits of an unsigned integral value at compile time
+        /// @tparam T Type of the value, must be an unsigned integral type
+        /// @tparam N The value to reverse bits for
+        /// @ingroup binary
+        template<typename T, T N, size_t TSize = sizeof(T), typename = typename EnableIf<IsUnsigned<T>::Value>::Type>
+        struct ReverseBits;
+    }
+
+    // 8-bit
+
+    /// @brief Reverses the bits of an unsigned integral value - for 8-bit types
+    /// @tparam T Type of the value, must be an unsigned integral type
+    /// @param value The value to reverse bits for
+    /// @return The value with its bits reversed
+    /// @ingroup binary
+    template<typename T>
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 1, T>::Type ReverseBits(T value) __WSTL_NOEXCEPT__ {
+        value = (value >> 1) & 0x55 | (value << 1) & 0xAA;
+        value = (value >> 2) & 0x33 | (value << 2) & 0xCC;
+        return (value >> 4) | (value << 4) & 0xF0;
+    }
+
+    // 8-bit, compile-time
+
+    namespace compile {
+        template<typename T, T N>
+        struct ReverseBits<T, N, 1> {
+        private:
+            static const __WSTL_CONSTEXPR__ T Value1 = (N >> 1) & 0x55 | (N << 1) & 0xAA;
+            static const __WSTL_CONSTEXPR__ T Value2 = (Value1 >> 2) & 0x33 | (Value1 << 2) & 0xCC;
+        
+        public:
+            static const __WSTL_CONSTEXPR__ T Value = (Value2 >> 4) | (Value2 << 4) & 0xF0;
+        };
+
+        template<typename T, T N>
+        const __WSTL_CONSTEXPR__ T ReverseBits<T, N, 1>::Value;
+    }
+
+    // 16-bit
+
+    /// @brief Reverses the bits of an unsigned integral value - for 16-bit types
+    /// @tparam T Type of the value, must be an unsigned integral type
+    /// @param value The value to reverse bits for
+    /// @return The value with its bits reversed
+    /// @ingroup binary
+    template<typename T>
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 2, T>::Type ReverseBits(T value) __WSTL_NOEXCEPT__ {
+        value = (value >> 1) & 0x5555 | (value << 1) & 0xAAAA;
+        value = (value >> 2) & 0x3333 | (value << 2) & 0xCCCC;
+        value = (value >> 4) & 0x0F0F | (value << 4) & 0xF0F0;
+        return (value >> 8) | (value << 8);
+    }
+
+    // 16-bit, compile-time
+
+    namespace compile {
+        template<typename T, T N>
+        struct ReverseBits<T, N, 2> {
+        private:
+            static const __WSTL_CONSTEXPR__ T Value1 = (N >> 1) & 0x5555 | (N << 1) & 0xAAAA;
+            static const __WSTL_CONSTEXPR__ T Value2 = (Value1 >> 2) & 0x3333 | (Value1 << 2) & 0xCCCC;
+            static const __WSTL_CONSTEXPR__ T Value3 = (Value2 >> 4) & 0x0F0F | (Value2 << 4) & 0xF0F0;
+        
+        public:
+            static const __WSTL_CONSTEXPR__ T Value = (Value3 >> 8) | (Value3 << 8);
+        };
+
+        template<typename T, T N>
+        const __WSTL_CONSTEXPR__ T ReverseBits<T, N, 2>::Value;
+    }
+
+    // 32-bit
+
+    /// @brief Reverses the bits of an unsigned integral value - for 32-bit types
+    /// @tparam T Type of the value, must be an unsigned integral type
+    /// @param value The value to reverse bits for
+    /// @return The value with its bits reversed
+    /// @ingroup binary
+    template<typename T>
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 4, T>::Type ReverseBits(T value) __WSTL_NOEXCEPT__ {
+        value = (value >> 1) & 0x55555555 | (value << 1) & 0xAAAAAAAA;
+        value = (value >> 2) & 0x33333333 | (value << 2) & 0xCCCCCCCC;
+        value = (value >> 4) & 0x0F0F0F0F | (value << 4) & 0xF0F0F0F0;
+        value = (value >> 8) & 0x00FF00FF | (value << 8) & 0xFF00FF00;
+        return (value >> 16) | (value << 16);
+    }
+
+    // 32-bit, compile-time
+
+    namespace compile {
+        template<typename T, T N>
+        struct ReverseBits<T, N, 4> {
+        private:
+            static const __WSTL_CONSTEXPR__ T Value1 = (N >> 1) & 0x55555555 | (N << 1) & 0xAAAAAAAA;
+            static const __WSTL_CONSTEXPR__ T Value2 = (Value1 >> 2) & 0x33333333 | (Value1 << 2) & 0xCCCCCCCC;
+            static const __WSTL_CONSTEXPR__ T Value3 = (Value2 >> 4) & 0x0F0F0F0F | (Value2 << 4) & 0xF0F0F0F0;
+            static const __WSTL_CONSTEXPR__ T Value4 = (Value3 >> 8) & 0x00FF00FF | (Value3 << 8) & 0xFF00FF00;
+        
+        public:
+            static const __WSTL_CONSTEXPR__ T Value = (Value4 >> 16) | (Value4 << 16);
+        };
+
+        template<typename T, T N>
+        const __WSTL_CONSTEXPR__ T ReverseBits<T, N, 4>::Value;
+    }
+
+    // 64-bit
+
+    /// @brief Reverses the bits of an unsigned integral value - for 64-bit types
+    /// @tparam T Type of the value, must be an unsigned integral type
+    /// @param value The value to reverse bits for
+    /// @return The value with its bits reversed
+    /// @ingroup binary
+    template<typename T>
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 8, T>::Type ReverseBits(T value) __WSTL_NOEXCEPT__ {
+        value = (value >> 1) & 0x5555555555555555ULL | (value << 1) & 0xAAAAAAAAAAAAAAAAULL;
+        value = (value >> 2) & 0x3333333333333333ULL | (value << 2) & 0xCCCCCCCCCCCCCCCCULL;
+        value = (value >> 4) & 0x0F0F0F0F0F0F0F0FULL | (value << 4) & 0xF0F0F0F0F0F0F0F0ULL;
+        value = (value >> 8) & 0x00FF00FF00FF00FFULL | (value << 8) & 0xFF00FF00FF00FF00ULL;
+        value = (value >> 16) & 0x0000FFFF0000FFFFULL | (value << 16) & 0xFFFF0000FFFF0000ULL;
+        return (value >> 32) | (value << 32);
+    }
+
+    // 64-bit, compile-time
+
+    namespace compile {
+        template<typename T, T N>
+        struct ReverseBits<T, N, 8> {
+        private:
+            static const __WSTL_CONSTEXPR__ T Value1 = (N >> 1) & 0x5555555555555555ULL | (N << 1) & 0xAAAAAAAAAAAAAAAAULL;
+            static const __WSTL_CONSTEXPR__ T Value2 = (Value1 >> 2) & 0x3333333333333333ULL | (Value1 << 2) & 0xCCCCCCCCCCCCCCCCULL;
+            static const __WSTL_CONSTEXPR__ T Value3 = (Value2 >> 4) & 0x0F0F0F0F0F0F0F0FULL | (Value2 << 4) & 0xF0F0F0F0F0F0F0F0ULL;
+            static const __WSTL_CONSTEXPR__ T Value4 = (Value3 >> 8) & 0x00FF00FF00FF00FFULL | (Value3 << 8) & 0xFF00FF00FF00FF00ULL;
+            static const __WSTL_CONSTEXPR__ T Value5 = (Value4 >> 16) & 0x0000FFFF0000FFFFULL | (Value4 << 16) & 0xFFFF0000FFFF0000ULL;
+        
+        public:
+            static const __WSTL_CONSTEXPR__ T Value = (Value5 >> 32) | (Value5 << 32);
+        };
+
+        template<typename T, T N>
+        const __WSTL_CONSTEXPR__ T ReverseBits<T, N, 8>::Value;
+    }
+
+    // For signed types
+
+    /// @brief Reverses the bits of a signed integral value - for signed types
+    /// @tparam T Type of the value, must be an integral signed type
+    /// @param value The value to reverse bits for
+    /// @return The value with its bits reversed
+    /// @ingroup binary
+    template<typename T>
+    __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsSigned<T>::Value, T>::Type ReverseBits(T value) __WSTL_NOEXCEPT__ {
+        return ReverseBits(static_cast<typename MakeUnsigned<T>::Type>(value));
+    }
+
     // Set flag
 
     /// @brief Sets a specific flag in an object
