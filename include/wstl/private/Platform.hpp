@@ -26,6 +26,10 @@
 /// A set of hash templates
 /// @ingroup maths
 
+/// @defgroup crc CRC
+/// A set of CRC calculation templates
+/// @ingroup maths
+
 /// @defgroup binary Binary
 /// A set of binary templates
 /// @ingroup wstl
@@ -49,6 +53,13 @@ namespace wstl {
     /// @brief Namespace that holds hash functions
     /// @ingroup hash
     namespace hash {}
+
+    /// @brief Namespace that holds string-related functions and constants
+    namespace string {}
+
+    // /// @brief Namespace that holds variations of CRC functions
+    // /// @ingroup crc
+    // namespace crc {}
 }
 
 // C++ version defines
