@@ -2675,6 +2675,36 @@ namespace wstl {
         return PreviousPermutation(first, last, Less<typename IteratorTraits<BidirectionalIterator>::ValueType>());
     }
 
+    // Erase (for containers)
+
+    /// @brief Removes all occurrences of a value from the container
+    /// @param container The container to remove from
+    /// @param value The value to remove
+    /// @return The number of elements removed
+    template<typename Container, typename U>
+    typename Container::SizeType Erase(Container& container, const U& value) {
+        typedef typename Container::Iterator IteratorType;
+        IteratorType iterator = Remove(container.Begin(), container.End(), value);
+
+        IteratorType result = container.End() - iterator;
+        container.Erase(result, container.End());
+
+        return result;
+    }
+
+    // Erase if (for containers)
+
+    template<typename Container, typename Predicate>
+    typename Container::SizeType EraseIf(Container& container, Predicate predicate) {
+        typedef typename Container::Iterator IteratorType;
+        IteratorType iterator = RemoveIf(container.Begin(), container.End(), predicate);
+
+        IteratorType result = container.End() - iterator;
+        container.Erase(result, container.End());
+        
+        return result;
+    }
+
     // Additional functions
 
     // Copy safe
