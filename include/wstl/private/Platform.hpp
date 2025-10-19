@@ -34,6 +34,10 @@
 /// A set of binary templates
 /// @ingroup wstl
 
+/// @defgroup string String
+/// A set of string templates
+/// @ingroup containers
+
 /// @brief Main namespace of WardenSTL library
 /// @ingroup wstl
 namespace wstl {
@@ -55,6 +59,7 @@ namespace wstl {
     namespace hash {}
 
     /// @brief Namespace that holds string-related functions and constants
+    /// @ingroup string
     namespace string {}
 
     // /// @brief Namespace that holds variations of CRC functions
