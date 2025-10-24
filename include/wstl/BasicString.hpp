@@ -76,10 +76,8 @@ namespace wstl {
         typedef wstl::ReverseIterator<Iterator> ReverseIterator;
         typedef wstl::ReverseIterator<ConstIterator> ConstReverseIterator;
 
-        enum {
-            /// @brief Special constant indicating no position with value `SizeType(-1)`
-            NoPosition = NumericLimits<SizeType>::Max()
-        };
+        /// @brief Special constant indicating no position with value `SizeType(-1)`
+        static const __WSTL_CONSTEXPR__ SizeType NoPosition = NumericLimits<SizeType>::Max();
 
         /// @brief Accesses the character at specified position with bounds checking
         /// @param position Position of the character to access
@@ -1971,6 +1969,9 @@ namespace wstl {
             return *this;
         }
     };
+
+    template<typename Derived, typename T, typename Traits>
+    const __WSTL_CONSTEXPR__ typename BasicString<Derived, T, Traits>::SizeType BasicString<Derived, T, Traits>::NoPosition;
 
     // Comparison operators
     
