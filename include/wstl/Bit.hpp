@@ -36,6 +36,8 @@
     #define __WSTL_BIG_ENDIAN__ 1
 #endif
 
+/// TODO: Add option to use dedicated instruction for some functions
+
 
 namespace wstl {
     /// @brief Enum class representing the endianness of the system
