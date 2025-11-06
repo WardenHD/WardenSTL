@@ -57,9 +57,6 @@ namespace wstl {
     /// @ingroup string
     /// @see https://en.cppreference.com/w/cpp/string/basic_string
     template<typename Derived, typename T, typename Traits = CharacterTraits<T> >
-    class BasicString;
-
-    template<typename Derived, typename T, typename Traits = CharacterTraits<T> >
     class BasicString : public TypedContainerBase<T> {
     public:
         typedef Traits TraitsType;

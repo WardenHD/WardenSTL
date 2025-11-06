@@ -227,7 +227,7 @@ namespace wstl {
     // Hash specialization
 
     template<typename Derived, typename Traits>
-    struct Hash<BasicString<Derived, char> > {
+    struct Hash<BasicString<Derived, char, Traits> > {
         size_t operator()(const BasicString<Derived, char, Traits>& string) const {
             return __private::__GenericHash<size_t>(reinterpret_cast<const uint8_t*>(string.Data()), reinterpret_cast<const uint8_t*>(string.Data() + string.Size()));
         }
@@ -773,7 +773,7 @@ namespace wstl {
     // Hash specialization
 
     template<typename Derived, typename Traits>
-    struct Hash<BasicString<Derived, char16_t> > {
+    struct Hash<BasicString<Derived, char16_t, Traits> > {
         size_t operator()(const BasicString<Derived, char16_t, Traits>& string) const {
             return __private::__GenericHash<size_t>(reinterpret_cast<const uint8_t*>(string.Data()), reinterpret_cast<const uint8_t*>(string.Data() + string.Size()));
         }
@@ -1045,7 +1045,7 @@ namespace wstl {
     // Hash specialization
 
     template<typename Derived, typename Traits>
-    struct Hash<BasicString<Derived, char32_t> > {
+    struct Hash<BasicString<Derived, char32_t, Traits> > {
         size_t operator()(const BasicString<Derived, char32_t, Traits>& string) const {
             return __private::__GenericHash<size_t>(reinterpret_cast<const uint8_t*>(string.Data()), reinterpret_cast<const uint8_t*>(string.Data() + string.Size()));
         }
@@ -1319,7 +1319,7 @@ namespace wstl {
     // Hash specialization
 
     template<typename Derived, typename Traits>
-    struct Hash<BasicString<Derived, char8_t> > {
+    struct Hash<BasicString<Derived, char8_t, Traits> > {
         size_t operator()(const BasicString<Derived, char8_t, Traits>& string) const {
             return __private::__GenericHash<size_t>(reinterpret_cast<const uint8_t*>(string.Data()), reinterpret_cast<const uint8_t*>(string.Data() + string.Size()));
         }
