@@ -202,7 +202,7 @@ namespace wstl {
     /// @param b Second number
     /// @return The greatest common divisor of the two numbers
     /// @ingroup numeric
-    /// @see https://en.cppreference.com/w/cpp/numeric/math/gcd
+    /// @see https://en.cppreference.com/w/cpp/numeric/gcd
     template<typename T>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ 
     typename EnableIf<IsUnsigned<T>::Value, T>::Type GCD(T a, T b) __WSTL_NOEXCEPT__ {
@@ -224,7 +224,7 @@ namespace wstl {
     /// @param b Second number
     /// @return The greatest common divisor of the two numbers
     /// @ingroup numeric
-    /// @see https://en.cppreference.com/w/cpp/numeric/math/gcd
+    /// @see https://en.cppreference.com/w/cpp/numeric/gcd
     template<typename T>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ 
     typename EnableIf<IsSigned<T>::Value, T>::Type GCD(T a, T b) __WSTL_NOEXCEPT__ {
@@ -244,7 +244,7 @@ namespace wstl {
     /// @param rest Remaining numbers
     /// @return The greatest common divisor of the numbers
     /// @ingroup numeric
-    /// @see https://en.cppreference.com/w/cpp/numeric/math/gcd
+    /// @see https://en.cppreference.com/w/cpp/numeric/gcd
     template<typename T, typename... Ts>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__
     T GCD(T first, Ts... rest) __WSTL_NOEXCEPT__ {
@@ -265,7 +265,7 @@ namespace wstl {
     /// @param rest Remaining numbers
     /// @return The greatest common divisor of the numbers
     /// @ingroup numeric
-    /// @see https://en.cppreference.com/w/cpp/numeric/math/gcd
+    /// @see https://en.cppreference.com/w/cpp/numeric/gcd
     template<typename T, typename... Ts>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__
     T GCD(T a, T b, Ts... rest) __WSTL_NOEXCEPT__ {
@@ -284,7 +284,7 @@ namespace wstl {
     /// @param b Second number
     /// @return The lowest common multiple of the two numbers
     /// @ingroup numeric
-    /// @see https://en.cppreference.com/w/cpp/numeric/math/lcm
+    /// @see https://en.cppreference.com/w/cpp/numeric/lcm
     template<typename T>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ 
     typename EnableIf<IsUnsigned<T>::Value, T>::Type LCM(T a, T b) __WSTL_NOEXCEPT__ {
@@ -299,7 +299,7 @@ namespace wstl {
     /// @param b Second number
     /// @return The lowest common multiple of the two numbers
     /// @ingroup numeric
-    /// @see https://en.cppreference.com/w/cpp/numeric/math/lcm
+    /// @see https://en.cppreference.com/w/cpp/numeric/lcm
     template<typename T>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ 
     typename EnableIf<IsSigned<T>::Value, T>::Type LCM(T a, T b) __WSTL_NOEXCEPT__ {
@@ -319,7 +319,7 @@ namespace wstl {
     /// @param rest Remaining numbers
     /// @return The lowest common multiple of the numbers
     /// @ingroup numeric
-    /// @see https://en.cppreference.com/w/cpp/numeric/math/lcm
+    /// @see https://en.cppreference.com/w/cpp/numeric/lcm
     template<typename T, typename... Ts>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__
     T LCM(T first, Ts... rest) __WSTL_NOEXCEPT__ {
@@ -340,7 +340,7 @@ namespace wstl {
     /// @param rest Remaining numbers
     /// @return The lowest common multiple of the numbers
     /// @ingroup numeric
-    /// @see https://en.cppreference.com/w/cpp/numeric/math/lcm
+    /// @see https://en.cppreference.com/w/cpp/numeric/lcm
     template<typename T, typename... Ts>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__
     T LCM(T a, T b, Ts... rest) __WSTL_NOEXCEPT__ {
@@ -359,7 +359,7 @@ namespace wstl {
     /// @param b Second number
     /// @return The midpoint of the two numbers
     /// @ingroup numeric
-    /// @see https://en.cppreference.com/w/cpp/numeric/math/midpoint
+    /// @see https://en.cppreference.com/w/cpp/numeric/midpoint
     template<typename T>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__
     inline T Midpoint(T a, T b) __WSTL_NOEXCEPT__ {
@@ -372,7 +372,7 @@ namespace wstl {
     /// @param b Pointer to the second element
     /// @return Pointer to the midpoint of the two pointers
     /// @ingroup numeric
-    /// @see https://en.cppreference.com/w/cpp/numeric/math/midpoint
+    /// @see https://en.cppreference.com/w/cpp/numeric/midpoint
     template<typename T>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__
     inline T* Midpoint(T* a, T* b) {
