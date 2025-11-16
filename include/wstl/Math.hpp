@@ -23,6 +23,12 @@
 #endif
 
 
+// Defines introduced
+
+/// @def __WSTL_MATH_SUPPORT__
+/// @brief If defined, the library will use math.h and stdlib.h functions where necessary
+/// @ingroup math
+
 namespace wstl {
     // Absolute
 

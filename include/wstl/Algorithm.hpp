@@ -2585,7 +2585,7 @@ namespace wstl {
     }
 
     // Next permutation
-    /// @brief Determines the next legicographical permutation in a range using a comparator.
+    /// @brief Determines the next lexicographical permutation in a range using a comparator.
     /// If no permutation is found, the range is transformed into the first permutation and false is returned
     /// @param first Iterator to the beginning of the range
     /// @param last Iterator to the end of the range
@@ -2616,7 +2616,7 @@ namespace wstl {
         }
     }
 
-    /// @brief Determines the next legicographical permutation in a range.
+    /// @brief Determines the next lexicographical permutation in a range.
     /// If no permutation is found, the range is transformed into the first permutation and false is returned
     /// @param first Iterator to the beginning of the range
     /// @param last Iterator to the end of the range
@@ -2631,7 +2631,7 @@ namespace wstl {
 
     // Previous permutation
 
-    /// @brief Determines the previous legicographical permutation in a range using a comparator.
+    /// @brief Determines the previous lexicographical permutation in a range using a comparator.
     /// If no permutation is found, the range is transformed into the last permutation and false is returned
     /// @param first Iterator to the beginning of the range
     /// @param last Iterator to the end of the range
@@ -2662,7 +2662,7 @@ namespace wstl {
         }
     }
 
-    /// @brief Determines the previous legicographical permutation in a range.
+    /// @brief Determines the previous lexicographical permutation in a range.
     /// If no permutation is found, the range is transformed into the last permutation and false is returned
     /// @param first Iterator to the beginning of the range
     /// @param last Iterator to the end of the range

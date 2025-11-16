@@ -21,6 +21,12 @@
 /// @brief Error handler for when throwing exceptions is not required
 /// @ingroup wstl
 
+// Defines introduced
+
+/// @def __WSTL_HANDLE_ERRORS__
+/// @brief If defined, the error handler functionality will be enabled with `ErrorHandler` class
+/// @ingroup error_handler
+
 #ifdef __WSTL_HANDLE_ERRORS__
 namespace wstl {
     /// @brief Error handler that is used when throwing exceptions is not required

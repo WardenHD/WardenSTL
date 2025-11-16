@@ -7,35 +7,37 @@
 #define __WSTL_PLATFORM_HPP__
 
 
-// Doxygen groups and comment
+// Doxygen groups and namespaces
 
 /// @defgroup wstl WardenSTL
+/// @brief Main WardenSTL library group
 
 /// @defgroup utilities Utilities
-/// A set of utility templates
+/// @brief A set of utility templates
 /// @ingroup wstl
 
 /// @defgroup containers Containers
+/// @brief A set of container templates
 /// @ingroup wstl
 
 /// @defgroup maths Maths
-/// A set of mathematical templates
+/// @brief A set of mathematical templates
 /// @ingroup wstl
 
 /// @defgroup hash Hash
-/// A set of hash templates
+/// @brief A set of hash templates
 /// @ingroup maths
 
 /// @defgroup crc CRC
-/// A set of CRC calculation templates
+/// @brief A set of CRC calculation templates
 /// @ingroup maths
 
 /// @defgroup binary Binary
-/// A set of binary templates
+/// @brief A set of binary templates
 /// @ingroup wstl
 
 /// @defgroup string String
-/// A set of string templates
+/// @brief A set of string templates
 /// @ingroup containers
 
 /// @brief Main namespace of WardenSTL library
@@ -72,8 +74,6 @@ namespace wstl {
 #if __cplusplus >= 201103L
     #define __WSTL_CXX11__
 #endif
-
-// #define __WSTL_EXCEPTIONS__
 
 #if __cplusplus >= 201402L
     #define __WSTL_CXX14__

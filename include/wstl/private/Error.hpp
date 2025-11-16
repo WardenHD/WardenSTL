@@ -16,6 +16,11 @@
 #include <assert.h>
 #endif
 
+// Defines introduced
+
+/// @def __WSTL_ASSERT_SUPPORT__
+/// @brief If defined, enables assert from assert.h in error handling macros
+/// @ingroup error_handler
 
 namespace wstl {
     namespace __private {
@@ -132,7 +137,7 @@ namespace wstl {
             return (value);                                     \
         }
     #else
-        #ifdef __WSTL_CASSERT__
+        #ifdef __WSTL_ASSERT_SUPPORT__
             #define __WSTL_ASSERT__(condition, exception) assert((condition))
 
             #define __WSTL_ASSERT_RETURN__(condition, exception) {  \

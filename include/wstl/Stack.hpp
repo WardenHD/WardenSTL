@@ -312,7 +312,7 @@ namespace wstl {
             wstl::Swap(this->m_CurrentSize, other.m_CurrentSize);
         }
         
-    public: // for debug
+    private:
         T m_Buffer[SIZE];
 
         void Clone(const Stack& other) {

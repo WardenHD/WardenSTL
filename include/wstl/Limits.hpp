@@ -75,6 +75,12 @@
 #endif
 
 
+// Defines introduced
+
+/// @def __WSTL_NAN_SUPPORT__
+/// @brief If defined, the library will use math.h NaN functions where necessary
+/// @ingroup math
+
 namespace wstl {
     /// @brief Indicates floating-point rounding modes
     /// @ingroup utilities

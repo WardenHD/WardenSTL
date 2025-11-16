@@ -11,6 +11,12 @@
 #include <stddef.h>
 
 
+// Defines introduced
+
+/// @def __WSTL_NO_INITIALIZERLIST__
+/// @brief If defined, disables `InitializerList` class
+/// @ingroup containers
+
 #if defined(__WSTL_CXX11__) && !defined(__WSTL_NO_INITIALIZERLIST__)
 namespace std {
     #if defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__)

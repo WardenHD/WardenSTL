@@ -13,6 +13,12 @@
 /// @brief A base class for all WSTL exceptions
 /// @ingroup utilities
 
+// Defines introduced
+
+/// @def __WSTL_EXCEPTION_LOCATION__
+/// @brief If defined, exceptions will store file name and line number information
+/// @ingroup exception
+
 namespace wstl {
     /// @brief A base class for all exceptions
     /// @ingroup exception

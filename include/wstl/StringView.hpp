@@ -37,10 +37,8 @@ namespace wstl {
         typedef wstl::ReverseIterator<Iterator> ReverseIterator;
         typedef wstl::ReverseIterator<ConstIterator> ConstReverseIterator;
 
-        enum {
-            /// @brief Special value indicating that no matches were found or that the position is invalid
-            NoPosition = NumericLimits<SizeType>::Max()
-        };
+        /// @brief Special constant indicating no position with value `SizeType(-1)`
+        static const __WSTL_CONSTEXPR__ SizeType NoPosition = NumericLimits<SizeType>::Max();
 
         /// @brief Default constructor
         __WSTL_CONSTEXPR__ BasicStringView() : m_Data(NullPointer), m_Size(0) {}

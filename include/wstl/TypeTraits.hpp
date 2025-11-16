@@ -16,6 +16,12 @@
 /// @brief A set of type trait definitions
 /// @ingroup utilities
 
+// Defines introduced
+
+/// @def __WSTL_EXCEPTIONS__
+/// @brief If defined, enables exception-related type traits and functionalities
+/// @ingroup type_traits
+
 namespace wstl {
     #ifdef __WSTL_CXX11__
     /// @brief Type alias for STL naming support

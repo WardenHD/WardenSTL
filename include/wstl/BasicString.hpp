@@ -18,15 +18,20 @@
 #include "Memory.hpp"
 
 
+// Defines introduced
+
 /// @def __WSTL_STRING_CLEAR_UNUSED__
 /// @brief If defined, unused portion of the string buffer is filled with zeros every time the content is modified
+/// @ingroup string
 
 /// @def __WSTL_STRING_TRUNCATION_CHECK__
 /// @brief If defined, string will check for trucation on operations that may cause it and store a truncation flag
 /// @details Also enables `.IsTruncated()` and `.ClearTruncated()` methods for checking and clearing the flag
+/// @ingroup string
 
 /// @def __WSTL_STRING_TRUNCATION_ERROR__
 /// @brief If defined, the exception `LengthError` will be thrown when a truncation occurs
+/// @ingroup string
 
 namespace wstl {
     // No position (npos) constant

@@ -23,6 +23,12 @@
 /// @ingroup containers
 /// @brief A double-ended queue with size defined at compile-time
 
+// Defines introduced
+
+/// @def __WSTL_CHECK_PUSHPOP__
+/// @brief If defined, push/pop operation will check if the container is full/empty, and in such case throw `LengthError` exception
+/// @ingroup deque
+
 namespace wstl {
     /// @brief A double-ended queue that supports pushing and popping elements from both ends
     /// @tparam T Type of the element to store in the deque

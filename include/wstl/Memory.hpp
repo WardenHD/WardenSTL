@@ -28,6 +28,12 @@
 /// @brief A set of memory management utilities 
 /// @ingroup wstl
 
+// Defines introduced
+
+/// @def __WSTL_LIBC_WRAPPERS__
+/// @brief If defined, the library will define wrappers for standard C library functions
+/// @ingroup memory
+
 namespace wstl {
     // Pointer traits
 
