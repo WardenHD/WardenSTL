@@ -81,22 +81,22 @@ namespace wstl {
         }
 
         /// @brief Gets reference to the first element of the array
-        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ReferenceType Front() {
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ReferenceType Front() __WSTL_NOEXCEPT__ {
             return __m_Data[0];
         }
 
         /// @brief Gets const reference to the first element of the array
-        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ConstReferenceType Front() const {
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ConstReferenceType Front() const __WSTL_NOEXCEPT__ {
             return __m_Data[0];
         }
 
         /// @brief Gets reference to the last element of the array
-        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ReferenceType Back() {
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ReferenceType Back() __WSTL_NOEXCEPT__ {
             return __m_Data[N - 1];
         }
 
         /// @brief Gets const reference to the last element of the array
-        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ConstReferenceType Back() const {
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ConstReferenceType Back() const __WSTL_NOEXCEPT__ {
             return __m_Data[N - 1];
         }
 
@@ -205,21 +205,41 @@ namespace wstl {
 
         // Additional functions
 
+        /// @brief Assigns values from a range to the array
+        /// @param first Iterator to the first element of the range
+        /// @param last Iterator to the last element of the range
+        template<typename InputIterator>
+        __WSTL_CONSTEXPR14__ void Assign(InputIterator first, InputIterator last) {
+            CopySafe(first, last, Begin(), End());
+        }
+
+        /// @brief Assigns values from a range to the array, filling remaining elements with a specified value
+        /// @param first Iterator to the first element of the range
+        /// @param last Iterator to the last element of the range
+        /// @param value The value to fill remaining elements with
+        template<typename InputIterator>
+        __WSTL_CONSTEXPR14__ void Assign(InputIterator first, InputIterator last, ValueType value) {
+            Iterator iterator = CopySafe(first, last, Begin(), End());
+            wstl::Fill(iterator, End(), value);
+        }
+
         /// @brief Inserts a value at the specified position
         /// @param position Iterator to the position where the value should be inserted
         /// @param value The value to insert
         /// @return Iterator to the inserted value
         __WSTL_CONSTEXPR14__ Iterator Insert(Iterator position, ValueType value) {
+            __WSTL_ASSERT__(Begin() <= position && position <= End(), WSTL_MAKE_EXCEPTION(OutOfRange, "Array insert index out of range"));
             MoveBackward(position, End() - 1, End());
             *position = value;
             return position;
         }
 
         /// @brief Inserts a value at the specified index
-        /// @param value The value to insert
         /// @param index The index where the value should be inserted
+        /// @param value The value to insert
         /// @return Iterator to the inserted value
-        __WSTL_CONSTEXPR14__ inline Iterator Insert(ValueType value, SizeType index) {
+        __WSTL_CONSTEXPR14__ inline Iterator Insert(SizeType index, ValueType value) {
+            __WSTL_ASSERT__(index < N, WSTL_MAKE_EXCEPTION(OutOfRange, "Array insert index out of range"));
             return Insert(Begin() + index, value);
         }
 
@@ -228,57 +248,318 @@ namespace wstl {
         /// @param first Iterator to the first element of the range
         /// @param last Iterator to the last element of the range
         /// @return Iterator to the first element of the inserted range
-        __WSTL_CONSTEXPR14__ Iterator InsertRange(Iterator position, Iterator first, Iterator last) {
+        template<typename InputIterator>
+        __WSTL_CONSTEXPR14__ Iterator InsertRange(Iterator position, InputIterator first, InputIterator last) {
+            __WSTL_ASSERT__(Begin() <= position && position <= End(), WSTL_MAKE_EXCEPTION(OutOfRange, "Array insert index out of range"));
             MoveBackward(position, End() - Distance(first, last), End());
             Copy(first, last, position);
             return position;
         }
 
         /// @brief Inserts a range of values at the specified index
+        /// @param index The index where the range should be inserted
         /// @param first Iterator to the first element of the range
         /// @param last Iterator to the last element of the range
-        /// @param index The index where the range should be inserted
         /// @return Iterator to the first element of the inserted range
-        __WSTL_CONSTEXPR14__ inline Iterator InsertRange(Iterator first, Iterator last, SizeType index) {
+        template<typename InputIterator>
+        __WSTL_CONSTEXPR14__ inline Iterator InsertRange(SizeType index, InputIterator first, InputIterator last) {
+            __WSTL_ASSERT__(index < N, WSTL_MAKE_EXCEPTION(OutOfRange, "Array insert index out of range"));
             return InsertRange(Begin() + index, first, last);
         }
 
-        /// @brief Deletes a value at the specified position
+        /// @brief Erases a value at the specified position
         /// @param position Iterator to the position of the value to delete
         /// @param value The value to fill the deleted value with, default is 0 (array will be shifted anyway)
         /// @return Iterator to the position where the deleted value was
-        __WSTL_CONSTEXPR14__ Iterator Delete(Iterator position, const T& value = 0) {
+        __WSTL_CONSTEXPR14__ Iterator Erase(Iterator position, const T& value = 0) {
+            __WSTL_ASSERT__(Begin() <= position && position <= End(), WSTL_MAKE_EXCEPTION(OutOfRange, "Array erase index out of range"));
             *position = value;
             Move(position + 1, End(), position);
             return position;
         }
 
-        /// @brief Deletes a value at the specified index
+        /// @brief Erases a value at the specified index
         /// @param index The index of the value to delete
         /// @param value The value to fill the deleted value with, default is 0 (array will be shifted anyway)
         /// @return Iterator to the position where the deleted value was
-        __WSTL_CONSTEXPR14__ inline Iterator Delete(SizeType index, const T& value = 0) {
+        __WSTL_CONSTEXPR14__ inline Iterator Erase(SizeType index, const T& value = 0) {
+            __WSTL_ASSERT__(index < N, WSTL_MAKE_EXCEPTION(OutOfRange, "Array erase index out of range"));
             return Delete(Begin() + index, value);
         }
 
-        /// @brief Deletes a range of values
+        /// @brief Erases a range of values
         /// @param first Iterator to the first element of the range to delete
         /// @param last Iterator to the last element of the range to delete
         /// @param value The value to fill the deleted range with, default is 0 (array will be shifted anyway)
         /// @return Iterator to the position where the beginning of the deleted range was
-        __WSTL_CONSTEXPR14__ Iterator DeleteRange(Iterator first, Iterator last, const T& value = 0) {
+        __WSTL_CONSTEXPR14__ Iterator EraseRange(Iterator first, Iterator last, const T& value = 0) {
+            __WSTL_ASSERT__(Begin() <= first && first <= last && last <= End(), WSTL_MAKE_EXCEPTION(OutOfRange, "Array erase positions out of range"));
             wstl::Fill(first, last, value);
             Move(last, End(), first);
             return first;
         }
 
-        /// @brief Deletes a range of values
+        /// @brief Erases a range of values
         /// @param first The index of the first element of the range to delete
         /// @param last The index of the last element of the range to delete
         /// @param value The value to fill the deleted range with, default is 0 (array will be shifted anyway)
         /// @return Iterator to the position where the beginning of the deleted range was
-        __WSTL_CONSTEXPR14__ inline Iterator DeleteRange(SizeType first, SizeType last, const T& value = 0) {
+        __WSTL_CONSTEXPR14__ inline Iterator EraseRange(SizeType first, SizeType last, const T& value = 0) {
+            __WSTL_ASSERT__(first <= N && last <= N, WSTL_MAKE_EXCEPTION(OutOfRange, "Array erase indices out of range"));
             return DeleteRange(Begin() + first, Begin() + last, value);
+        }
+    };
+
+    // Specialization for size 0
+
+    template<typename T>
+    struct Array<T, 0> {
+        typedef T ValueType;
+        typedef size_t SizeType;
+        typedef T& ReferenceType;
+        typedef const T& ConstReferenceType;
+        typedef T* PointerType;
+        typedef const T* ConstPointerType;
+        typedef T* Iterator;
+        typedef const T* ConstIterator;
+        typedef wstl::ReverseIterator<Iterator> ReverseIterator;
+        typedef wstl::ReverseIterator<ConstIterator> ConstReverseIterator;
+
+        typedef typename Conditional<IsFundamental<T>::Value || IsPointer<T>::Value, T, 
+        const T&>::Type ParameterType;
+
+        /// @brief Returns a reference to the element at the specified index with bounds checking
+        /// @param index Index of the element to return
+        /// @return Reference to the element at the specified index
+        /// @throws IndexOutOfRange if the index is out of range
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ReferenceType At(SizeType) {
+            return *Data();
+        }
+
+        /// @brief Returns a const reference to the element at the specified index with bounds checking
+        /// @param index Index of the element to return
+        /// @return Const reference to the element at the specified index
+        /// @throws IndexOutOfRange if the index is out of range
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ConstReferenceType At(SizeType) const {
+            return *Data();
+        }
+
+        /// @brief Access operator
+        /// @param index Index of the element to return
+        /// @return Reference to the element at the specified index
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ReferenceType operator[](SizeType) {
+            return *Data();
+        }
+
+        /// @brief Access operator
+        /// @param index Index of the element to return
+        /// @return Const reference to the element at the specified index
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ConstReferenceType operator[](SizeType) const {
+            return *Data();
+        }
+
+        /// @brief Gets reference to the first element of the array
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ReferenceType Front() __WSTL_NOEXCEPT__ {
+            return *Data();
+        }
+
+        /// @brief Gets const reference to the first element of the array
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ConstReferenceType Front() const __WSTL_NOEXCEPT__ {
+            return *Data();
+        }
+
+        /// @brief Gets reference to the last element of the array
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ReferenceType Back() __WSTL_NOEXCEPT__ {
+            return *Data();
+        }
+
+        /// @brief Gets const reference to the last element of the array
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ConstReferenceType Back() const __WSTL_NOEXCEPT__ {
+            return *Data();
+        }
+
+        /// @brief Gets the data pointer of the array
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ PointerType Data() __WSTL_NOEXCEPT__ {
+            return (const T*) 0;
+        }
+
+        /// @brief Gets the const data pointer of the array
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR__ ConstReferenceType Data() const __WSTL_NOEXCEPT__ {
+            return (T*) 0;
+        }
+
+        /// @brief Gets the iterator to the beginning of the array
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ Iterator Begin() __WSTL_NOEXCEPT__ {
+            return Iterator();
+        }
+
+        /// @brief Gets the iterator to the beginning of the array
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR__ ConstIterator Begin() const __WSTL_NOEXCEPT__ {
+            return ConstIterator();
+        }
+
+        /// @brief Gets the const iterator to the beginning of the array
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR__ ConstIterator ConstBegin() const __WSTL_NOEXCEPT__ {
+            return ConstIterator();
+        }
+
+        /// @brief Gets the iterator to the end of the array
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ Iterator End() __WSTL_NOEXCEPT__ {
+            return Iterator();
+        }
+
+        /// @brief Gets the iterator to the end of the array
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR__ ConstIterator End() const __WSTL_NOEXCEPT__ {
+            return ConstIterator();
+        }
+
+        /// @brief Gets the const iterator to the end of the array
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR__ ConstIterator ConstEnd() const __WSTL_NOEXCEPT__ {
+            return ConstIterator();
+        }
+
+        /// @brief Gets the reverse iterator to the beginning of the array
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ 
+        ReverseIterator ReverseBegin() __WSTL_NOEXCEPT__ {
+            return ReverseIterator(End());
+        }
+
+        /// @brief Gets the reverse iterator to the beginning of the array
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR__ 
+        ConstReverseIterator ReverseBegin() const __WSTL_NOEXCEPT__ {
+            return ConstReverseIterator(End());
+        }
+
+        /// @brief Gets the const reverse iterator to the beginning of the array
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR__ 
+        ConstReverseIterator ConstReverseBegin() const __WSTL_NOEXCEPT__ {
+            return ConstReverseIterator(End());
+        }
+
+        /// @brief Gets the reverse iterator to the end of the array
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ 
+        ReverseIterator ReverseEnd() __WSTL_NOEXCEPT__ {
+            return ReverseIterator(Begin());
+        }
+
+        /// @brief Gets the reverse iterator to the end of the array
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR__ 
+        ConstIterator ReverseEnd() const __WSTL_NOEXCEPT__ {
+            return ConstReverseIterator(Begin());
+        }
+
+        /// @brief Gets the const reverse iterator to the end of the array
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR__ 
+        ConstReverseIterator ConstReverseEnd() const __WSTL_NOEXCEPT__ {
+            return ConstReverseIterator(Begin());
+        }
+
+        /// @brief Checks whether the array is empty
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR__ bool Empty() const __WSTL_NOEXCEPT__{
+            return true;
+        }
+
+        /// @brief Gets the size of the array
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR__ SizeType Size() const __WSTL_NOEXCEPT__{
+            return 0;
+        }
+
+        /// @brief Gets the maximum size of the array
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR__ SizeType MaxSize() const __WSTL_NOEXCEPT__{
+            return 0;
+        }
+
+        /// @brief Fills the array with the specified value
+        /// @param value The value to fill the array with
+        __WSTL_CONSTEXPR14__ void Fill(ParameterType) {}
+
+        /// @brief Swaps the contents of the array with another array
+        /// @param other The other array to swap with
+        __WSTL_CONSTEXPR14__ void Swap(Array&) __WSTL_NOEXCEPT__ {}
+
+        // Additional functions
+
+        /// @brief Assigns values from a range to the array
+        /// @param first Iterator to the first element of the range
+        /// @param last Iterator to the last element of the range
+        template<typename InputIterator>
+        __WSTL_CONSTEXPR14__ void Assign(InputIterator, InputIterator) {}
+
+        /// @brief Assigns values from a range to the array, filling remaining elements with a specified value
+        /// @param first Iterator to the first element of the range
+        /// @param last Iterator to the last element of the range
+        /// @param value The value to fill remaining elements with
+        template<typename InputIterator>
+        __WSTL_CONSTEXPR14__ void Assign(InputIterator, InputIterator, ValueType) {}
+
+        /// @brief Inserts a value at the specified position
+        /// @param position Iterator to the position where the value should be inserted
+        /// @param value The value to insert
+        /// @return Iterator to the inserted value
+        __WSTL_CONSTEXPR14__ Iterator Insert(Iterator, ValueType) {
+            return Iterator();
+        }
+
+        /// @brief Inserts a value at the specified index
+        /// @param index The index where the value should be inserted
+        /// @param value The value to insert
+        /// @return Iterator to the inserted value
+        __WSTL_CONSTEXPR14__ inline Iterator Insert(SizeType, ValueType) {
+            return Iterator();
+        }
+
+        /// @brief Inserts a range of values at the specified position
+        /// @param position Iterator to the position where the range should be inserted
+        /// @param first Iterator to the first element of the range
+        /// @param last Iterator to the last element of the range
+        /// @return Iterator to the first element of the inserted range
+        template<typename InputIterator>
+        __WSTL_CONSTEXPR14__ Iterator InsertRange(Iterator, InputIterator, InputIterator) {
+            return Iterator();
+        }
+
+        /// @brief Inserts a range of values at the specified index
+        /// @param index The index where the range should be inserted
+        /// @param first Iterator to the first element of the range
+        /// @param last Iterator to the last element of the range
+        /// @return Iterator to the first element of the inserted range
+        template<typename InputIterator>
+        __WSTL_CONSTEXPR14__ inline Iterator InsertRange(SizeType, InputIterator, InputIterator) {
+            return Iterator();
+        }
+
+        /// @brief Erases a value at the specified position
+        /// @param position Iterator to the position of the value to delete
+        /// @param value The value to fill the deleted value with, default is 0 (array will be shifted anyway)
+        /// @return Iterator to the position where the deleted value was
+        __WSTL_CONSTEXPR14__ Iterator Erase(Iterator, const T& = 0) {
+            return Iterator();
+        }
+
+        /// @brief Erases a value at the specified index
+        /// @param index The index of the value to delete
+        /// @param value The value to fill the deleted value with, default is 0 (array will be shifted anyway)
+        /// @return Iterator to the position where the deleted value was
+        __WSTL_CONSTEXPR14__ inline Iterator Erase(SizeType, const T& = 0) {
+            return Iterator();
+        }
+
+        /// @brief Erases a range of values
+        /// @param first Iterator to the first element of the range to delete
+        /// @param last Iterator to the last element of the range to delete
+        /// @param value The value to fill the deleted range with, default is 0 (array will be shifted anyway)
+        /// @return Iterator to the position where the beginning of the deleted range was
+        __WSTL_CONSTEXPR14__ Iterator EraseRange(Iterator, Iterator, const T& = 0) {
+            return Iterator();
+        }
+
+        /// @brief Erases a range of values
+        /// @param first The index of the first element of the range to delete
+        /// @param last The index of the last element of the range to delete
+        /// @param value The value to fill the deleted range with, default is 0 (array will be shifted anyway)
+        /// @return Iterator to the position where the beginning of the deleted range was
+        __WSTL_CONSTEXPR14__ inline Iterator EraseRange(SizeType, SizeType, const T& = 0) {
+            return Iterator();
         }
     };
 
