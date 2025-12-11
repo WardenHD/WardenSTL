@@ -668,7 +668,7 @@ namespace wstl {
         /// @return Iterator to the newly inserted element
         /// @throws LengthError if the deque is full
         Iterator Insert(ConstIterator position, ConstReferenceType value) {
-            Iterator result = Begin() + Distance(ConstBegin(), position);
+            Iterator result = ToIterator(position);
 
             __WSTL_ASSERT_RETURNVALUE__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"), result);
             
@@ -697,7 +697,7 @@ namespace wstl {
         /// @return Iterator to the newly inserted element
         /// @throws LengthError if the deque is full
         Iterator Insert(ConstIterator position, T&& value) {
-            Iterator result = Begin() + Distance(ConstBegin(), position);
+            Iterator result = ToIterator(position);
 
             __WSTL_ASSERT_RETURNVALUE__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"), result);
 
@@ -728,7 +728,7 @@ namespace wstl {
         /// @return Iterator to the first inserted element
         /// @throws LengthError if the deque is full
         Iterator Insert(ConstIterator position, SizeType count, ConstReferenceType value) {
-            Iterator result = Begin() + Distance(ConstBegin(), position);
+            Iterator result = ToIterator(position);
 
             __WSTL_ASSERT_RETURNVALUE__(count <= this->m_Capacity - this->m_CurrentSize, WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"), result);
 
@@ -803,7 +803,7 @@ namespace wstl {
         template<typename InputIterator>
         typename EnableIf<!IsIntegral<InputIterator>::Value, Iterator>::Type
         Insert(ConstIterator position, InputIterator first, InputIterator last) {
-            Iterator result = Begin() + Distance(ConstBegin(), position);
+            Iterator result = ToIterator(position);
             SizeType count = Distance(first, last);
 
             __WSTL_ASSERT_RETURNVALUE__(count <= this->m_Capacity - this->m_CurrentSize, WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"), result);
@@ -878,7 +878,7 @@ namespace wstl {
         /// @throws LengthError if the deque is full
         /// @return Iterator to the first inserted element
         Iterator Insert(ConstIterator position, InitializerList<T> list) {
-            Iterator result = Begin() + Distance(ConstBegin(), position);
+            Iterator result = ToIterator(position);
 
             __WSTL_ASSERT_RETURNVALUE__(list.Size() <= this->m_Capacity - this->m_CurrentSize, WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"), result);
 
@@ -953,7 +953,7 @@ namespace wstl {
         /// @return Iterator to the newly emplaced element
         template<typename... Args>
         Iterator Emplace(ConstIterator position, Args&&... args) {
-            Iterator result = Begin() + Distance(ConstBegin(), position);
+            Iterator result = ToIterator(position);
 
             __WSTL_ASSERT_RETURNVALUE__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"), result);
 
@@ -997,7 +997,7 @@ namespace wstl {
         /// @return Iterator to the newly emplaced element
         template<typename Arg>
         Iterator Emplace(ConstIterator position) {
-            Iterator result = Begin() + Distance(ConstBegin(), position);
+            Iterator result = ToIterator(position);
 
             __WSTL_ASSERT_RETURNVALUE__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"), result);
 
@@ -1041,7 +1041,7 @@ namespace wstl {
         /// @return Iterator to the newly emplaced element
         template<typename Arg>
         Iterator Emplace(ConstIterator position, const Arg& arg) {
-            Iterator result = Begin() + Distance(ConstBegin(), position);
+            Iterator result = ToIterator(position);
 
             __WSTL_ASSERT_RETURNVALUE__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"), result);
 
@@ -1086,7 +1086,7 @@ namespace wstl {
         /// @return Iterator to the newly emplaced element
         template<typename Arg1, typename Arg2>
         Iterator Emplace(ConstIterator position, const Arg1& arg1, const Arg2& arg2) {
-            Iterator result = Begin() + Distance(ConstBegin(), position);
+            Iterator result = ToIterator(position);
 
             __WSTL_ASSERT_RETURNVALUE__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"), result);
 
@@ -1132,7 +1132,7 @@ namespace wstl {
         /// @return Iterator to the newly emplaced element
         template<typename Arg1, typename Arg2, typename Arg3>
         Iterator Emplace(ConstIterator position, const Arg1& arg1, const Arg2& arg2, const Arg3& arg3) {
-            Iterator result = Begin() + Distance(ConstBegin(), position);
+            Iterator result = ToIterator(position);
 
             __WSTL_ASSERT_RETURNVALUE__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Deque is full"), result);
 
@@ -1209,7 +1209,7 @@ namespace wstl {
         /// @return Iterator to the element following the erased element
         /// @throws OutOfRange if the position is out of range
         Iterator Erase(ConstIterator position) {
-            Iterator result = Begin() + Distance(ConstBegin(), position);
+            Iterator result = ToIterator(position);
 
             __WSTL_ASSERT_RETURNVALUE__(
                 Distance(Begin(), result) <= DifferenceType(this->m_CurrentSize), 
@@ -1285,7 +1285,7 @@ namespace wstl {
         /// @return Iterator to the first element following the erased range
         /// @throws OutOfRange if the range is out of bounds
         Iterator Erase(ConstIterator first, ConstIterator last) {
-            Iterator result = Begin() + Distance(ConstBegin(), first);
+            Iterator result = ToIterator(first);
             SizeType count = Distance(first, last);
 
             __WSTL_ASSERT_RETURNVALUE__(
@@ -1626,6 +1626,10 @@ namespace wstl {
 
         T m_Buffer[m_BufferCapacity];
         SizeType m_StartIndex;
+
+        Iterator ToIterator(ConstIterator iterator) const {
+            return const_cast<Iterator>(iterator);
+        }
 
         /// @brief Initializes the deque
         template<typename U = T>
