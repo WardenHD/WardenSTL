@@ -36,8 +36,13 @@
     #define __WSTL_BIG_ENDIAN__ 1
 #endif
 
-/// TODO: Add option to use dedicated instruction for some functions
 
+// Defines introduced
+
+/// @def __WSTL_BIT_USE_BUILTINS__
+/// @brief If defined, compiler built-in functions will be used for certain bit operations where available
+/// @details This greatly improves runtime performance but at the cost of constexpr-ness
+/// @ingroup binary
 
 namespace wstl {
     /// @brief Enum class representing the endianness of the system
@@ -106,7 +111,13 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/numeric/byteswap
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 2, T>::Type ByteSwap(T value) {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__) 
+        return __builtin_bswap16(value);
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
+        return _byteswap_ushort(value);
+        #else
         return (value << 8) | (value >> 8);
+        #endif
     }
 
     // 4-byte
@@ -119,8 +130,14 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/numeric/byteswap
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 4, T>::Type ByteSwap(T value) {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__)
+        return __builtin_bswap32(value);
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
+        return _byteswap_ulong(value);
+        #else
         value = (value >> 24) | ((value >> 8) & 0x0000FF00UL) | ((value << 8) & 0x00FF0000) | (value << 24);
         return value;
+        #endif
     }
 
     // 8-byte
@@ -133,9 +150,15 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/numeric/byteswap
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 8, T>::Type ByteSwap(T value) {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__)
+        return __builtin_bswap64(value);
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
+        return _byteswap_uint64(value);
+        #else
         value = ((value & 0xFF00FF00FF00FF00ULL) >> 8) | ((value & 0x00FF00FF00FF00FFULL) << 8);
         value = ((value & 0xFFFF0000FFFF0000ULL) >> 16) | ((value & 0x0000FFFF0000FFFFULL) << 16);
         return (value >> 32) | (value << 32);
+        #endif
     }
 
     // Has single bit 
@@ -163,9 +186,15 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/numeric/countl_zero
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 1, uint_least8_t>::Type CountLeftZero(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__) 
+        return (value != 0) ? (uint_least8_t) (__builtin_clz((unsigned int) value) - 24) : 8;
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
+        unsigned long index;
+        return _BitScanReverse(&index, (unsigned long) value) ? (uint_least8_t) (7 - index) : 8;
+        #else
         if(value == 0) return 8;
 
-        int count = 0;
+        uint_least8_t count = 0;
 
         if((value & 0xF0U) == 0) { 
             count += 4; 
@@ -180,6 +209,7 @@ namespace wstl {
         if((value & 0x80U) == 0) count += 1;
 
         return count;
+        #endif
     }
 
     // 2-byte
@@ -192,9 +222,15 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/numeric/countl_zero
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 2, uint_least8_t>::Type CountLeftZero(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__) 
+        return (value != 0) ? (uint_least8_t) (__builtin_clz((unsigned int) value) - 16) : 16;
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
+        unsigned long index;
+        return _BitScanReverse(&index, (unsigned long) value) ? (uint_least8_t) (15 - index) : 16;
+        #else
         if(value == 0) return 16;
 
-        int count = 0;
+        uint_least8_t count = 0;
 
         if((value & 0xFF00U) == 0) {
             count += 8;
@@ -214,6 +250,7 @@ namespace wstl {
         if((value & 0x8000U) == 0) count += 1;
 
         return count;
+        #endif
     }
 
     // 4-byte
@@ -226,9 +263,15 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/numeric/countl_zero
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 4, uint_least8_t>::Type CountLeftZero(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__) 
+        return (value != 0) ? (uint_least8_t) __builtin_clz(value) : 32;
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
+        unsigned long index;
+        return _BitScanReverse(&index, value) ? (uint_least8_t) (31 - index) : 32;
+        #else
         if(value == 0) return 32;
 
-        int count = 0;
+        uint_least8_t count = 0;
 
         if((value & 0xFFFF0000UL) == 0) {
             count += 16;
@@ -253,6 +296,7 @@ namespace wstl {
         if((value & 0x80000000UL) == 0) count += 1;
 
         return count;
+        #endif
     }
 
     // 8-byte
@@ -265,9 +309,15 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/numeric/countl_zero
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 8, uint_least8_t>::Type CountLeftZero(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__) 
+        return (value != 0) ? (uint_least8_t) __builtin_clzll(value) : 64;
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
+        unsigned long index;
+        return _BitScanReverse64(&index, value) ? (uint_least8_t) (63 - index) : 64;
+        #else
         if(value == 0) return 64;
 
-        int count = 0;
+        uint_least8_t count = 0;
 
         if((value & 0xFFFFFFFF00000000ULL) == 0) {
             count += 32;
@@ -297,6 +347,7 @@ namespace wstl {
         if((value & 0x8000000000000000ULL) == 0) count += 1;
 
         return count;
+        #endif
     }
 
     // For signed types
@@ -326,9 +377,15 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/numeric/countr_zero
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 1, uint_least8_t>::Type CountRightZero(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__) 
+        return (value != 0) ? (uint_least8_t) __builtin_ctz((unsigned int) value) : 8;
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
+        unsigned long index;
+        return _BitScanForward(&index, (unsigned long) value) ? (uint_least8_t) index : 8;
+        #else
         if(value == 0) return 8;
 
-        int count = 0;
+        uint_least8_t count = 0;
 
         if((value & 0xFU) == 0) { 
             count += 4; 
@@ -343,6 +400,7 @@ namespace wstl {
         if((value & 0x1U) == 0) count += 1;
 
         return count;
+        #endif
     }
 
     // 2-byte
@@ -355,9 +413,15 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/numeric/countr_zero
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 2, uint_least8_t>::Type CountRightZero(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__) 
+        return (value != 0) ? (uint_least8_t) __builtin_ctz((unsigned int) value) : 16;
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
+        unsigned long index;
+        return _BitScanForward(&index, (unsigned long) value) ? (uint_least8_t) index : 16;
+        #else
         if(value == 0) return 16;
 
-        int count = 0;
+        uint_least8_t count = 0;
 
         if((value & 0xFFU) == 0) { 
             count += 8; 
@@ -377,6 +441,7 @@ namespace wstl {
         if((value & 0x1U) == 0) count += 1;
 
         return count;
+        #endif
     }
 
     // 4-byte
@@ -389,9 +454,15 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/numeric/countr_zero
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 4, uint_least8_t>::Type CountRightZero(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__) 
+        return (value != 0) ? (uint_least8_t) __builtin_ctz(value) : 32;
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
+        unsigned long index;
+        return _BitScanForward(&index, value) ? (uint_least8_t) index : 32;
+        #else
         if(value == 0) return 32;
 
-        int count = 0;
+        uint_least8_t count = 0;
 
         if((value & 0xFFFFUL) == 0) { 
             count += 16; 
@@ -416,6 +487,7 @@ namespace wstl {
         if((value & 0x1UL) == 0) count += 1;
 
         return count;
+        #endif
     }
 
     // 8-byte
@@ -428,9 +500,15 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/numeric/countr_zero
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 8, uint_least8_t>::Type CountRightZero(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__) 
+        return (value != 0) ? (uint_least8_t) __builtin_ctzll(value) : 64;
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
+        unsigned long index;
+        return _BitScanForward64(&index, value) ? (uint_least8_t) index : 64;
+        #else
         if(value == 0) return 64;
 
-        int count = 0;
+        uint_least8_t count = 0;
 
         if((value & 0xFFFFFFFFULL) == 0) { 
             count += 32; 
@@ -460,6 +538,7 @@ namespace wstl {
         if((value & 0x1ULL) == 0) count += 1;
 
         return count;
+        #endif
     }
 
     // For signed types
@@ -488,9 +567,19 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/numeric/countl_one
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 1, uint_least8_t>::Type CountLeftOne(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__) 
+        return (value != 0xFFU) ? (uint_least8_t) (__builtin_clz((unsigned int) ~value) - 24) : 8;
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
         if(value == 0xFFU) return 8;
 
-        int count = 0;
+        unsigned long index;
+        _BitScanReverse(&index, (unsigned long) ~value);
+
+        return (uint_least8_t) (7 - index);
+        #else
+        if(value == 0xFFU) return 8;
+
+        uint_least8_t count = 0;
 
         if((value & 0xF0U) == 0xF0U) {
             count += 4;
@@ -505,6 +594,7 @@ namespace wstl {
         if((value & 0x80U) == 0x80U) count += 1;
 
         return count;
+        #endif
     }
 
     // 2-byte
@@ -517,9 +607,19 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/numeric/countl_one
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 2, uint_least8_t>::Type CountLeftOne(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__) 
+        return (value != 0xFFFFU) ? (uint_least8_t) (__builtin_clz((unsigned int) ~value) - 16) : 16;
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
         if(value == 0xFFFFU) return 16;
 
-        int count = 0;
+        unsigned long index;
+        _BitScanReverse(&index, (unsigned long) ~value);
+
+        return (uint_least8_t) (15 - index);
+        #else
+        if(value == 0xFFFFU) return 16;
+
+        uint_least8_t count = 0;
 
         if((value & 0xFF00U) == 0xFF00U) {
             count += 8;
@@ -539,6 +639,7 @@ namespace wstl {
         if((value & 0x8000U) == 0x8000U) count += 1;
 
         return count;
+        #endif
     }
 
     // 4-byte
@@ -551,9 +652,19 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/numeric/countl_one
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 4, uint_least8_t>::Type CountLeftOne(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__) 
+        return (value != 0xFFFFFFFFUL) ? (uint_least8_t) __builtin_clz(~value) : 32;
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
         if(value == 0xFFFFFFFFUL) return 32;
 
-        int count = 0;
+        unsigned long index;
+        _BitScanReverse(&index, ~value);
+
+        return (uint_least8_t) (31 - index);
+        #else
+        if(value == 0xFFFFFFFFUL) return 32;
+
+        uint_least8_t count = 0;
 
         if((value & 0xFFFF0000UL) == 0xFFFF0000UL) {
             count += 16;
@@ -578,6 +689,7 @@ namespace wstl {
         if((value & 0x80000000UL) == 0x80000000UL) count += 1;
 
         return count;
+        #endif
     }
 
     // 8-byte
@@ -590,9 +702,19 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/numeric/countl_one
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 8, uint_least8_t>::Type CountLeftOne(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__) 
+        return (value != 0xFFFFFFFFFFFFFFFFULL) ? (uint_least8_t) __builtin_clzll(~value) : 64;
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
         if(value == 0xFFFFFFFFFFFFFFFFULL) return 64;
 
-        int count = 0;
+        unsigned long index;
+        _BitScanReverse64(&index, ~value);
+
+        return (uint_least8_t) (63 - index);
+        #else
+        if(value == 0xFFFFFFFFFFFFFFFFULL) return 64;
+
+        uint_least8_t count = 0;
 
         if((value & 0xFFFFFFFF00000000ULL)) {
             count += 32;
@@ -622,6 +744,7 @@ namespace wstl {
         if((value & 0x8000000000000000ULL) == 0x8000000000000000ULL) count += 1;
 
         return count;
+        #endif
     }
 
     // For signed types
@@ -650,9 +773,19 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/numeric/countr_one
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 1, uint_least8_t>::Type CountRightOne(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__) 
+        return (value != 0xFFU) ? (uint_least8_t) __builtin_ctz((unsigned int) ~value) : 8;
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
         if(value == 0xFFU) return 8;
 
-        int count = 0;
+        unsigned long index;
+        _BitScanForward(&index, (unsigned long) ~value);
+
+        return (uint_least8_t) index;
+        #else
+        if(value == 0xFFU) return 8;
+
+        uint_least8_t count = 0;
 
         if((value & 0xFU) == 0xFU) {
             count += 4;
@@ -667,6 +800,7 @@ namespace wstl {
         if((value & 0x1U) == 0x1U) count += 1;
 
         return count;
+        #endif
     }
 
     // 2-byte
@@ -679,9 +813,19 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/numeric/countr_one
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 2, uint_least8_t>::Type CountRightOne(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__) 
+        return (value != 0xFFFFU) ? (uint_least8_t) __builtin_ctz((unsigned int) ~value) : 16;
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
         if(value == 0xFFFFU) return 16;
 
-        int count = 0;
+        unsigned long index;
+        _BitScanForward(&index, (unsigned long) ~value);
+
+        return (uint_least8_t) index;
+        #else
+        if(value == 0xFFFFU) return 16;
+
+        uint_least8_t count = 0;
 
         if((value & 0xFFU) == 0xFFU) {
             count += 8;
@@ -701,6 +845,7 @@ namespace wstl {
         if((value & 0x1U) == 0x1U) count += 1;
 
         return count;
+        #endif
     }
 
     // 4-byte
@@ -713,9 +858,19 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/numeric/countr_one
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 4, uint_least8_t>::Type CountRightOne(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__) 
+        return (value != 0xFFFFFFFFUL) ? (uint_least8_t) __builtin_ctz(~value) : 32;
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
         if(value == 0xFFFFFFFFUL) return 32;
 
-        int count = 0;
+        unsigned long index;
+        _BitScanForward(&index, ~value);
+
+        return (uint_least8_t) index;
+        #else
+        if(value == 0xFFFFFFFFUL) return 32;
+
+        uint_least8_t count = 0;
 
         if((value & 0xFFFFUL) == 0xFFFFUL) {
             count += 16;
@@ -740,6 +895,7 @@ namespace wstl {
         if((value & 0x1UL) == 0x1UL) count += 1;
 
         return count;
+        #endif
     }
 
     // 8-byte
@@ -752,9 +908,19 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/numeric/countr_one
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 8, uint_least8_t>::Type CountRightOne(T value) __WSTL_NOEXCEPT__ {
-        if(value == 0xFFFFFFFFFFFFFFFFUL) return 32;
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__) 
+        return (value != 0xFFFFFFFFFFFFFFFFUL) ? (uint_least8_t) __builtin_ctzll(~value) : 64;
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
+        if(value == 0xFFFFFFFFFFFFFFFFUL) return 64;
 
-        int count = 0;
+        unsigned long index;
+        _BitScanForward64(&index, ~value);
+
+        return (uint_least8_t) index;
+        #else
+        if(value == 0xFFFFFFFFFFFFFFFFUL) return 64;
+
+        uint_least8_t count = 0;
 
         if((value & 0xFFFFFFFFUL) == 0xFFFFFFFFUL) {
             count += 32;
@@ -784,6 +950,7 @@ namespace wstl {
         if((value & 0x1UL) == 0x1UL) count += 1;
 
         return count;
+        #endif
     }
 
     // For signed types
@@ -883,10 +1050,17 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/numeric/popcount
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 1, uint_least8_t>::Type PopulationCount(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__) 
+        return (uint_least8_t) __builtin_popcount((unsigned int) value);
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
+        return (uint_least8_t) __popcnt((unsigned int) value);
+        #else
         value -= ((value >> 1) & 0x55);
         value = (value & 0x33) + ((value >> 2) & 0x33);
         value = (value + (value >> 4)) & 0x0F;
-        return static_cast<uint_least8_t>(value); 
+
+        return static_cast<uint_least8_t>(value);
+        #endif
     }
 
     // 2-byte
@@ -899,11 +1073,18 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/numeric/popcount
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 2, uint_least8_t>::Type PopulationCount(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__) 
+        return (uint_least8_t) __builtin_popcount((unsigned int) value);
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
+        return (uint_least8_t) __popcnt((unsigned int) value);
+        #else
         value -= ((value >> 1) & 0x5555U);
         value = (value & 0x3333U) + ((value >> 2) & 0x3333U);
         value = (value + (value >> 4)) & 0x0F0FU;
         value = (value + (value >> 8)) & 0x00FFU;
+
         return static_cast<uint_least8_t>(value);
+        #endif
     }
 
     // 4-byte
@@ -916,10 +1097,17 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/numeric/popcount
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 4, uint_least8_t>::Type PopulationCount(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__) 
+        return (uint_least8_t) __builtin_popcount(value);
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
+        return (uint_least8_t) __popcnt(value);
+        #else
         value -= ((value >> 1) & 0x55555555U);
         value = (value & 0x33333333U) + ((value >> 2) & 0x33333333U);
         value = (value + (value >> 4)) & 0x0F0F0F0FU;
+
         return static_cast<uint_least8_t>((value * 0x01010101U) >> 24);
+        #endif
     }
 
     // 8-byte
@@ -932,11 +1120,18 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/numeric/popcount
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 8, uint_least8_t>::Type PopulationCount(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__) 
+        return (uint_least8_t) __builtin_popcountll(value);
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
+        return (uint_least8_t) __popcnt64(value);
+        #else
         value -= (value >> 1) & 0x5555555555555555ULL;
         value = (value & 0x3333333333333333ULL) + ((value >> 2) & 0x3333333333333333ULL);
         value = (value + (value >> 4)) & 0x0F0F0F0F0F0F0F0FULL;
         value *= 0x0101010101010101ULL;
+
         return static_cast<uint_least8_t>(value >> 56);
+        #endif
     }
 
     // Parity
@@ -950,9 +1145,15 @@ namespace wstl {
     /// @ingroup binary
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 1, uint_least8_t>::Type Parity(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__) 
+        return (uint_least8_t) __builtin_parity((unsigned int) value);
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
+        return (uint_least8_t) __popcnt((unsigned int) value) & 1;
+        #else
         value ^= value >> 4U;
         value &= 0x0FU;
         return (0x6996U >> value) & 1U;
+        #endif
     }
 
     // 2-byte
@@ -964,10 +1165,16 @@ namespace wstl {
     /// @ingroup binary
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 2, uint_least8_t>::Type Parity(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__) 
+        return (uint_least8_t) __builtin_parity((unsigned int) value);
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
+        return (uint_least8_t) (__popcnt((unsigned int) value) & 1);
+        #else
         value ^= value >> 8U;
         value ^= value >> 4U;
         value &= 0x0FU;
         return (0x6996U >> value) & 1U;
+        #endif
     }
 
     // 4-byte
@@ -979,11 +1186,17 @@ namespace wstl {
     /// @ingroup binary
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 4, uint_least8_t>::Type Parity(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__) 
+        return (uint_least8_t) __builtin_parity(value);
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
+        return (uint_least8_t) __popcnt(value) & 1;
+        #else
         value ^= value >> 16U;
         value ^= value >> 8U;
         value ^= value >> 4U;
         value &= 0x0FU;
         return (0x6996U >> value) & 1U;
+        #endif
     }
 
     // 8-byte
@@ -995,12 +1208,18 @@ namespace wstl {
     /// @ingroup binary
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 8, uint_least8_t>::Type Parity(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__) 
+        return (uint_least8_t) __builtin_parityll(value);
+        #elif defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_MSVC__)
+        return (uint_least8_t) __popcnt64(value) & 1;
+        #else
         value ^= value >> 32U;
         value ^= value >> 16U;
         value ^= value >> 8U;
         value ^= value >> 4U;
         value &= 0x0FU;
         return (0x69966996UL >> value) & 1U;
+        #endif
     }
 
     // For signed types
@@ -1035,9 +1254,13 @@ namespace wstl {
     /// @ingroup binary
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 1, T>::Type ReverseBits(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_CLANG__)
+        return __builtin_bitreverse8(value);
+        #else
         value = (value >> 1) & 0x55 | (value << 1) & 0xAA;
         value = (value >> 2) & 0x33 | (value << 2) & 0xCC;
         return (value >> 4) | (value << 4) & 0xF0;
+        #endif
     }
 
     // 8-bit, compile-time
@@ -1066,10 +1289,14 @@ namespace wstl {
     /// @ingroup binary
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 2, T>::Type ReverseBits(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_CLANG__)
+        return __builtin_bitreverse16(value);
+        #else
         value = (value >> 1) & 0x5555 | (value << 1) & 0xAAAA;
         value = (value >> 2) & 0x3333 | (value << 2) & 0xCCCC;
         value = (value >> 4) & 0x0F0F | (value << 4) & 0xF0F0;
         return (value >> 8) | (value << 8);
+        #endif
     }
 
     // 16-bit, compile-time
@@ -1099,11 +1326,15 @@ namespace wstl {
     /// @ingroup binary
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 4, T>::Type ReverseBits(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_CLANG__)
+        return __builtin_bitreverse32(value);
+        #else
         value = (value >> 1) & 0x55555555 | (value << 1) & 0xAAAAAAAA;
         value = (value >> 2) & 0x33333333 | (value << 2) & 0xCCCCCCCC;
         value = (value >> 4) & 0x0F0F0F0F | (value << 4) & 0xF0F0F0F0;
         value = (value >> 8) & 0x00FF00FF | (value << 8) & 0xFF00FF00;
         return (value >> 16) | (value << 16);
+        #endif
     }
 
     // 32-bit, compile-time
@@ -1134,12 +1365,16 @@ namespace wstl {
     /// @ingroup binary
     template<typename T>
     __WSTL_CONSTEXPR14__ typename EnableIf<IsIntegral<T>::Value && IsUnsigned<T>::Value && sizeof(T) == 8, T>::Type ReverseBits(T value) __WSTL_NOEXCEPT__ {
+        #if defined(__WSTL_BIT_USE_BUILTINS__) && defined(__WSTL_CLANG__)
+        return __builtin_bitreverse64(value);
+        #else
         value = (value >> 1) & 0x5555555555555555ULL | (value << 1) & 0xAAAAAAAAAAAAAAAAULL;
         value = (value >> 2) & 0x3333333333333333ULL | (value << 2) & 0xCCCCCCCCCCCCCCCCULL;
         value = (value >> 4) & 0x0F0F0F0F0F0F0F0FULL | (value << 4) & 0xF0F0F0F0F0F0F0F0ULL;
         value = (value >> 8) & 0x00FF00FF00FF00FFULL | (value << 8) & 0xFF00FF00FF00FF00ULL;
         value = (value >> 16) & 0x0000FFFF0000FFFFULL | (value << 16) & 0xFFFF0000FFFF0000ULL;
         return (value >> 32) | (value << 32);
+        #endif
     }
 
     // 64-bit, compile-time
