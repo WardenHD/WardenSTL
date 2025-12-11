@@ -20,6 +20,7 @@
 
 /// @def __WSTL_ASSERT_SUPPORT__
 /// @brief If defined, enables assert from assert.h in error handling macros
+/// @details However, the library will prioritize usage of `ErrorHandler` functions if they are enabled
 /// @ingroup error_handler
 
 namespace wstl {
