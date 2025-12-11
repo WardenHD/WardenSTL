@@ -203,7 +203,7 @@ namespace wstl {
         __WSTL_CONSTEXPR__ BasicStringView Substring(SizeType position = 0, SizeType count = NoPosition) const {
             BasicStringView result;
             
-            __WSTL_ASSERT_RETURNVALUE__(position <= Size(), WSTL_MAKE_EXCEPTION(OutOfRange, "Substring position out of range"), result);
+            __WSTL_ASSERT_RETURNVALUE__(position < Size(), WSTL_MAKE_EXCEPTION(OutOfRange, "Substring position out of range"), result);
             result = BasicStringView(m_Data + position, Min(count, Size() - position));
 
             return result;
