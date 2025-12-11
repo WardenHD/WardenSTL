@@ -27,12 +27,12 @@ namespace wstl {
         typedef typename Base::SizeType SizeType;
 
         /// @brief Default constructor
-        String() : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {}
+        String() : Base(m_Buffer, N) {}
 
         /// @brief Constructor with count and value
         /// @param count Number of characters
         /// @param value Character to fill with
-        String(SizeType count, ValueType value) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        String(SizeType count, ValueType value) : Base(m_Buffer, N) {
             this->Assign(count, value);
         }
 
@@ -40,26 +40,26 @@ namespace wstl {
         /// @param first Iterator to the first character
         /// @param last Iterator to one past the last character
         template<typename InputIterator>
-        String(InputIterator first, InputIterator last, typename EnableIf<!IsIntegral<InputIterator>::Value, int>::Type = 0) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        String(InputIterator first, InputIterator last, typename EnableIf<!IsIntegral<InputIterator>::Value, int>::Type = 0) : Base(m_Buffer, N) {
             this->Assign(first, last);
         }
 
         /// @brief Constructor from C-style string and length
         /// @param string C-style string pointer
         /// @param count Number of characters in the string
-        String(const ValueType* string, SizeType count) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        String(const ValueType* string, SizeType count) : Base(m_Buffer, N) {
             this->Assign(string, count);
         }
 
         /// @brief Constructor from C-style string
         /// @param string C-style string pointer
-        String(const ValueType* string) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        String(const ValueType* string) : Base(m_Buffer, N) {
             this->Assign(string);
         }
 
         /// @brief Constructor from string view
         /// @param view String view to construct from
-        explicit String(const StringView& view) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        explicit String(const StringView& view) : Base(m_Buffer, N) {
             this->Assign(view);
         }
 
@@ -67,20 +67,20 @@ namespace wstl {
         /// @param view String view to construct from
         /// @param position Starting position in the string view
         /// @param count Number of characters to take from the string view (default is `NoPosition`, meaning until the end)
-        explicit String(const StringView& view, SizeType position, SizeType count = Base::NoPosition) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        explicit String(const StringView& view, SizeType position, SizeType count = Base::NoPosition) : Base(m_Buffer, N) {
             this->Assign(view.Substring(position, count));
         }
 
         /// @brief Copy constructor
         /// @param other String to copy from
-        String(const String& other) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        String(const String& other) : Base(m_Buffer, N) {
             this->Assign(other);
         }
 
         /// @brief Copy constructor from string interface
         /// @param other String to copy from
         template<typename Derived, typename Traits>
-        String(const BasicString<Derived, ValueType, Traits>& other) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        String(const BasicString<Derived, ValueType, Traits>& other) : Base(m_Buffer, N) {
             this->Assign(other);
         }
 
@@ -89,7 +89,7 @@ namespace wstl {
         /// @param position Starting position in the other string
         /// @param count Number of characters to take from the other string (default is `NoPosition`, meaning until the end)
         template<typename Derived, typename Traits>
-        String(const BasicString<Derived, ValueType, Traits>& other, SizeType position, SizeType count = Base::NoPosition) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        String(const BasicString<Derived, ValueType, Traits>& other, SizeType position, SizeType count = Base::NoPosition) : Base(m_Buffer, N) {
             this->Assign(other, position, count);
         }
 
@@ -97,7 +97,7 @@ namespace wstl {
         /// @brief Move constructor
         /// @param other String to move from
         /// @since C++11
-        String(String&& other) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        String(String&& other) : Base(m_Buffer, N) {
             this->Assign(Move(other));
         }
 
@@ -105,7 +105,7 @@ namespace wstl {
         /// @param other String to move from
         /// @since C++11
         template<typename Derived, typename Traits>
-        String(BasicString<Derived, ValueType, Traits>&& other) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        String(BasicString<Derived, ValueType, Traits>&& other) : Base(m_Buffer, N) {
             this->Assign(Move(other));
         }
         #endif
@@ -114,7 +114,7 @@ namespace wstl {
         /// @param other String to copy from
         /// @param position Starting position in the other string
         /// @param count Number of characters to take from the other string (default is `NoPosition`, meaning until the end)
-        String(const String& other, SizeType position, SizeType count = Base::NoPosition) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        String(const String& other, SizeType position, SizeType count = Base::NoPosition) : Base(m_Buffer, N) {
             this->Assign(other.Substring(position, count));
         }
 
@@ -123,7 +123,7 @@ namespace wstl {
         /// @param other String to move from
         /// @param position Starting position in the other string
         /// @param count Number of characters to take from the other string (default is `NoPosition`, meaning until the end)
-        String(String&& other, SizeType position, SizeType count = Base::NoPosition) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        String(String&& other, SizeType position, SizeType count = Base::NoPosition) : Base(m_Buffer, N) {
             this->Assign(Move(other.Substring(position, count)));
         }
 
@@ -132,14 +132,14 @@ namespace wstl {
         /// @param position Starting position in the other string
         /// @param count Number of characters to take from the other string (default is `NoPosition`, meaning until the end)
         template<typename Derived, typename Traits>
-        String(BasicString<Derived, ValueType, Traits>&& other, SizeType position, SizeType count = Base::NoPosition) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        String(BasicString<Derived, ValueType, Traits>&& other, SizeType position, SizeType count = Base::NoPosition) : Base(m_Buffer, N) {
             this->Assign(Move(other.Substring(position, count)));
         }
 
         #ifndef __WSTL_NO_INITIALIZERLIST__
         /// @brief Constructor from initializer list
         /// @param list Initializer list of characters
-        String(InitializerList<ValueType> list) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        String(InitializerList<ValueType> list) : Base(m_Buffer, N) {
             this->Assign(list);
         }
         #endif
@@ -208,7 +208,7 @@ namespace wstl {
         }
 
     private:
-        char m_Buffer[N + 1];
+        ValueType m_Buffer[N + 1];
         
         /// @brief Deleted null pointer constructor
         String(NullPointerType) __WSTL_DELETE__;
@@ -234,7 +234,7 @@ namespace wstl {
     };
 
     template<size_t N>
-    struct Hash<String<N>> {
+    struct Hash<String<N> > {
         size_t operator()(const String<N>& string) const {
             return __private::__GenericHash<size_t>(reinterpret_cast<const uint8_t*>(string.Data()), reinterpret_cast<const uint8_t*>(string.Data() + string.Size()));
         }
@@ -299,12 +299,12 @@ namespace wstl {
         typedef typename Base::SizeType SizeType;
 
         /// @brief Default constructor
-        WideString() : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {}
+        WideString() : Base(m_Buffer, N) {}
 
         /// @brief Constructor with count and value
         /// @param count Number of characters
         /// @param value Character to fill with
-        WideString(SizeType count, ValueType value) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        WideString(SizeType count, ValueType value) : Base(m_Buffer, N) {
             this->Assign(count, value);
         }
 
@@ -312,26 +312,26 @@ namespace wstl {
         /// @param first Iterator to the first character
         /// @param last Iterator to one past the last character
         template<typename InputIterator>
-        WideString(InputIterator first, InputIterator last, typename EnableIf<!IsIntegral<InputIterator>::Value, int>::Type = 0) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        WideString(InputIterator first, InputIterator last, typename EnableIf<!IsIntegral<InputIterator>::Value, int>::Type = 0) : Base(m_Buffer, N) {
             this->Assign(first, last);
         }
 
         /// @brief Constructor from C-style string and length
         /// @param string C-style string pointer
         /// @param count Number of characters in the string
-        WideString(const ValueType* string, SizeType count) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        WideString(const ValueType* string, SizeType count) : Base(m_Buffer, N) {
             this->Assign(string, count);
         }
 
         /// @brief Constructor from C-style string
         /// @param string C-style string pointer
-        WideString(const ValueType* string) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        WideString(const ValueType* string) : Base(m_Buffer, N) {
             this->Assign(string);
         }
 
         /// @brief Constructor from string view
         /// @param view String view to construct from
-        explicit WideString(const WideStringView& view) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        explicit WideString(const WideStringView& view) : Base(m_Buffer, N) {
             this->Assign(view);
         }
 
@@ -339,20 +339,20 @@ namespace wstl {
         /// @param view String view to construct from
         /// @param position Starting position in the string view
         /// @param count Number of characters to take from the string view (default is `NoPosition`, meaning until the end)
-        explicit WideString(const WideStringView& view, SizeType position, SizeType count = Base::NoPosition) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        explicit WideString(const WideStringView& view, SizeType position, SizeType count = Base::NoPosition) : Base(m_Buffer, N) {
             this->Assign(view.Substring(position, count));
         }
 
         /// @brief Copy constructor
         /// @param other String to copy from
-        WideString(const WideString& other) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        WideString(const WideString& other) : Base(m_Buffer, N) {
             this->Assign(other);
         }
 
         /// @brief Copy constructor from string interface
         /// @param other String to copy from
         template<typename Derived, typename Traits>
-        WideString(const BasicString<Derived, ValueType>& other) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        WideString(const BasicString<Derived, ValueType>& other) : Base(m_Buffer, N) {
             this->Assign(other);
         }
 
@@ -361,7 +361,7 @@ namespace wstl {
         /// @param position Starting position in the other string
         /// @param count Number of characters to take from the other string (default is `NoPosition`, meaning until the end)
         template<typename Derived, typename Traits>
-        WideString(const BasicString<Derived, ValueType, Traits>& other, SizeType position, SizeType count = Base::NoPosition) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        WideString(const BasicString<Derived, ValueType, Traits>& other, SizeType position, SizeType count = Base::NoPosition) : Base(m_Buffer, N) {
             this->Assign(other, position, count);
         }
 
@@ -369,7 +369,7 @@ namespace wstl {
         /// @brief Move constructor
         /// @param other String to move from
         /// @since C++11
-        WideString(WideString&& other) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        WideString(WideString&& other) : Base(m_Buffer, N) {
             this->Assign(Move(other));
         }
 
@@ -377,7 +377,7 @@ namespace wstl {
         /// @param other String to move from
         /// @since C++11
         template<typename Derived, typename Traits>
-        WideString(BasicString<Derived, ValueType, Traits>&& other) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        WideString(BasicString<Derived, ValueType, Traits>&& other) : Base(m_Buffer, N) {
             this->Assign(Move(other));
         }
         #endif
@@ -386,7 +386,7 @@ namespace wstl {
         /// @param other String to copy from
         /// @param position Starting position in the other string
         /// @param count Number of characters to take from the other string (default is `NoPosition`, meaning until the end)
-        WideString(const WideString& other, SizeType position, SizeType count = Base::NoPosition) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        WideString(const WideString& other, SizeType position, SizeType count = Base::NoPosition) : Base(m_Buffer, N) {
             this->Assign(other.Substring(position, count));
         }
 
@@ -395,7 +395,7 @@ namespace wstl {
         /// @param other String to move from
         /// @param position Starting position in the other string
         /// @param count Number of characters to take from the other string (default is `NoPosition`, meaning until the end)
-        WideString(WideString&& other, SizeType position, SizeType count = Base::NoPosition) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        WideString(WideString&& other, SizeType position, SizeType count = Base::NoPosition) : Base(m_Buffer, N) {
             this->Assign(Move(other.Substring(position, count)));
         }
 
@@ -404,14 +404,14 @@ namespace wstl {
         /// @param position Starting position in the other string
         /// @param count Number of characters to take from the other string (default is `NoPosition`, meaning until the end)
         template<typename Derived, typename Traits>
-        WideString(BasicString<Derived, ValueType>&& other, SizeType position, SizeType count = Base::NoPosition) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        WideString(BasicString<Derived, ValueType>&& other, SizeType position, SizeType count = Base::NoPosition) : Base(m_Buffer, N) {
             this->Assign(Move(other.Substring(position, count)));
         }
 
         #ifndef __WSTL_NO_INITIALIZERLIST__
         /// @brief Constructor from initializer list
         /// @param list Initializer list of characters
-        WideString(InitializerList<ValueType> list) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        WideString(InitializerList<ValueType> list) : Base(m_Buffer, N) {
             this->Assign(list);
         }
         #endif
@@ -480,7 +480,7 @@ namespace wstl {
         }
 
     private:
-        char m_Buffer[N + 1];
+        ValueType m_Buffer[N + 1];
         
         /// @brief Deleted null pointer constructor
         WideString(NullPointerType) __WSTL_DELETE__;
@@ -506,7 +506,7 @@ namespace wstl {
     };
 
     template<size_t N>
-    struct Hash<WideString<N>> {
+    struct Hash<WideString<N> > {
         size_t operator()(const WideString<N>& string) const {
             return __private::__GenericHash<size_t>(reinterpret_cast<const uint8_t*>(string.Data()), reinterpret_cast<const uint8_t*>(string.Data() + string.Size()));
         }
@@ -573,12 +573,12 @@ namespace wstl {
         typedef typename Base::SizeType SizeType;
 
         /// @brief Default constructor
-        U16String() : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {}
+        U16String() : Base(m_Buffer, N) {}
 
         /// @brief Constructor with count and value
         /// @param count Number of characters
         /// @param value Character to fill with
-        U16String(SizeType count, ValueType value) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U16String(SizeType count, ValueType value) : Base(m_Buffer, N) {
             this->Assign(count, value);
         }
 
@@ -586,26 +586,26 @@ namespace wstl {
         /// @param first Iterator to the first character
         /// @param last Iterator to one past the last character
         template<typename InputIterator>
-        U16String(InputIterator first, InputIterator last, typename EnableIf<!IsIntegral<InputIterator>::Value, int>::Type = 0) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U16String(InputIterator first, InputIterator last, typename EnableIf<!IsIntegral<InputIterator>::Value, int>::Type = 0) : Base(m_Buffer, N) {
             this->Assign(first, last);
         }
 
         /// @brief Constructor from C-style string and length
         /// @param string C-style string pointer
         /// @param count Number of characters in the string
-        U16String(const ValueType* string, SizeType count) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U16String(const ValueType* string, SizeType count) : Base(m_Buffer, N) {
             this->Assign(string, count);
         }
 
         /// @brief Constructor from C-style string
         /// @param string C-style string pointer
-        U16String(const ValueType* string) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U16String(const ValueType* string) : Base(m_Buffer, N) {
             this->Assign(string);
         }
 
         /// @brief Constructor from string view
         /// @param view String view to construct from
-        explicit U16String(const U16StringView& view) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        explicit U16String(const U16StringView& view) : Base(m_Buffer, N) {
             this->Assign(view);
         }
 
@@ -613,20 +613,20 @@ namespace wstl {
         /// @param view String view to construct from
         /// @param position Starting position in the string view
         /// @param count Number of characters to take from the string view (default is `NoPosition`, meaning until the end)
-        explicit U16String(const U16StringView& view, SizeType position, SizeType count = Base::NoPosition) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        explicit U16String(const U16StringView& view, SizeType position, SizeType count = Base::NoPosition) : Base(m_Buffer, N) {
             this->Assign(view.Substring(position, count));
         }
 
         /// @brief Copy constructor
         /// @param other String to copy from
-        U16String(const U16String& other) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U16String(const U16String& other) : Base(m_Buffer, N) {
             this->Assign(other);
         }
 
         /// @brief Copy constructor from string interface
         /// @param other String to copy from
         template<typename Derived, typename Traits>
-        U16String(const BasicString<Derived, ValueType, Traits>& other) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U16String(const BasicString<Derived, ValueType, Traits>& other) : Base(m_Buffer, N) {
             this->Assign(other);
         }
 
@@ -635,7 +635,7 @@ namespace wstl {
         /// @param position Starting position in the other string
         /// @param count Number of characters to take from the other string (default is `NoPosition`, meaning until the end)
         template<typename Derived, typename Traits>
-        U16String(const BasicString<Derived, ValueType, Traits>& other, SizeType position, SizeType count = Base::NoPosition) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U16String(const BasicString<Derived, ValueType, Traits>& other, SizeType position, SizeType count = Base::NoPosition) : Base(m_Buffer, N) {
             this->Assign(other, position, count);
         }
 
@@ -643,7 +643,7 @@ namespace wstl {
         /// @brief Move constructor
         /// @param other String to move from
         /// @since C++11
-        U16String(U16String&& other) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U16String(U16String&& other) : Base(m_Buffer, N) {
             this->Assign(Move(other));
         }
 
@@ -651,7 +651,7 @@ namespace wstl {
         /// @param other String to move from
         /// @since C++11
         template<typename Derived, typename Traits>
-        U16String(BasicString<Derived, ValueType, Traits>&& other) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U16String(BasicString<Derived, ValueType, Traits>&& other) : Base(m_Buffer, N) {
             this->Assign(Move(other));
         }
         #endif
@@ -660,7 +660,7 @@ namespace wstl {
         /// @param other String to copy from
         /// @param position Starting position in the other string
         /// @param count Number of characters to take from the other string (default is `NoPosition`, meaning until the end)
-        U16String(const U16String& other, SizeType position, SizeType count = Base::NoPosition) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U16String(const U16String& other, SizeType position, SizeType count = Base::NoPosition) : Base(m_Buffer, N) {
             this->Assign(other.Substring(position, count));
         }
 
@@ -669,7 +669,7 @@ namespace wstl {
         /// @param other String to move from
         /// @param position Starting position in the other string
         /// @param count Number of characters to take from the other string (default is `NoPosition`, meaning until the end)
-        U16String(U16String&& other, SizeType position, SizeType count = Base::NoPosition) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U16String(U16String&& other, SizeType position, SizeType count = Base::NoPosition) : Base(m_Buffer, N) {
             this->Assign(Move(other.Substring(position, count)));
         }
 
@@ -678,14 +678,14 @@ namespace wstl {
         /// @param position Starting position in the other string
         /// @param count Number of characters to take from the other string (default is `NoPosition`, meaning until the end)
         template<typename Derived, typename Traits>
-        U16String(BasicString<Derived, ValueType, Traits>&& other, SizeType position, SizeType count = Base::NoPosition) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U16String(BasicString<Derived, ValueType, Traits>&& other, SizeType position, SizeType count = Base::NoPosition) : Base(m_Buffer, N) {
             this->Assign(Move(other.Substring(position, count)));
         }
 
         #ifndef __WSTL_NO_INITIALIZERLIST__
         /// @brief Constructor from initializer list
         /// @param list Initializer list of characters
-        U16String(InitializerList<ValueType> list) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U16String(InitializerList<ValueType> list) : Base(m_Buffer, N) {
             this->Assign(list);
         }
         #endif
@@ -754,7 +754,7 @@ namespace wstl {
         }
 
     private:
-        char m_Buffer[N + 1];
+        ValueType m_Buffer[N + 1];
         
         /// @brief Deleted null pointer constructor
         U16String(NullPointerType) __WSTL_DELETE__;
@@ -780,7 +780,7 @@ namespace wstl {
     };
 
     template<size_t N>
-    struct Hash<U16String<N>> {
+    struct Hash<U16String<N> > {
         size_t operator()(const U16String<N>& string) const {
             return __private::__GenericHash<size_t>(reinterpret_cast<const uint8_t*>(string.Data()), reinterpret_cast<const uint8_t*>(string.Data() + string.Size()));
         }
@@ -845,12 +845,12 @@ namespace wstl {
         typedef typename Base::SizeType SizeType;
 
         /// @brief Default constructor
-        U32String() : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {}
+        U32String() : Base(m_Buffer, N) {}
 
         /// @brief Constructor with count and value
         /// @param count Number of characters
         /// @param value Character to fill with
-        U32String(SizeType count, ValueType value) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U32String(SizeType count, ValueType value) : Base(m_Buffer, N) {
             this->Assign(count, value);
         }
 
@@ -858,26 +858,26 @@ namespace wstl {
         /// @param first Iterator to the first character
         /// @param last Iterator to one past the last character
         template<typename InputIterator>
-        U32String(InputIterator first, InputIterator last, typename EnableIf<!IsIntegral<InputIterator>::Value, int>::Type = 0) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U32String(InputIterator first, InputIterator last, typename EnableIf<!IsIntegral<InputIterator>::Value, int>::Type = 0) : Base(m_Buffer, N) {
             this->Assign(first, last);
         }
 
         /// @brief Constructor from C-style string and length
         /// @param string C-style string pointer
         /// @param count Number of characters in the string
-        U32String(const ValueType* string, SizeType count) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U32String(const ValueType* string, SizeType count) : Base(m_Buffer, N) {
             this->Assign(string, count);
         }
 
         /// @brief Constructor from C-style string
         /// @param string C-style string pointer
-        U32String(const ValueType* string) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U32String(const ValueType* string) : Base(m_Buffer, N) {
             this->Assign(string);
         }
 
         /// @brief Constructor from string view
         /// @param view String view to construct from
-        explicit U32String(const U32StringView& view) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        explicit U32String(const U32StringView& view) : Base(m_Buffer, N) {
             this->Assign(view);
         }
 
@@ -885,20 +885,20 @@ namespace wstl {
         /// @param view String view to construct from
         /// @param position Starting position in the string view
         /// @param count Number of characters to take from the string view (default is `NoPosition`, meaning until the end)
-        explicit U32String(const U32StringView& view, SizeType position, SizeType count = Base::NoPosition) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        explicit U32String(const U32StringView& view, SizeType position, SizeType count = Base::NoPosition) : Base(m_Buffer, N) {
             this->Assign(view.Substring(position, count));
         }
 
         /// @brief Copy constructor
         /// @param other String to copy from
-        U32String(const U32String& other) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U32String(const U32String& other) : Base(m_Buffer, N) {
             this->Assign(other);
         }
 
         /// @brief Copy constructor from string interface
         /// @param other String to copy from
         template<typename Derived, typename Traits>
-        U32String(const BasicString<Derived, ValueType, Traits>& other) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U32String(const BasicString<Derived, ValueType, Traits>& other) : Base(m_Buffer, N) {
             this->Assign(other);
         }
 
@@ -907,7 +907,7 @@ namespace wstl {
         /// @param position Starting position in the other string
         /// @param count Number of characters to take from the other string (default is `NoPosition`, meaning until the end)
         template<typename Derived, typename Traits>
-        U32String(const BasicString<Derived, ValueType, Traits>& other, SizeType position, SizeType count = Base::NoPosition) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U32String(const BasicString<Derived, ValueType, Traits>& other, SizeType position, SizeType count = Base::NoPosition) : Base(m_Buffer, N) {
             this->Assign(other, position, count);
         }
 
@@ -915,7 +915,7 @@ namespace wstl {
         /// @brief Move constructor
         /// @param other String to move from
         /// @since C++11
-        U32String(U32String&& other) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U32String(U32String&& other) : Base(m_Buffer, N) {
             this->Assign(Move(other));
         }
 
@@ -923,7 +923,7 @@ namespace wstl {
         /// @param other String to move from
         /// @since C++11
         template<typename Derived, typename Traits>
-        U32String(BasicString<Derived, ValueType, Traits>&& other) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U32String(BasicString<Derived, ValueType, Traits>&& other) : Base(m_Buffer, N) {
             this->Assign(Move(other));
         }
         #endif
@@ -932,7 +932,7 @@ namespace wstl {
         /// @param other String to copy from
         /// @param position Starting position in the other string
         /// @param count Number of characters to take from the other string (default is `NoPosition`, meaning until the end)
-        U32String(const U32String& other, SizeType position, SizeType count = Base::NoPosition) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U32String(const U32String& other, SizeType position, SizeType count = Base::NoPosition) : Base(m_Buffer, N) {
             this->Assign(other.Substring(position, count));
         }
 
@@ -941,7 +941,7 @@ namespace wstl {
         /// @param other String to move from
         /// @param position Starting position in the other string
         /// @param count Number of characters to take from the other string (default is `NoPosition`, meaning until the end)
-        U32String(U32String&& other, SizeType position, SizeType count = Base::NoPosition) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U32String(U32String&& other, SizeType position, SizeType count = Base::NoPosition) : Base(m_Buffer, N) {
             this->Assign(Move(other.Substring(position, count)));
         }
 
@@ -950,14 +950,14 @@ namespace wstl {
         /// @param position Starting position in the other string
         /// @param count Number of characters to take from the other string (default is `NoPosition`, meaning until the end)
         template<typename Derived, typename Traits>
-        U32String(BasicString<Derived, ValueType, Traits>&& other, SizeType position, SizeType count = Base::NoPosition) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U32String(BasicString<Derived, ValueType, Traits>&& other, SizeType position, SizeType count = Base::NoPosition) : Base(m_Buffer, N) {
             this->Assign(Move(other.Substring(position, count)));
         }
 
         #ifndef __WSTL_NO_INITIALIZERLIST__
         /// @brief Constructor from initializer list
         /// @param list Initializer list of characters
-        U32String(InitializerList<ValueType> list) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U32String(InitializerList<ValueType> list) : Base(m_Buffer, N) {
             this->Assign(list);
         }
         #endif
@@ -1026,7 +1026,7 @@ namespace wstl {
         }
 
     private:
-        char m_Buffer[N + 1];
+        ValueType m_Buffer[N + 1];
         
         /// @brief Deleted null pointer constructor
         U32String(NullPointerType) __WSTL_DELETE__;
@@ -1052,7 +1052,7 @@ namespace wstl {
     };
 
     template<size_t N>
-    struct Hash<U32String<N>> {
+    struct Hash<U32String<N> > {
         size_t operator()(const U32String<N>& string) const {
             return __private::__GenericHash<size_t>(reinterpret_cast<const uint8_t*>(string.Data()), reinterpret_cast<const uint8_t*>(string.Data() + string.Size()));
         }
@@ -1119,12 +1119,12 @@ namespace wstl {
         typedef typename Base::SizeType SizeType;
 
         /// @brief Default constructor
-        U8String() : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {}
+        U8String() : Base(m_Buffer, N) {}
 
         /// @brief Constructor with count and value
         /// @param count Number of characters
         /// @param value Character to fill with
-        U8String(SizeType count, ValueType value) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U8String(SizeType count, ValueType value) : Base(m_Buffer, N) {
             this->Assign(count, value);
         }
 
@@ -1132,26 +1132,26 @@ namespace wstl {
         /// @param first Iterator to the first character
         /// @param last Iterator to one past the last character
         template<typename InputIterator>
-        U8String(InputIterator first, InputIterator last, typename EnableIf<!IsIntegral<InputIterator>::Value, int>::Type = 0) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U8String(InputIterator first, InputIterator last, typename EnableIf<!IsIntegral<InputIterator>::Value, int>::Type = 0) : Base(m_Buffer, N) {
             this->Assign(first, last);
         }
 
         /// @brief Constructor from C-style string and length
         /// @param string C-style string pointer
         /// @param count Number of characters in the string
-        U8String(const ValueType* string, SizeType count) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U8String(const ValueType* string, SizeType count) : Base(m_Buffer, N) {
             this->Assign(string, count);
         }
 
         /// @brief Constructor from C-style string
         /// @param string C-style string pointer
-        U8String(const ValueType* string) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U8String(const ValueType* string) : Base(m_Buffer, N) {
             this->Assign(string);
         }
 
         /// @brief Constructor from string view
         /// @param view String view to construct from
-        explicit U8String(const U8StringView& view) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        explicit U8String(const U8StringView& view) : Base(m_Buffer, N) {
             this->Assign(view);
         }
 
@@ -1159,20 +1159,20 @@ namespace wstl {
         /// @param view String view to construct from
         /// @param position Starting position in the string view
         /// @param count Number of characters to take from the string view (default is `NoPosition`, meaning until the end)
-        explicit U8String(const U8StringView& view, SizeType position, SizeType count = Base::NoPosition) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        explicit U8String(const U8StringView& view, SizeType position, SizeType count = Base::NoPosition) : Base(m_Buffer, N) {
             this->Assign(view.Substring(position, count));
         }
 
         /// @brief Copy constructor
         /// @param other String to copy from
-        U8String(const U8String& other) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U8String(const U8String& other) : Base(m_Buffer, N) {
             this->Assign(other);
         }
 
         /// @brief Copy constructor from string interface
         /// @param other String to copy from
         template<typename Derived, typename Traits>
-        U8String(const BasicString<Derived, ValueType, Traits>& other) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U8String(const BasicString<Derived, ValueType, Traits>& other) : Base(m_Buffer, N) {
             this->Assign(other);
         }
 
@@ -1181,7 +1181,7 @@ namespace wstl {
         /// @param position Starting position in the other string
         /// @param count Number of characters to take from the other string (default is `NoPosition`, meaning until the end)
         template<typename Derived, typename Traits>
-        U8String(const BasicString<Derived, ValueType, Traits>& other, SizeType position, SizeType count = Base::NoPosition) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U8String(const BasicString<Derived, ValueType, Traits>& other, SizeType position, SizeType count = Base::NoPosition) : Base(m_Buffer, N) {
             this->Assign(other, position, count);
         }
 
@@ -1189,7 +1189,7 @@ namespace wstl {
         /// @brief Move constructor
         /// @param other String to move from
         /// @since C++11
-        U8String(U8String&& other) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U8String(U8String&& other) : Base(m_Buffer, N) {
             this->Assign(Move(other));
         }
 
@@ -1197,7 +1197,7 @@ namespace wstl {
         /// @param other String to move from
         /// @since C++11
         template<typename Derived, typename Traits>
-        U8String(BasicString<Derived, ValueType, Traits>&& other) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U8String(BasicString<Derived, ValueType, Traits>&& other) : Base(m_Buffer, N) {
             this->Assign(Move(other));
         }
         #endif
@@ -1206,7 +1206,7 @@ namespace wstl {
         /// @param other String to copy from
         /// @param position Starting position in the other string
         /// @param count Number of characters to take from the other string (default is `NoPosition`, meaning until the end)
-        U8String(const U8String& other, SizeType position, SizeType count = Base::NoPosition) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U8String(const U8String& other, SizeType position, SizeType count = Base::NoPosition) : Base(m_Buffer, N) {
             this->Assign(other.Substring(position, count));
         }
 
@@ -1215,7 +1215,7 @@ namespace wstl {
         /// @param other String to move from
         /// @param position Starting position in the other string
         /// @param count Number of characters to take from the other string (default is `NoPosition`, meaning until the end)
-        U8String(U8String&& other, SizeType position, SizeType count = Base::NoPosition) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U8String(U8String&& other, SizeType position, SizeType count = Base::NoPosition) : Base(m_Buffer, N) {
             this->Assign(Move(other.Substring(position, count)));
         }
 
@@ -1224,14 +1224,14 @@ namespace wstl {
         /// @param position Starting position in the other string
         /// @param count Number of characters to take from the other string (default is `NoPosition`, meaning until the end)
         template<typename Derived, typename Traits>
-        U8String(BasicString<Derived, ValueType, Traits>&& other, SizeType position, SizeType count = Base::NoPosition) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U8String(BasicString<Derived, ValueType, Traits>&& other, SizeType position, SizeType count = Base::NoPosition) : Base(m_Buffer, N) {
             this->Assign(Move(other.Substring(position, count)));
         }
 
         #ifndef __WSTL_NO_INITIALIZERLIST__
         /// @brief Constructor from initializer list
         /// @param list Initializer list of characters
-        U8String(InitializerList<ValueType> list) : Base(reinterpret_cast<ValueType*>(&m_Buffer), N) {
+        U8String(InitializerList<ValueType> list) : Base(m_Buffer, N) {
             this->Assign(list);
         }
         #endif
@@ -1300,7 +1300,7 @@ namespace wstl {
         }
 
     private:
-        char m_Buffer[N + 1];
+        ValueType m_Buffer[N + 1];
         
         /// @brief Deleted null pointer constructor
         U8String(NullPointerType) __WSTL_DELETE__;
@@ -1326,7 +1326,7 @@ namespace wstl {
     };
 
     template<size_t N>
-    struct Hash<U8String<N>> {
+    struct Hash<U8String<N> > {
         size_t operator()(const U8String<N>& string) const {
             return __private::__GenericHash<size_t>(reinterpret_cast<const uint8_t*>(string.Data()), reinterpret_cast<const uint8_t*>(string.Data() + string.Size()));
         }
