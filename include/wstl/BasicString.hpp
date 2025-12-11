@@ -233,7 +233,7 @@ namespace wstl {
         Derived Substring(SizeType position = 0, SizeType count = NoPosition) const {
             Derived result;
 
-            __WSTL_ASSERT_RETURNVALUE__(position <= this->Size(), WSTL_MAKE_EXCEPTION(OutOfRange, "Substring position out of range"), result);
+            __WSTL_ASSERT_RETURNVALUE__(position < this->Size(), WSTL_MAKE_EXCEPTION(OutOfRange, "Substring position out of range"), result);
             result.Assign(m_Buffer + position, Min(count, this->Size() - position));
 
             return result;
