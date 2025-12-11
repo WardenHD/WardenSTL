@@ -67,6 +67,10 @@ namespace wstl {
     // /// @brief Namespace that holds variations of CRC functions
     // /// @ingroup crc
     // namespace crc {}
+
+    /// @brief Namespace that holds containers that use externally defined storage
+    /// @ingroup containers
+    namespace external {}
 }
 
 // C++ version defines
