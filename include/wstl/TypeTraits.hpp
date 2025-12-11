@@ -545,7 +545,7 @@ namespace wstl {
     /// @tparam T Type of value
     /// @ingroup type_traits
     /// @since C++11
-    typename AddRValueReference<T>::Type DeclareValue() __WSTL_NOEXCEPT__;
+    AddRValueReferenceType<T> DeclareValue() __WSTL_NOEXCEPT__;
     #endif
 
     // Enable if
@@ -1527,13 +1527,7 @@ namespace wstl {
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_constructible
     template<typename T, typename... Args>
-    struct IsTriviallyConstructible : BoolConstant<
-    #ifdef __WSTL_GCC__
-    __has_trivial_constructor(T)
-    #else
-    __is_trivially_constructible(T, Args...)
-    #endif
-    > {};
+    struct IsTriviallyConstructible : BoolConstant<__is_trivially_constructible(T, Args...)> {};
     #else
     /// @brief Checks whether type is trivially constructible (does not call not trivial operations)
     /// @tparam T Constructor type
@@ -1855,12 +1849,8 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/types/is_assignable
     template<typename T, typename U>
     struct IsTriviallyAssignable : BoolConstant<
-        #if defined(__WSTL_CXX11__) && !defined(__WSTL_MSVC__) 
-        #if defined(__WSTL_GCC__) || defined(__WSTL_ICC__) || defined(__WSTL_CLANG__)
+        #if defined(__WSTL_CXX11__)
         __is_trivially_assignable(T, U)
-        #else
-        false
-        #endif
         #else
         IsAssignable<T, U>::Value && 
         #if defined(__WSTL_GCC__) || defined(__WSTL_ICC__) || defined(__WSTL_CLANG__)
@@ -2104,13 +2094,8 @@ namespace wstl {
     namespace __private {
         #ifdef __WSTL_CXX11__
         template<typename T>
-        static constexpr bool __TestNothrowDestructible(int) {
+        static constexpr bool __TestNothrowDestructible() {
             return noexcept(DeclareValue<T&>().~T());
-        }
-        
-        template<typename>
-        static constexpr bool __TestNothrowDestructible(...) {
-            return false;
         }
         #endif
     }
@@ -2123,7 +2108,7 @@ namespace wstl {
     template<typename T>
     struct IsNothrowDestructible : BoolConstant<
     #ifdef __WSTL_CXX11__
-    __private::__TestNothrowDestructible<T>(0)
+    __private::__TestNothrowDestructible<T>()
     #elif defined(__WSTL_GCC__) || defined(__WSTL_MSVC__) || defined(__WSTL_CLANG__)
     __is_nothrow_destructible(T)
     #else
