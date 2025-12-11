@@ -18,39 +18,39 @@ namespace wstl {
         typedef size_t SizeType;
 
         /// @brief Gets the current size of the container
-        SizeType Size() const {
+        SizeType Size() const __WSTL_NOEXCEPT__ {
             return m_CurrentSize;
         }
 
         /// @brief Checks if the container is empty
-        bool Empty() const {
+        bool Empty() const __WSTL_NOEXCEPT__ {
             return m_CurrentSize == 0;
         }
 
         /// @brief Gets the maximum size of the container
-        SizeType MaxSize() const {
+        SizeType MaxSize() const __WSTL_NOEXCEPT__ {
             return m_Capacity;
         }
 
         /// @brief Checks if the container is full
-        bool Full() const {
+        bool Full() const __WSTL_NOEXCEPT__ {
             return m_CurrentSize == m_Capacity;
         }
 
         /// @brief Gets the capacity of the container
-        SizeType Capacity() const {
+        SizeType Capacity() const __WSTL_NOEXCEPT__ {
             return m_Capacity;
         }
 
         /// @brief Gets the available space in the container
-        SizeType Available() const {
+        SizeType Available() const __WSTL_NOEXCEPT__ {
             return MaxSize() - Size();
         }
 
     protected:
         /// @brief Protected constructor
         /// @param capacity The maximum number of elements container can hold
-        FixedContainerBase(SizeType capacity) : m_Capacity(capacity), m_CurrentSize(0) {}
+        FixedContainerBase(SizeType capacity) __WSTL_NOEXCEPT__ : m_Capacity(capacity), m_CurrentSize(0) {}
 
         /// @brief Protected destructor
         ~FixedContainerBase() {}
@@ -76,7 +76,7 @@ namespace wstl {
     protected:
         /// @brief Protected constructor
         /// @param capacity The maximum number of elements container can hold
-        TypedContainerBase(SizeType capacity) : FixedContainerBase(capacity) {}
+        TypedContainerBase(SizeType capacity) __WSTL_NOEXCEPT__ : FixedContainerBase(capacity) {}
     };
 }
 
