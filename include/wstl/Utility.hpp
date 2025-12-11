@@ -56,7 +56,7 @@ namespace wstl {
     /// @ingroup utility
     /// @see https://en.cppreference.com/w/cpp/utility/exchange
     template<typename T, typename U = T>
-    __WSTL_CONSTEXPR14__ T Exchange(T& object, U&& newValue) {
+    __WSTL_CONSTEXPR14__ T Exchange(T& object, U&& newValue) __WSTL_NOEXCEPT_EXPR__(IsNothrowMoveConstructible<T>::Value && IsNothrowAssignable<T&, U>::Value) {
         T old = Move(object);
         object = Forward<U>(newValue);
         return old;
