@@ -29,8 +29,8 @@ namespace wstl {
     /// @ingroup utility
     /// @since C++11
     /// @see https://en.cppreference.com/w/cpp/utility/move
-    constexpr typename wstl::RemoveReference<T>::Type&& Move(T&& t) __WSTL_NOEXCEPT__ {
-        return static_cast<typename RemoveReference<T>::Type&&>(t);
+    constexpr RemoveReferenceType<T>&& Move(T&& t) __WSTL_NOEXCEPT__ {
+        return static_cast<RemoveReferenceType<T>&&>(t);
     }
 
     // Move if noexcept
@@ -64,14 +64,14 @@ namespace wstl {
     /// @ingroup utility
     /// @since C++11
     /// @see https://en.cppreference.com/w/cpp/utility/forward
-    constexpr T&& Forward(typename wstl::RemoveReference<T>::Type& t) __WSTL_NOEXCEPT__ {
+    constexpr T&& Forward(RemoveReferenceType<T>& t) __WSTL_NOEXCEPT__ {
         return static_cast<T&&>(t);
     }
 
     template<typename T>
     /// @copydoc Forward(wstl::RemoveReference<T>::Type&)
-    constexpr T&& Forward(typename wstl::RemoveReference<T>::Type&& t) __WSTL_NOEXCEPT__ {
-        StaticAssert(!wstl::IsLValueReference<T>::Value, "Invalid conversion rvalue to lvalue");
+    constexpr T&& Forward(RemoveReferenceType<T>&& t) __WSTL_NOEXCEPT__ {
+        StaticAssert(!IsLValueReference<T>::Value, "Invalid conversion rvalue to lvalue");
         return static_cast<T&&>(t);
     }
 
@@ -88,7 +88,7 @@ namespace wstl {
     /// @since C++11
     /// @see https://en.cppreference.com/w/cpp/utility/forward_like
     template<typename T, typename U>
-    constexpr EnableIfType<IsConst<RemoveReferenceType<T>>::Value && IsLValueReference<T>::Value, const RemoveReferenceType<T>&> ForwardLike(U&& u) {
+    constexpr EnableIfType<IsConst<RemoveReferenceType<T>>::Value && IsLValueReference<T>::Value, const RemoveReferenceType<T>&> ForwardLike(U&& u) __WSTL_NOEXCEPT__ {
         return static_cast<const RemoveReferenceType<T>&>(u);
     }
 
@@ -96,7 +96,7 @@ namespace wstl {
 
     /// @copydoc ForwardLike(U&&)
     template<typename T, typename U>
-    constexpr EnableIfType<IsConst<RemoveReferenceType<T>>::Value && !IsLValueReference<T>::Value, const RemoveReferenceType<T>&&> ForwardLike(U&& u) {
+    constexpr EnableIfType<IsConst<RemoveReferenceType<T>>::Value && !IsLValueReference<T>::Value, const RemoveReferenceType<T>&&> ForwardLike(U&& u) __WSTL_NOEXCEPT__ {
         return static_cast<const RemoveReferenceType<T>&&>(u);
     }
 
@@ -104,7 +104,7 @@ namespace wstl {
 
     /// @copydoc ForwardLike(U&&)
     template<typename T, typename U>
-    constexpr EnableIfType<IsConst<RemoveReferenceType<T>>::Value && IsLValueReference<T>::Value, RemoveReferenceType<T>&> ForwardLike(U&& u) {
+    constexpr EnableIfType<IsConst<RemoveReferenceType<T>>::Value && IsLValueReference<T>::Value, RemoveReferenceType<T>&> ForwardLike(U&& u) __WSTL_NOEXCEPT__ {
         return static_cast<RemoveReferenceType<T>&>(u);
     }
 
@@ -112,7 +112,7 @@ namespace wstl {
 
     /// @copydoc ForwardLike(U&&)
     template<typename T, typename U>
-    constexpr EnableIfType<!IsConst<RemoveReferenceType<T>>::Value && !IsLValueReference<T>::Value, RemoveReferenceType<T>&&> ForwardLike(U&& u) {
+    constexpr EnableIfType<!IsConst<RemoveReferenceType<T>>::Value && !IsLValueReference<T>::Value, RemoveReferenceType<T>&&> ForwardLike(U&& u) __WSTL_NOEXCEPT__ {
         return static_cast<RemoveReferenceType<T>&&>(u);
     }
 
@@ -128,17 +128,37 @@ namespace wstl {
     // Swap
 
     namespace __private {
+        #ifdef __WSTL_CXX11__
+        template<typename, typename = void>
+        struct __HasMemberSwap : FalseType {};
+
         template<typename T>
-        __WSTL_CONSTEXPR14__ inline void __Swap(T& a, T& b, char (*)[sizeof(&T::Swap)] = 0) {
+        struct __HasMemberSwap<T, VoidType<decltype(DeclareValue<T&>().Swap(DeclareValue<T&>()))>> : TrueType {};
+
+        template<typename T, EnableIfType<__HasMemberSwap<T>::Value> = 0>
+        __WSTL_CONSTEXPR14__ inline void __Swap(T& a, T& b) __WSTL_NOEXCEPT_EXPR__(noexcept(a.Swap(b))) {
+            a.Swap(b);
+        }
+
+        template<typename T, EnableIfType<!__HasMemberSwap<T>::Value> = 0>
+        __WSTL_CONSTEXPR14__ void __Swap(T& a, T& b) __WSTL_NOEXCEPT_EXPR__(IsNothrowMoveConstructible<T>::Value && IsNothrowMoveAssignable<T>::Value) {
+            T temp = Move(a);
+            a = Move(b);
+            b = Move(temp);
+        }
+        #else
+        template<typename T>
+        inline void __Swap(T& a, T& b, char (*)[sizeof(&T::Swap)] = 0) {
             a.Swap(b);
         }
 
         template<typename T>
-        __WSTL_CONSTEXPR14__ void __Swap(T& a, T& b, ...) {
-            T temp = __WSTL_MOVE__(a);
-            a = __WSTL_MOVE__(b);
-            b = __WSTL_MOVE__(temp);
+        void __Swap(T& a, T& b, ...) {
+            T temp = a;
+            a = b;
+            b = temp;
         }
+        #endif
     }
     
     template<typename T>
@@ -148,8 +168,12 @@ namespace wstl {
     /// @param b Second object to swap
     /// @ingroup utility
     /// @see https://en.cppreference.com/w/cpp/utility/swap
-    __WSTL_CONSTEXPR14__ inline void Swap(T& a, T&b) {
+    __WSTL_CONSTEXPR14__ inline void Swap(T& a, T&b) __WSTL_NOEXCEPT_EXPR__(noexcept(__private::__Swap(a, b))) {
+        #ifdef __WSTL_CXX11__
+        __private::__Swap(a, b);
+        #else
         __private::__Swap(a, b, 0);
+        #endif
     }
 
     template<typename T, size_t N>
@@ -160,7 +184,7 @@ namespace wstl {
     /// @param b Second array to swap
     /// @ingroup utility
     /// @see https://en.cppreference.com/w/cpp/utility/swap
-    __WSTL_CONSTEXPR14__ void Swap(T (&a)[N], T (&b)[N]) {
+    __WSTL_CONSTEXPR14__ void Swap(T (&a)[N], T (&b)[N]) __WSTL_NOEXCEPT_EXPR__(noexcept(Swap(*a, *b))) {
         for (size_t i = 0; i < N; ++i) Swap(a[i], b[i]);
     }
 }
