@@ -11,7 +11,7 @@
 #include <stdint.h>
 
 /// @defgroup string_view String View
-/// Non-owning view of a contiguous sequence of characters
+/// @brief Non-owning view of a contiguous sequence of characters
 /// @ingroup containers
 
 
@@ -118,7 +118,7 @@ namespace wstl {
         /// @brief Returns a reference to the character at specified position with bounds checking
         /// @param position Position of the character to access
         /// @return Reference to the character at specified position
-        /// @throws LogicError if the string view is null, OutOfRange if the position is out of range
+        /// @throws `LogicError` if the string view is null, OutOfRange if the position is out of range
         ConstReferenceType At(SizeType position) const {
             __WSTL_ASSERT__(m_Data != NullPointer, WSTL_MAKE_EXCEPTION(LogicError, "String view is null"));
             __WSTL_ASSERT__(position < Size(), WSTL_MAKE_EXCEPTION(OutOfRange, "String view index out of range"));

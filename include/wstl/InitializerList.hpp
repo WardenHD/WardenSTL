@@ -16,6 +16,9 @@
 /// @def __WSTL_NO_INITIALIZERLIST__
 /// @brief If defined, disables `InitializerList` class
 /// @ingroup containers
+#ifdef __DOXYGEN__
+    #define __WSTL_NO_INITIALIZERLIST__ 
+#endif
 
 #if defined(__WSTL_CXX11__) && !defined(__WSTL_NO_INITIALIZERLIST__)
 namespace std {

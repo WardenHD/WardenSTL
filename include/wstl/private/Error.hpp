@@ -19,9 +19,19 @@
 // Defines introduced
 
 /// @def __WSTL_ASSERT_SUPPORT__
-/// @brief If defined, enables assert from assert.h in error handling macros
+/// @brief If defined, enables assert from `assert.h` in error handling macros
 /// @details However, the library will prioritize usage of `ErrorHandler` functions if they are enabled
 /// @ingroup error_handler
+#ifdef __DOXYGEN__
+    #define __WSTL_ASSERT_SUPPORT__ 
+#endif
+
+/// @def __WSTL_ASSERT_PUSHPOP__
+/// @brief If defined, push/pop operations in containers will be checked, and in case of error the exception will be thrown
+/// @ingroup error_handler
+#ifdef __DOXYGEN__
+    #define __WSTL_ASSERT_PUSHPOP__ 
+#endif
 
 namespace wstl {
     namespace __private {
@@ -191,5 +201,13 @@ namespace wstl {
         #endif
     #endif
 #endif
+
+// Additional defines
+
+#ifdef __WSTL_ASSERT_PUSHPOP__
+    #define __WSTL_ASSERT_PUSHPOP_RETURN__(condition, exception) __WSTL_ASSERT_RETURN__(condition, exception)
+#else
+    #define __WSTL_ASSERT_PUSHPOP_RETURN__(condition, exception)
+#endif 
 
 #endif

@@ -10,6 +10,7 @@
 #define __WSTL_LIMITS_HPP__
 
 #include "private/Platform.hpp"
+#include "TypeTraits.hpp"
 
 #ifndef __USE_C99_MATH
 #define __USE_C99_MATH
@@ -80,6 +81,9 @@
 /// @def __WSTL_NAN_SUPPORT__
 /// @brief If defined, the library will use math.h NaN functions where necessary
 /// @ingroup math
+#ifdef __DOXYGEN__
+    #define __WSTL_NAN_SUPPORT__ 
+#endif
 
 namespace wstl {
     /// @brief Indicates floating-point rounding modes

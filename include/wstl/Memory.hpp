@@ -33,6 +33,9 @@
 /// @def __WSTL_LIBC_WRAPPERS__
 /// @brief If defined, the library will define wrappers for standard C library functions
 /// @ingroup memory
+#ifdef __DOXYGEN__
+    #define __WSTL_LIBC_WRAPPERS__ 
+#endif
 
 namespace wstl {
     // Pointer traits
@@ -890,7 +893,7 @@ namespace wstl {
 
     /// @brief Constructs an object at the given address
     /// @param pointer The address to construct the object at
-    /// @param args The argument to pass to the constructor
+    /// @param arg The argument to pass to the constructor
     /// @return A pointer to the constructed object
     /// @ingroup memory
     /// @see https://en.cppreference.com/w/cpp/memory/construct_at

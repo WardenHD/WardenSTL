@@ -71,6 +71,10 @@ namespace wstl {
     /// @brief Namespace that holds containers that use externally defined storage
     /// @ingroup containers
     namespace external {}
+
+    /// @brief Namespace that holds container adaptors
+    /// @ingroup containers
+    namespace adaptor {}
 }
 
 // C++ version defines
@@ -93,7 +97,17 @@ namespace wstl {
 
 #if __cplusplus >= 202302L
     #define __WSTL_CXX23__
-#endif  
+#endif
+
+// Define all C++ version for Doxygen for proper documentation
+
+#if defined(__DOXYGEN__)
+    #define __WSTL_CXX11__
+    #define __WSTL_CXX14__
+    #define __WSTL_CXX17__
+    #define __WSTL_CXX20__
+    #define __WSTL_CXX23__
+#endif
 
 // Compiler defines (ones that are supported)
 

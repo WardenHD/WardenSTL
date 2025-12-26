@@ -21,6 +21,9 @@
 /// @def __WSTL_EXCEPTIONS__
 /// @brief If defined, enables exception-related type traits and functionalities
 /// @ingroup type_traits
+#ifdef __DOXYGEN__
+    #define __WSTL_EXCEPTIONS__ 
+#endif
 
 namespace wstl {
     #ifdef __WSTL_CXX11__

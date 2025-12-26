@@ -139,7 +139,7 @@ namespace wstl {
         
         /// @brief Templated copy constructor
         /// @param other Another span with dynamic extent to copy from
-        /// @throws LengthError if the size of the other span does not match the extent
+        /// @throws `LengthError` if the size of the other span does not match the extent
         template<typename U>
         __WSTL_CONSTEXPR14__ Span(const Span<U, DynamicExtent>& other) : m_Begin(other.Data()) {
             __WSTL_ASSERT__(other.Size() == Extent, WSTL_MAKE_EXCEPTION(LengthError, "Span size mismatch"));
@@ -215,7 +215,7 @@ namespace wstl {
         /// @brief Returns a reference to the element at the specified position with bounds checking
         /// @param position The position of the element to access
         /// @return Reference to the element at the specified position
-        /// @throws OutOfRange if the position is out of bounds
+        /// @throws `OutOfRange` if the position is out of bounds
         __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ReferenceType At(SizeType position) {
             __WSTL_ASSERT__(position >= Size(), WSTL_MAKE_EXCEPTION(OutOfRange, "Span position out of range"));
             return m_Begin[position];
@@ -224,7 +224,7 @@ namespace wstl {
         /// @brief Returns a const reference to the element at the specified position with bounds checking
         /// @param position The position of the element to access
         /// @return Const reference to the element at the specified position
-        /// @throws OutOfRange if the position is out of bounds
+        /// @throws `OutOfRange` if the position is out of bounds
         __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ConstReferenceType At(SizeType position) const {
             __WSTL_ASSERT__(position >= Size(), WSTL_MAKE_EXCEPTION(OutOfRange, "Span position out of range"));
             return m_Begin[position];
@@ -342,7 +342,7 @@ namespace wstl {
         /// @brief Reinterprets the span as a span of a different type
         /// @tparam New Type to reinterpret the span as
         /// @return A new span with the specified type
-        /// @throws BadCast if the alignment or size of the new type does not match the original type
+        /// @throws `BadCast` if the alignment or size of the new type does not match the original type
         template<typename New>
         __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ Span<New, DynamicExtent> ReinterpretAs() const {
             __WSTL_ASSERT__(IsAligned<AlignmentOf<New>::Value>(m_Begin), WSTL_MAKE_EXCEPTION(BadCast, "Span cast error: alignment mismatch"));
@@ -387,8 +387,8 @@ namespace wstl {
         __WSTL_CONSTEXPR__ Span() __WSTL_NOEXCEPT__ : m_Begin(__WSTL_NULLPTR__), m_End(__WSTL_NULLPTR__) {}
 
         /// @brief Constructor with iterator and size
-        /// @param first Iterator to the first element
-        /// @param last Iterator to the element past the last element
+        /// @param first Iterator to the first element in the range
+        /// @param count Number of elements in the range
         template<typename Iterator>
         __WSTL_CONSTEXPR__ Span(Iterator first, SizeType count) __WSTL_NOEXCEPT__ : m_Begin(ToAddress(first)), 
             m_End(ToAddress(first) + count) {}
@@ -520,7 +520,7 @@ namespace wstl {
         /// @brief Returns a reference to the element at the specified position with bounds checking
         /// @param position The position of the element to access
         /// @return Reference to the element at the specified position
-        /// @throws OutOfRange if the position is out of bounds
+        /// @throws `OutOfRange` if the position is out of bounds
         __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ReferenceType At(SizeType position) {
             __WSTL_ASSERT__(position >= Size(), WSTL_MAKE_EXCEPTION(OutOfRange, "Span position out of range"));
             return m_Begin[position];
@@ -529,7 +529,7 @@ namespace wstl {
         /// @brief Returns a const reference to the element at the specified position with bounds checking
         /// @param position The position of the element to access
         /// @return Const reference to the element at the specified position
-        /// @throws OutOfRange if the position is out of bounds
+        /// @throws `OutOfRange` if the position is out of bounds
         __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ConstReferenceType At(SizeType position) const {
             __WSTL_ASSERT__(position >= Size(), WSTL_MAKE_EXCEPTION(OutOfRange, "Span position out of range"));
             return m_Begin[position];
@@ -637,7 +637,7 @@ namespace wstl {
         /// @brief Reinterprets the span as a span of a different type
         /// @tparam New Type to reinterpret the span as
         /// @return A new span with the specified type
-        /// @throws BadCast if the alignment or size of the new type does not match the original type
+        /// @throws `BadCast` if the alignment or size of the new type does not match the original type
         template<typename New>
         __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ Span<New, DynamicExtent> ReinterpretAs() const {
             __WSTL_ASSERT__(IsAligned<AlignmentOf<New>::Value>(m_Begin), WSTL_MAKE_EXCEPTION(BadCast, "Span cast error: alignment mismatch"));

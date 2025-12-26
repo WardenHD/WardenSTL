@@ -28,6 +28,9 @@
 /// @def __WSTL_MATH_SUPPORT__
 /// @brief If defined, the library will use math.h and stdlib.h functions where necessary
 /// @ingroup math
+#ifdef __DOXYGEN__
+    #define __WSTL_MATH_SUPPORT__ 
+#endif
 
 namespace wstl {
     // Absolute

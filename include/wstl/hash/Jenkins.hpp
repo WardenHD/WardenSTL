@@ -46,7 +46,7 @@ namespace wstl {
 
             /// @brief Pushes a value into the hasher
             /// @param value The value to be hashed
-            /// @throws LogicError if the hasher is already finalized
+            /// @throws `LogicError` if the hasher is already finalized
             __WSTL_CONSTEXPR14__ void PushBack(ValueType value) {
                 __WSTL_ASSERT_RETURN__(!m_IsFinalized, WSTL_MAKE_EXCEPTION(LogicError, "Cannot add value to finalized Jenkins hash"));
 

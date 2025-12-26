@@ -43,6 +43,9 @@
 /// @brief If defined, compiler built-in functions will be used for certain bit operations where available
 /// @details This greatly improves runtime performance but at the cost of constexpr-ness
 /// @ingroup binary
+#ifdef __DOXYGEN__
+    #define __WSTL_BIT_USE_BUILTINS__ 
+#endif
 
 namespace wstl {
     /// @brief Enum class representing the endianness of the system

@@ -47,7 +47,7 @@ namespace wstl {
         /// @brief Allocates a block of memory of the specified size
         /// @param size The size of the memory to allocate
         /// @return A pointer to the allocated memory or null pointer if unsuccessful
-        /// @throws BadAllocation if the allocation fails
+        /// @throws `BadAllocation` if the allocation fails
         virtual void* Allocate(size_t size) = 0;
 
         /// @brief Frees a block of memory at the specified address

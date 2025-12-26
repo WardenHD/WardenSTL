@@ -12,7 +12,8 @@
 
 /// @defgroup standard_exceptions Standard Exceptions
 /// @brief A set of standard exceptions that can be thrown by the library
-/// @ingroup exceptions
+/// @ingroup exception
+
 
 namespace wstl {
     /// @brief Exception thrown when exceeding the length of a container

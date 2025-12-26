@@ -18,6 +18,9 @@
 /// @def __WSTL_EXCEPTION_LOCATION__
 /// @brief If defined, exceptions will store file name and line number information
 /// @ingroup exception
+#ifdef __DOXYGEN__
+    #define __WSTL_EXCEPTION_LOCATION__ 
+#endif
 
 namespace wstl {
     /// @brief A base class for all exceptions

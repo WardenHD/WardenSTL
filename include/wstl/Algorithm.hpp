@@ -2713,6 +2713,7 @@ namespace wstl {
     /// @param first Iterator to the beginning of the source range
     /// @param last Iterator to the end of the source range
     /// @param resultFirst Iterator to the beginning of the destination range
+    /// @param resultLast Iterator to the end of the destination range
     /// @return Output iterator to the past the last element copied
     /// @ingroup algorithm
     template<typename InputIterator, typename OutputIterator>

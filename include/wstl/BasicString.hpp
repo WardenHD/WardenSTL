@@ -23,15 +23,24 @@
 /// @def __WSTL_STRING_CLEAR_UNUSED__
 /// @brief If defined, unused portion of the string buffer is filled with zeros every time the content is modified
 /// @ingroup string
+#ifdef __DOXYGEN__
+    #define __WSTL_STRING_CLEAR_UNUSED__ 
+#endif
 
 /// @def __WSTL_STRING_TRUNCATION_CHECK__
 /// @brief If defined, string will check for trucation on operations that may cause it and store a truncation flag
 /// @details Also enables `.IsTruncated()` and `.ClearTruncated()` methods for checking and clearing the flag
 /// @ingroup string
+#ifdef __DOXYGEN__
+    #define __WSTL_STRING_TRUNCATION_CHECK__ 
+#endif
 
 /// @def __WSTL_STRING_TRUNCATION_ERROR__
 /// @brief If defined, the exception `LengthError` will be thrown when a truncation occurs
 /// @ingroup string
+#ifdef __DOXYGEN__
+    #define __WSTL_STRING_TRUNCATION_ERROR__ 
+#endif
 
 namespace wstl {
     // No position (npos) constant
@@ -1797,7 +1806,7 @@ namespace wstl {
         }
 
         /// @brief Checks if this string contains a given string view
-        /// @param string String view to check
+        /// @param view String view to check
         template<typename UTraits>
         bool Contains(const BasicStringView<T, UTraits>& view) const {
             return Find(view) != NoPosition;

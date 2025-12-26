@@ -29,6 +29,9 @@
 /// @details This define best works with `__WSTL_BIT_USE_BUILTIN__` defined. 
 /// These two defines improve the performance of find functions at the cost of constexpr-ness.
 /// @ingroup bitset
+#ifdef __DOXYGEN__
+    #define __WSTL_BITSET_USE_CTZ___ 
+#endif
 
 namespace wstl {
     // Bitset internal classes
@@ -1230,6 +1233,15 @@ namespace wstl {
     // Bitset external
 
     namespace external {
+        // Bitset
+        // Forward declaration
+
+        template<size_t N = 0, typename T = unsigned char>
+        class Bitset;
+
+        template<>
+        class Bitset<0, unsigned char> : public __private::__BitsetCommon<0, unsigned char> {};
+
         /// @brief A version of `Bitset` that uses external storage
         /// @tparam N Number of bits
         /// @tparam T Underlying type to store bits

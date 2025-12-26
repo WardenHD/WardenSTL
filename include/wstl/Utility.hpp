@@ -227,7 +227,7 @@ namespace wstl {
 
     /// @brief Gets an element from pair
     /// @tparam Index Index of element
-    /// @param p Pair from which to get the element
+    /// @param pair Pair from which to get the element
     /// @return The element at the specified index
     /// @ingroup utility
     /// @see https://en.cppreference.com/w/cpp/utility/pair/get

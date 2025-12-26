@@ -187,6 +187,7 @@ namespace wstl {
         /// @brief Compares two C-style strings for equality
         /// @param string1 First C-style string pointer
         /// @param string2 Second C-style string pointer
+        /// @param count Maximum number of characters to compare
         /// @return `0` if equal, negative if `string1 < string2`, positive if `string1 > string2`
         static __WSTL_CONSTEXPR14__ int Compare(const CharacterType* string1, const CharacterType* string2, size_t count) {
             for(size_t i = 0; i < count; ++i) {
