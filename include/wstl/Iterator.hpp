@@ -294,9 +294,13 @@ namespace wstl {
     /// @ingroup iterator
     /// @see https://en.cppreference.com/w/cpp/iterator/reverse_iterator
     template<typename T>
-    class ReverseIterator : public Iterator<typename IteratorTraits<T>::IteratorCategory, 
-    typename IteratorTraits<T>::ValueType, typename IteratorTraits<T>::DifferenceType, 
-    typename IteratorTraits<T>::PointerType, typename IteratorTraits<T>::ReferenceType> {
+    class ReverseIterator : public Iterator<
+        typename IteratorTraits<T>::IteratorCategory, 
+        typename IteratorTraits<T>::ValueType, 
+        typename IteratorTraits<T>::DifferenceType, 
+        typename IteratorTraits<T>::PointerType, 
+        typename IteratorTraits<T>::ReferenceType
+    > {
     public:
         typedef T PointerType;
         typedef typename IteratorTraits<T>::DifferenceType DifferenceType;
@@ -477,9 +481,15 @@ namespace wstl {
     /// @ingroup iterator
     /// @see https://en.cppreference.com/w/cpp/iterator/move_iterator
     template<typename T>
-    class MoveIterator : public Iterator<typename IteratorTraits<T>::IteratorCategory,
-    typename IteratorTraits<T>::ValueType, typename IteratorTraits<T>::DifferenceType,
-    T, typename IteratorTraits<T>::ValueType&&> {
+    class MoveIterator : public Iterator<
+        typename IteratorTraits<T>::IteratorCategory,
+        typename IteratorTraits<T>::ValueType, 
+        typename IteratorTraits<T>::DifferenceType,
+        T, 
+        typename Conditional<IsReference<typename IteratorTraits<T>::ReferenceType>::Value, 
+            RemoveReferenceType<typename IteratorTraits<T>::ReferenceType>&&, 
+            typename IteratorTraits<T>::ReferenceType>::Type
+    > {
     public:
         /// @brief The type of the underlying pointer
         typedef T PointerType;
@@ -488,7 +498,9 @@ namespace wstl {
         typedef typename IteratorTraits<T>::DifferenceType DifferenceType;
         
         /// @brief The reference type, which is an rvalue reference to allow moves
-        typedef typename IteratorTraits<T>::ValueType&& ReferenceType;
+        typedef typename Conditional<IsReference<typename IteratorTraits<T>::ReferenceType>::Value, 
+            RemoveReferenceType<typename IteratorTraits<T>::ReferenceType>&&, 
+            typename IteratorTraits<T>::ReferenceType>::Type ReferenceType;
         
         /// @brief The type of the underlying iterator
         typedef T IteratorType;
@@ -514,9 +526,14 @@ namespace wstl {
             return *this;
         }
 
-        /// @brief Returns the underlying iterator
-        __WSTL_CONSTEXPR14__ IteratorType Base() const {
+        /// @brief Returns a reference to the underlying iterator
+        __WSTL_CONSTEXPR14__ const IteratorType& Base() const& __WSTL_NOEXCEPT__ {
             return m_Current;
+        }
+
+        /// @brief Returns an iterator move constructed from the underlying iterator
+        __WSTL_CONSTEXPR14__ IteratorType Base() && {
+            return Move(m_Current);
         }
         
         /// @brief Arrow operator - provides access to element's member functions or properties
@@ -528,7 +545,7 @@ namespace wstl {
         /// @brief Dereference operator
         /// @return Reference to the element that precedes the base iterator
         __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ReferenceType operator*() const {
-            return Move(*m_Current);
+            return static_cast<ReferenceType>(*m_Current);
         }
 
         /// @brief Pre-increment operator - moves the iterator forward by one element
@@ -691,7 +708,7 @@ namespace wstl {
         /// @param value The value to insert (rvalue reference)
         /// @return A reference to the current iterator
         /// @since C++11
-        __WSTL_CONSTEXPR14__ InsertIterator operator=(const typename Container::ValueType&& value) {
+        __WSTL_CONSTEXPR14__ InsertIterator operator=(typename Container::ValueType&& value) {
             m_Iterator = m_Container->Insert(m_Iterator, Move(value));
             ++m_Iterator;
             return *this;
