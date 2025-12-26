@@ -613,7 +613,7 @@ namespace wstl {
                 m_Container.Swap(other.m_Container);
             }
         
-        public: /// TODO: make private
+        private:
             Container m_Container;
         };
 
