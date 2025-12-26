@@ -12,6 +12,7 @@
 #define __WSTL_HASH_HPP__
 
 #include "private/Platform.hpp"
+#include "Math.hpp"
 
 #include "hash/FNV1.hpp"
 #include "hash/Jenkins.hpp"
