@@ -2,6 +2,7 @@ from SCons.Environment import *
 from SCons.Builder import *
 from SCons.Node.FS import *
 from SCons.Action import *
+import webbrowser
 
 
 def open_doxygen(target: str, source: str, env: Environment) -> None:
@@ -11,12 +12,7 @@ def open_doxygen(target: str, source: str, env: Environment) -> None:
     index_path = 'docs/html/index.html'
     print(f"Opening documentation {index_path}...")
 
-    if os.name == 'nt':
-        os.system(f'start {index_path}')
-    elif os.name == 'posix':
-        os.system(f'xdg-open {index_path}')
-    else:
-        print("Don't know how to open files on this OS.")
+    webbrowser.open('file://' + os.path.realpath(index_path))
 
 env = Environment()
 
