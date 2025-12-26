@@ -135,13 +135,13 @@ namespace wstl {
         template<typename T>
         struct __HasMemberSwap<T, VoidType<decltype(DeclareValue<T&>().Swap(DeclareValue<T&>()))>> : TrueType {};
 
-        template<typename T, EnableIfType<__HasMemberSwap<T>::Value> = 0>
-        __WSTL_CONSTEXPR14__ inline void __Swap(T& a, T& b) __WSTL_NOEXCEPT_EXPR__(noexcept(a.Swap(b))) {
+        template<typename T>
+        __WSTL_CONSTEXPR14__ inline EnableIfType<__HasMemberSwap<T>::Value> __Swap(T& a, T& b) __WSTL_NOEXCEPT_EXPR__(noexcept(a.Swap(b))) {
             a.Swap(b);
         }
 
-        template<typename T, EnableIfType<!__HasMemberSwap<T>::Value> = 0>
-        __WSTL_CONSTEXPR14__ void __Swap(T& a, T& b) __WSTL_NOEXCEPT_EXPR__(IsNothrowMoveConstructible<T>::Value && IsNothrowMoveAssignable<T>::Value) {
+        template<typename T>
+        __WSTL_CONSTEXPR14__ EnableIfType<!__HasMemberSwap<T>::Value> __Swap(T& a, T& b) __WSTL_NOEXCEPT_EXPR__(IsNothrowMoveConstructible<T>::Value && IsNothrowMoveAssignable<T>::Value) {
             T temp = Move(a);
             a = Move(b);
             b = Move(temp);
