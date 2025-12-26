@@ -41,15 +41,6 @@ namespace wstl {
             __WSTL_CONSTEXPR14__ __CircularIteratorCommon(const __CircularIteratorCommon<U>& other) :
                 m_Begin(other.Begin()), m_End(other.End()), m_Current(other.Current()) {}
 
-            #ifdef __WSTL_CXX11__
-            __WSTL_CONSTEXPR14__ __CircularIteratorCommon(__CircularIteratorCommon&& other) :
-                m_Begin(Move(other.Begin())), m_End(Move(other.End())), m_Current(Move(other.Current())) {}
-
-            template<typename U>
-            __WSTL_CONSTEXPR14__ __CircularIteratorCommon(__CircularIteratorCommon<U>&& other) :
-                m_Begin(Move(other.Begin())), m_End(Move(other.End())), m_Current(Move(other.Current())) {}
-            #endif
-
             __WSTL_CONSTEXPR14__ __CircularIteratorCommon& operator=(const __CircularIteratorCommon& other) {
                 m_Begin = other.m_Begin;
                 m_End = other.m_End;
@@ -64,26 +55,6 @@ namespace wstl {
                 m_Current = other.m_Current;
                 return *this;
             }
-
-            #ifdef __WSTL_CXX11__
-            __WSTL_CONSTEXPR14__ __CircularIteratorCommon& operator=(__CircularIteratorCommon&& other) {
-                if(this != &other) {
-                    m_Begin = Move(other.m_Begin);
-                    m_End = Move(other.m_End);
-                    m_Current = Move(other.m_Current);
-                }
-                
-                return *this;
-            }
-
-            template<typename U>
-            __WSTL_CONSTEXPR14__ __CircularIteratorCommon& operator=(__CircularIteratorCommon<U>&& other) {
-                m_Begin = Move(other.m_Begin);
-                m_End = Move(other.m_End);
-                m_Current = Move(other.m_Current);
-                return *this;
-            }
-            #endif
 
             /// @brief Returns the iterator pointing to the beginning
             __WSTL_CONSTEXPR14__ T Begin() const {
@@ -106,22 +77,12 @@ namespace wstl {
             }
 
             /// @brief Deference operator
-            __WSTL_CONSTEXPR14__ ReferenceType operator*() {
-                return *m_Current;
-            }
-
-            /// @brief Const deference operator
-            __WSTL_CONSTEXPR14__ const ReferenceType operator*() const {
+            __WSTL_CONSTEXPR14__ ReferenceType operator*() const {
                 return *m_Current;
             }
 
             /// @brief Arrow operator
-            __WSTL_CONSTEXPR14__ T operator->() {
-                return m_Current;
-            }
-
-            /// @brief Const arrow operator
-            __WSTL_CONSTEXPR14__ const T operator->() const {
+            __WSTL_CONSTEXPR14__ T operator->() const {
                 return m_Current;
             }
 
@@ -177,15 +138,6 @@ namespace wstl {
             __WSTL_CONSTEXPR14__ __CircularIterator(const __CircularIterator<U>& other) :
                 CommonType(other) {}
 
-            #ifdef __WSTL_CXX11__
-            __WSTL_CONSTEXPR14__ __CircularIterator(__CircularIterator&& other) :
-                CommonType(Move(other)) {}
-
-            template<typename U>
-            __WSTL_CONSTEXPR14__ __CircularIterator(__CircularIterator<U>&& other) :
-                CommonType(Move(other)) {}
-            #endif
-
             __WSTL_CONSTEXPR14__ __CircularIterator operator=(const __CircularIterator& other) {
                 CommonType::operator=(other);
                 return *this;
@@ -196,19 +148,6 @@ namespace wstl {
                 CommonType::operator=(other);
                 return *this;
             }
-
-            #ifdef __WSTL_CXX11__
-            __WSTL_CONSTEXPR14__ __CircularIterator operator=(__CircularIterator&& other) {
-                CommonType::operator=(Move(other));
-                return *this;
-            }
-
-            template<typename U>
-            __WSTL_CONSTEXPR14__ __CircularIterator operator=(__CircularIterator<U>&& other) {
-                CommonType::operator=(Move(other));
-                return *this;
-            }
-            #endif
 
             /// @brief Pre-increment operator - moves the iterator forward by one element
             /// @return Reference to the updated iterator
@@ -252,19 +191,6 @@ namespace wstl {
             __WSTL_CONSTEXPR14__ __CircularIterator(const __CircularIterator& other) :
                 CommonType(other) {}
 
-            template<typename U>
-            __WSTL_CONSTEXPR14__ __CircularIterator(const __CircularIterator<U>&& other) :
-                CommonType(other) {}
-
-            #ifdef __WSTL_CXX11__
-            __WSTL_CONSTEXPR14__ __CircularIterator(__CircularIterator&& other) :
-                CommonType(Move(other)) {}
-
-            template<typename U>
-            __WSTL_CONSTEXPR14__ __CircularIterator(__CircularIterator<U>&& other) :
-                CommonType(Move(other)) {}
-            #endif
-
             __WSTL_CONSTEXPR14__ __CircularIterator operator=(const __CircularIterator& other) {
                 CommonType::operator=(other);
                 return *this;
@@ -275,19 +201,6 @@ namespace wstl {
                 CommonType::operator=(other);
                 return *this;
             }
-
-            #ifdef __WSTL_CXX11__
-            __WSTL_CONSTEXPR14__ __CircularIterator operator=(__CircularIterator&& other) {
-                CommonType::operator=(Move(other));
-                return *this;
-            }
-
-            template<typename U>
-            __WSTL_CONSTEXPR14__ __CircularIterator operator=(__CircularIterator<U>&& other) {
-                CommonType::operator=(Move(other));
-                return *this;
-            }
-            #endif
 
             /// @brief Pre-increment operator - moves the iterator forward by one element
             /// @return Reference to the updated iterator
@@ -354,15 +267,6 @@ namespace wstl {
             template<typename U>
             __WSTL_CONSTEXPR14__ __CircularIterator(const __CircularIterator<U>& other) :
                 CommonType(other) {}
-
-            #ifdef __WSTL_CXX11__
-            __WSTL_CONSTEXPR14__ __CircularIterator(__CircularIterator&& other) :
-                CommonType(Move(other)) {}
-
-            template<typename U>
-            __WSTL_CONSTEXPR14__ __CircularIterator(__CircularIterator<U>&& other) :
-                CommonType(Move(other)) {}
-            #endif
             
             __WSTL_CONSTEXPR14__ __CircularIterator operator=(const __CircularIterator& other) {
                 CommonType::operator=(other);
@@ -374,19 +278,6 @@ namespace wstl {
                 CommonType::operator=(other);
                 return *this;
             }
-
-            #ifdef __WSTL_CXX11__
-            __WSTL_CONSTEXPR14__ __CircularIterator operator=(__CircularIterator&& other) {
-                CommonType::operator=(Move(other));
-                return *this;
-            }
-
-            template<typename U>
-            __WSTL_CONSTEXPR14__ __CircularIterator operator=(__CircularIterator<U>&& other) {
-                CommonType::operator=(Move(other));
-                return *this;
-            }
-            #endif
 
             /// @brief Pre-increment operator - moves the iterator forward by one element
             /// @return Reference to the updated iterator
@@ -491,17 +382,6 @@ namespace wstl {
         __WSTL_CONSTEXPR14__ CircularIterator(const CircularIterator<U>& other) :
             InternalType(other) {}
 
-        #ifdef __WSTL_CXX11__
-        /// @brief Move constructor
-        /// @param other Circular iterator to move from
-        __WSTL_CONSTEXPR14__ CircularIterator(CircularIterator&& other) : InternalType(Move(other)) {}
-
-        /// @brief Templated move constructor
-        /// @param other Circular iterator to move from
-        template<typename U>
-        __WSTL_CONSTEXPR14__ CircularIterator(CircularIterator<U>&& other) : InternalType(Move(other)) {}
-        #endif
-
         /// @brief Assignment operator
         /// @param other Circular iterator to assign from
         __WSTL_CONSTEXPR14__ CircularIterator& operator=(const CircularIterator& other) {
@@ -516,23 +396,6 @@ namespace wstl {
             InternalType::operator=(other);
             return *this;
         }
-
-        #ifdef __WSTL_CXX11__
-        /// @brief Move assignment operator
-        /// @param other Circular iterator to move from
-        __WSTL_CONSTEXPR14__ CircularIterator& operator=(CircularIterator&& other) {
-            InternalType::operator=(Move(other));
-            return *this;
-        }
-
-        /// @brief Templated move assignment operator
-        /// @param other Circular iterator to move from
-        template<typename U>
-        __WSTL_CONSTEXPR14__ CircularIterator& operator=(CircularIterator<U>&& other) {
-            InternalType::operator=(Move(other));
-            return *this;
-        }
-        #endif
     };
 
     // Addition operator

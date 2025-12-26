@@ -26,7 +26,7 @@ namespace wstl {
         typedef typename MakeUnsigned<typename IteratorTraits<T>::DifferenceType>::Type DifferenceType;
 
         /// @brief Default constructor
-        __WSTL_CONSTEXPR14__ ForwardBoundedIterator() : m_Current(T()), m_End(T()) {}
+        __WSTL_CONSTEXPR14__ ForwardBoundedIterator() : m_Current(), m_End() {}
 
         /// @brief Parameterized constructor
         /// @param begin Iterator to beginning of the range
@@ -41,17 +41,6 @@ namespace wstl {
         /// @param other Another `ForwardBoundedIterator` to copy from
         template<typename U>
         __WSTL_CONSTEXPR14__ ForwardBoundedIterator(const ForwardBoundedIterator<U>& other) : m_Current(other.m_Current), m_End(other.m_End) {}
-
-        #ifdef __WSTL_CXX11__
-        /// @brief Move constructor
-        /// @param other Another `ForwardBoundedIterator` to move from
-        __WSTL_CONSTEXPR14__ ForwardBoundedIterator(ForwardBoundedIterator&& other) : m_Current(Move(other.m_Current)), m_End(Move(other.m_End)) {}
-
-        /// @brief Templated move constructor - moves from forward bounded iterator of potentially different type
-        /// @param other Another `ForwardBoundedIterator` to move from
-        template<typename U>
-        __WSTL_CONSTEXPR14__ ForwardBoundedIterator(ForwardBoundedIterator<U>&& other) : m_Current(Move(other.m_Current)), m_End(Move(other.m_End)) {}
-        #endif
 
         /// @brief Copy assignment operator
         /// @param other Another `ForwardBoundedIterator` to copy from
@@ -73,54 +62,15 @@ namespace wstl {
             return *this;
         }
 
-        #ifdef __WSTL_CXX11__
-        /// @brief Move assignment operator
-        /// @param other Another `ForwardBoundedIterator` to move from
-        __WSTL_CONSTEXPR14__ ForwardBoundedIterator& operator=(ForwardBoundedIterator&& other) {
-            if(this != &other) {
-                m_Current = Move(other.m_Current);
-                m_End = Move(other.m_End);
-            }
-            
-            return *this;
-        }
-
-        /// @brief Templated move assignment operator
-        /// @param other Another `ForwardBoundedIterator` to move from
-        template<typename U>
-        __WSTL_CONSTEXPR14__ ForwardBoundedIterator& operator=(ForwardBoundedIterator<U>&& other) {
-            m_Current = Move(other.m_Current);
-            m_End = Move(other.m_End);
-            return *this;
-        }
-        #endif
-
         /// @brief Dereference operator
         /// @return Reference to the current element
-        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ReferenceType operator*() { 
-            return *m_Current; 
-        }
-
-        /// @brief Const dereference operator
-        /// @return Const reference to the current element
-        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ const ReferenceType operator*() const { 
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ReferenceType operator*() const { 
             return *m_Current; 
         }
 
         /// @brief Arrow operator - provides access to element's member functions or properties
         /// @return Pointer to the current element
-        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ T operator->() {
-            return m_Current;
-        }
-
-        /// @brief Const arrow operator - provides access to element's member functions or properties
-        /// @return Const pointer to the current element
-        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ const T operator->() const {
-            return m_Current;
-        }
-
-        /// @brief Conversion operator to the underlying type
-        __WSTL_CONSTEXPR14__ operator T() const {
+        __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ PointerType operator->() const {
             return m_Current;
         }
 
@@ -133,7 +83,7 @@ namespace wstl {
 
         /// @brief Post-increment operator - moves the iterator forward by one element
         /// @return Reference to the iterator before incrementing
-        __WSTL_CONSTEXPR14__ ForwardBoundedIterator& operator++(int) {
+        __WSTL_CONSTEXPR14__ ForwardBoundedIterator operator++(int) {
             ForwardBoundedIterator original(*this);
             ++(*this);
             return original;
