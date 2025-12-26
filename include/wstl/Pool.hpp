@@ -136,6 +136,9 @@ namespace wstl {
         typedef typename Base::ConstReferenceType ConstReferenceType;
         typedef typename Base::PointerType PointerType;
         typedef typename Base::ConstPointerType ConstPointerType;
+
+        /// @brief The static size of the stack, needed for metaprogramming
+        static const __WSTL_CONSTEXPR__ SizeType StaticSize = N;
         
     private:
         template<bool IsConst>
@@ -151,51 +154,27 @@ namespace wstl {
 
             IntrusivePoolIterator(const IntrusivePoolIterator& other) : m_Current(other.m_Current), m_Pool(other.m_Pool) {}
 
-            #ifdef __WSTL_CXX11__
-            IntrusivePoolIterator(IntrusivePoolIterator&& other) : m_Current(Move(other.m_Current)), m_Pool(Move(other.m_Pool)) {}
-            #endif
-
             IntrusivePoolIterator& operator=(const IntrusivePoolIterator& other) {
                 m_Current = other.m_Current;
                 m_Pool = other.m_Pool;
                 return *this;
             }
 
-            #ifdef __WSTL_CXX11__
-            IntrusivePoolIterator& operator=(IntrusivePoolIterator&& other) __WSTL_NOEXCEPT__ {
-                m_Current = Move(other.m_Current);
-                m_Pool = Move(other.m_Pool);
-                return *this;
-            }
-            #endif
-
-            ReferenceType operator*() {
+            ReferenceType operator*() const {
                 return *m_Current;
             }
 
-            const ReferenceType operator*() const {
-                return *m_Current;
-            }
-
-            ValueType* operator->() {
+            PointerType operator->() const {
                 return m_Current;
             }
 
-            const ValueType* operator->() const {
-                return m_Current;
-            }
-
-            operator ValueType*() const {
-                return m_Current;
-            }
-
-            __WSTL_CONSTEXPR14__ IntrusivePoolIterator& operator++() {
+            IntrusivePoolIterator& operator++() {
                 ++m_Current;
                 FindAllocated();
                 return *this;
             }
 
-            __WSTL_CONSTEXPR14__ IntrusivePoolIterator& operator++(int) {
+            IntrusivePoolIterator& operator++(int) {
                 IntrusivePoolIterator original(*this);
                 ++(*this);
                 return original;
@@ -210,10 +189,10 @@ namespace wstl {
             }
  
         private:
-            ValueType* m_Current;
+            PointerType m_Current;
             IntrusivePool* m_Pool;
 
-            IntrusivePoolIterator(IntrusivePool* pool, ValueType* start) : m_Current(start), m_Pool(pool) {
+            IntrusivePoolIterator(IntrusivePool* pool, PointerType start) : m_Current(start), m_Pool(pool) {
                 FindAllocated();
             }
 
@@ -390,6 +369,9 @@ namespace wstl {
         }
     };
 
+    template<typename T, size_t N>
+    const __WSTL_CONSTEXPR__ typename IntrusivePool<T, N>::SizeType IntrusivePool<T, N>::StaticSize;
+
     // Indexed pool
 
     /// @brief Indexed pool that stores objects and free list using bitset
@@ -410,6 +392,9 @@ namespace wstl {
         typedef typename Base::PointerType PointerType;
         typedef typename Base::ConstPointerType ConstPointerType;
 
+        /// @brief The static size of the stack, needed for metaprogramming
+        static const __WSTL_CONSTEXPR__ SizeType StaticSize = N;
+
     private:
         template<bool IsConst>
         class IndexedPoolIterator {
@@ -424,50 +409,26 @@ namespace wstl {
 
             IndexedPoolIterator(const IndexedPoolIterator& other) : m_CurrentIndex(other.m_CurrentIndex), m_Pool(other.m_Pool) {}
 
-            #ifdef __WSTL_CXX11__
-            IndexedPoolIterator(IndexedPoolIterator&& other) : m_CurrentIndex(Move(other.m_CurrentIndex)), m_Pool(Move(other.m_Pool)) {}
-            #endif
-
             IndexedPoolIterator& operator=(const IndexedPoolIterator& other) {
                 m_CurrentIndex = other.m_CurrentIndex;
                 m_Pool = other.m_Pool;
                 return *this;
             }
 
-            #ifdef __WSTL_CXX11__
-            IndexedPoolIterator& operator=(IndexedPoolIterator&& other) __WSTL_NOEXCEPT__ {
-                m_CurrentIndex = Move(other.m_CurrentIndex);
-                m_Pool = Move(other.m_Pool);
-                return *this;
-            }
-            #endif
-
-            ReferenceType operator*() {
+            ReferenceType operator*() const {
                 return m_Pool->m_Buffer[m_CurrentIndex];
             }
 
-            ConstReferenceType operator*() const {
-                return m_Pool->m_Buffer[m_CurrentIndex];
-            }
-
-            ValueType* operator->() {
+            PointerType operator->() const {
                 return (m_Pool->m_Buffer + m_CurrentIndex);
             }
 
-            const ValueType* operator->() const {
-                return (m_Pool->m_Buffer + m_CurrentIndex);
-            }
-
-            operator ValueType*() const {
-                return (m_Pool->m_Buffer + m_CurrentIndex);
-            }
-
-            __WSTL_CONSTEXPR14__ IndexedPoolIterator& operator++() {
+            IndexedPoolIterator& operator++() {
                 m_CurrentIndex = m_Pool->m_Indices.template FindNext<true>(m_CurrentIndex);
                 return *this;
             }
 
-            __WSTL_CONSTEXPR14__ IndexedPoolIterator& operator++(int) {
+            IndexedPoolIterator operator++(int) {
                 IndexedPoolIterator original(*this);
                 ++(*this);
                 return original;
@@ -632,6 +593,9 @@ namespace wstl {
         IndexedPool& operator=(const IndexedPool&) __WSTL_DELETE__;
     };
 
+    template<typename T, size_t N>
+    const __WSTL_CONSTEXPR__ typename IndexedPool<T, N>::SizeType IndexedPool<T, N>::StaticSize;
+
     // Pool external
 
     namespace external {
@@ -669,51 +633,27 @@ namespace wstl {
 
                 IntrusivePoolIterator(const IntrusivePoolIterator& other) : m_Current(other.m_Current), m_Pool(other.m_Pool) {}
 
-                #ifdef __WSTL_CXX11__
-                IntrusivePoolIterator(IntrusivePoolIterator&& other) : m_Current(Move(other.m_Current)), m_Pool(Move(other.m_Pool)) {}
-                #endif
-
                 IntrusivePoolIterator& operator=(const IntrusivePoolIterator& other) {
                     m_Current = other.m_Current;
                     m_Pool = other.m_Pool;
                     return *this;
                 }
 
-                #ifdef __WSTL_CXX11__
-                IntrusivePoolIterator& operator=(IntrusivePoolIterator&& other) __WSTL_NOEXCEPT__ {
-                    m_Current = Move(other.m_Current);
-                    m_Pool = Move(other.m_Pool);
-                    return *this;
-                }
-                #endif
-
-                ReferenceType operator*() {
+                ReferenceType operator*() const {
                     return *m_Current;
                 }
 
-                const ReferenceType operator*() const {
-                    return *m_Current;
-                }
-
-                ValueType* operator->() {
+                PointerType operator->() const {
                     return m_Current;
                 }
 
-                const ValueType* operator->() const {
-                    return m_Current;
-                }
-
-                operator ValueType*() const {
-                    return m_Current;
-                }
-
-                __WSTL_CONSTEXPR14__ IntrusivePoolIterator& operator++() {
+                IntrusivePoolIterator& operator++() {
                     ++m_Current;
                     FindAllocated();
                     return *this;
                 }
 
-                __WSTL_CONSTEXPR14__ IntrusivePoolIterator& operator++(int) {
+                IntrusivePoolIterator operator++(int) {
                     IntrusivePoolIterator original(*this);
                     ++(*this);
                     return original;
@@ -728,10 +668,10 @@ namespace wstl {
                 }
     
             private:
-                ValueType* m_Current;
+                PointerType m_Current;
                 IntrusivePool* m_Pool;
 
-                IntrusivePoolIterator(IntrusivePool* pool, ValueType* start) : m_Current(start), m_Pool(pool) {
+                IntrusivePoolIterator(IntrusivePool* pool, PointerType start) : m_Current(start), m_Pool(pool) {
                     FindAllocated();
                 }
 
