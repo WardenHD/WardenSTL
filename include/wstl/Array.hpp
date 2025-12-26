@@ -46,12 +46,15 @@ namespace wstl {
         typedef typename Conditional<IsFundamental<T>::Value || IsPointer<T>::Value, T, 
         const T&>::Type ParameterType;
 
+        /// @brief The static size, needed for metaprogramming
+        static const __WSTL_CONSTEXPR__ SizeType StaticSize = N;
+
         T __m_Data[N];
 
         /// @brief Returns a reference to the element at the specified index with bounds checking
         /// @param index Index of the element to return
         /// @return Reference to the element at the specified index
-        /// @throws IndexOutOfRange if the index is out of range
+        /// @throws `IndexOutOfRange` if the index is out of range
         __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ReferenceType At(SizeType index) {
             __WSTL_ASSERT__(index < N,  WSTL_MAKE_EXCEPTION(OutOfRange));
             return __m_Data[index];
@@ -60,7 +63,7 @@ namespace wstl {
         /// @brief Returns a const reference to the element at the specified index with bounds checking
         /// @param index Index of the element to return
         /// @return Const reference to the element at the specified index
-        /// @throws IndexOutOfRange if the index is out of range
+        /// @throws `IndexOutOfRange` if the index is out of range
         __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ConstReferenceType At(SizeType index) const {
             __WSTL_ASSERT__(index < N, WSTL_MAKE_EXCEPTION(OutOfRange));
             return __m_Data[index];
@@ -310,6 +313,9 @@ namespace wstl {
         }
     };
 
+    template<typename T, size_t N>
+    const __WSTL_CONSTEXPR__ typename Array<T, N>::SizeType Array<T, N>::StaticSize;
+
     // Specialization for size 0
 
     template<typename T>
@@ -327,11 +333,14 @@ namespace wstl {
 
         typedef typename Conditional<IsFundamental<T>::Value || IsPointer<T>::Value, T, 
         const T&>::Type ParameterType;
+        
+        /// @brief The static size, needed for metaprogramming
+        static const __WSTL_CONSTEXPR__ SizeType StaticSize = 0;
 
         /// @brief Returns a reference to the element at the specified index with bounds checking
         /// @param index Index of the element to return
         /// @return Reference to the element at the specified index
-        /// @throws IndexOutOfRange if the index is out of range
+        /// @throws `IndexOutOfRange` if the index is out of range
         __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ReferenceType At(SizeType) {
             return *Data();
         }
@@ -339,7 +348,7 @@ namespace wstl {
         /// @brief Returns a const reference to the element at the specified index with bounds checking
         /// @param index Index of the element to return
         /// @return Const reference to the element at the specified index
-        /// @throws IndexOutOfRange if the index is out of range
+        /// @throws `IndexOutOfRange` if the index is out of range
         __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ ConstReferenceType At(SizeType) const {
             return *Data();
         }
@@ -562,6 +571,9 @@ namespace wstl {
             return Iterator();
         }
     };
+
+    template<typename T>
+    const __WSTL_CONSTEXPR__ typename Array<T, 0>::SizeType Array<T, 0>::StaticSize;
 
     // Template deduction guide
 

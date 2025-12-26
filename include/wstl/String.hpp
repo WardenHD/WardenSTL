@@ -26,6 +26,9 @@ namespace wstl {
         typedef typename Base::ValueType ValueType;
         typedef typename Base::SizeType SizeType;
 
+        /// @brief The static size, needed for metaprogramming
+        static const __WSTL_CONSTEXPR__ SizeType StaticSize = N;
+
         /// @brief Default constructor
         String() : Base(m_Buffer, N) {}
 
@@ -217,6 +220,9 @@ namespace wstl {
         String& operator=(NullPointerType) __WSTL_DELETE__;
     };
 
+    template<size_t N>
+    const __WSTL_CONSTEXPR__ typename String<N>::SizeType String<N>::StaticSize;
+
     // Template deduction guide
 
     #ifdef __WSTL_CXX17__
@@ -297,6 +303,9 @@ namespace wstl {
     public:
         typedef typename Base::ValueType ValueType;
         typedef typename Base::SizeType SizeType;
+
+        /// @brief The static size, needed for metaprogramming
+        static const __WSTL_CONSTEXPR__ SizeType StaticSize = N;
 
         /// @brief Default constructor
         WideString() : Base(m_Buffer, N) {}
@@ -489,6 +498,9 @@ namespace wstl {
         WideString& operator=(NullPointerType) __WSTL_DELETE__;
     };
 
+    template<size_t N>
+    const __WSTL_CONSTEXPR__ typename WideString<N>::SizeType WideString<N>::StaticSize;
+
     // Template deduction guide
 
     #ifdef __WSTL_CXX17__
@@ -571,6 +583,9 @@ namespace wstl {
     public:
         typedef typename Base::ValueType ValueType;
         typedef typename Base::SizeType SizeType;
+
+        /// @brief The static size, needed for metaprogramming
+        static const __WSTL_CONSTEXPR__ SizeType StaticSize = N;
 
         /// @brief Default constructor
         U16String() : Base(m_Buffer, N) {}
@@ -763,6 +778,9 @@ namespace wstl {
         U16String& operator=(NullPointerType) __WSTL_DELETE__;
     };
 
+    template<size_t N>
+    const __WSTL_CONSTEXPR__ typename U16String<N>::SizeType U16String<N>::StaticSize;
+
     // Template deduction guide
 
     #ifdef __WSTL_CXX17__
@@ -843,6 +861,9 @@ namespace wstl {
     public:
         typedef typename Base::ValueType ValueType;
         typedef typename Base::SizeType SizeType;
+
+        /// @brief The static size, needed for metaprogramming
+        static const __WSTL_CONSTEXPR__ SizeType StaticSize = N;
 
         /// @brief Default constructor
         U32String() : Base(m_Buffer, N) {}
@@ -1035,6 +1056,9 @@ namespace wstl {
         U32String& operator=(NullPointerType) __WSTL_DELETE__;
     };
 
+    template<size_t N>
+    const __WSTL_CONSTEXPR__ typename U32String<N>::SizeType U32String<N>::StaticSize;
+
     // Template deduction guide
 
     #ifdef __WSTL_CXX17__
@@ -1117,6 +1141,9 @@ namespace wstl {
     public:
         typedef typename Base::ValueType ValueType;
         typedef typename Base::SizeType SizeType;
+
+        /// @brief The static size, needed for metaprogramming
+        static const __WSTL_CONSTEXPR__ SizeType StaticSize = N;
 
         /// @brief Default constructor
         U8String() : Base(m_Buffer, N) {}
@@ -1308,6 +1335,9 @@ namespace wstl {
         /// @brief Deleted null pointer assignment operator
         U8String& operator=(NullPointerType) __WSTL_DELETE__;
     };
+
+    template<size_t N>
+    const __WSTL_CONSTEXPR__ typename U8String<N>::SizeType U8String<N>::StaticSize;
 
     // Template deduction guide
 
