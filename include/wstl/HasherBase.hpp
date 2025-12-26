@@ -35,8 +35,8 @@ namespace wstl {
         /// @brief Appends a range to the hasher
         /// @param first The beginning of the range
         /// @param last The end of the range
-        template<typename Iterator>
-        __WSTL_CONSTEXPR14__ void Append(Iterator first, Iterator last) {
+        template<typename InputIterator>
+        __WSTL_CONSTEXPR14__ void Append(InputIterator first, InputIterator last) {
             for(; first != last; ++first) PushBack(*first);
         }
 
@@ -45,14 +45,14 @@ namespace wstl {
         /// @param container The container whose elements will be hashed
         template<typename Container>
         __WSTL_CONSTEXPR14__ void Append(Container&& container) {
-            Append(Begin(container), End(container));
+            Append(MakeMoveIterator(container.Begin()), MakeMoveIterator(container.End()));
         }
         #else
         /// @brief Appends a container to the hasher
         /// @param container The container whose elements will be hashed
         template<typename Container>
         void Append(const Container& container) {
-            Append(Begin(container), End(container));
+            Append(container.Begin(), container.End());
         }
         #endif
 
