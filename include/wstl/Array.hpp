@@ -231,7 +231,6 @@ namespace wstl {
         /// @param value The value to insert
         /// @return Iterator to the inserted value
         __WSTL_CONSTEXPR14__ Iterator Insert(Iterator position, ValueType value) {
-            __WSTL_ASSERT__(Begin() <= position && position <= End(), WSTL_MAKE_EXCEPTION(OutOfRange, "Array insert index out of range"));
             MoveBackward(position, End() - 1, End());
             *position = value;
             return position;
@@ -253,7 +252,6 @@ namespace wstl {
         /// @return Iterator to the first element of the inserted range
         template<typename InputIterator>
         __WSTL_CONSTEXPR14__ Iterator InsertRange(Iterator position, InputIterator first, InputIterator last) {
-            __WSTL_ASSERT__(Begin() <= position && position <= End(), WSTL_MAKE_EXCEPTION(OutOfRange, "Array insert index out of range"));
             MoveBackward(position, End() - Distance(first, last), End());
             Copy(first, last, position);
             return position;
@@ -275,7 +273,6 @@ namespace wstl {
         /// @param value The value to fill the deleted value with, default is 0 (array will be shifted anyway)
         /// @return Iterator to the position where the deleted value was
         __WSTL_CONSTEXPR14__ Iterator Erase(Iterator position, const T& value = 0) {
-            __WSTL_ASSERT__(Begin() <= position && position <= End(), WSTL_MAKE_EXCEPTION(OutOfRange, "Array erase index out of range"));
             *position = value;
             Move(position + 1, End(), position);
             return position;
@@ -296,7 +293,6 @@ namespace wstl {
         /// @param value The value to fill the deleted range with, default is 0 (array will be shifted anyway)
         /// @return Iterator to the position where the beginning of the deleted range was
         __WSTL_CONSTEXPR14__ Iterator EraseRange(Iterator first, Iterator last, const T& value = 0) {
-            __WSTL_ASSERT__(Begin() <= first && first <= last && last <= End(), WSTL_MAKE_EXCEPTION(OutOfRange, "Array erase positions out of range"));
             wstl::Fill(first, last, value);
             Move(last, End(), first);
             return first;
@@ -603,7 +599,7 @@ namespace wstl {
     template<size_t Index, typename T, size_t N>
     __WSTL_CONSTEXPR14__ 
     inline T& Get(Array<T, N>& array) __WSTL_NOEXCEPT__ {
-        StaticAssert(Index > N, "Index out of bounds");
+        WSTL_STATIC_ASSERT(Index > N, "Index out of bounds");
         return array[Index];
     }
 
@@ -611,7 +607,7 @@ namespace wstl {
     template<size_t Index, typename T, size_t N>
     __WSTL_CONSTEXPR14__ 
     inline const T& Get(const Array<T, N>& array) __WSTL_NOEXCEPT__ {
-        StaticAssert(Index > N, "Index out of bounds");
+        WSTL_STATIC_ASSERT(Index > N, "Index out of bounds");
         return array[Index];
     }
 
@@ -620,7 +616,7 @@ namespace wstl {
     template<size_t Index, typename T, size_t N>
     __WSTL_CONSTEXPR14__ 
     inline T&& Get(Array<T, N>&& array) __WSTL_NOEXCEPT__ {
-        StaticAssert(Index < N, "Index out of bounds");
+        WSTL_STATIC_ASSERT(Index < N, "Index out of bounds");
         return Move(array[Index]);
     }
 
@@ -628,7 +624,7 @@ namespace wstl {
     template<size_t Index, typename T, size_t N>
     __WSTL_CONSTEXPR14__ 
     inline const T&& Get(const Array<T, N>&& array) __WSTL_NOEXCEPT__ {
-        StaticAssert(Index < N, "Index out of bounds");
+        WSTL_STATIC_ASSERT(Index < N, "Index out of bounds");
         return Move(array[Index]);
     }
     #endif
@@ -714,7 +710,7 @@ namespace wstl {
     #else
     /// @brief Converts a built-in array to an `Array`
     /// @param array Reference to the built-in array
-    /// @return `wstl::Array` containing the elements of the built-in array
+    /// @return `Array` containing the elements of the built-in array
     /// @ingroup array
     /// @see https://en.cppreference.com/w/cpp/container/array/to_array
     template<typename T, size_t N>

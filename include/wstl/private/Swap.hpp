@@ -71,7 +71,7 @@ namespace wstl {
     template<typename T>
     /// @copydoc Forward(wstl::RemoveReference<T>::Type&)
     constexpr T&& Forward(RemoveReferenceType<T>&& t) __WSTL_NOEXCEPT__ {
-        StaticAssert(!IsLValueReference<T>::Value, "Invalid conversion rvalue to lvalue");
+        WSTL_STATIC_ASSERT(!IsLValueReference<T>::Value, "Invalid conversion rvalue to lvalue");
         return static_cast<T&&>(t);
     }
 

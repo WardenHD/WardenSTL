@@ -28,7 +28,7 @@ namespace wstl {
             typedef typename Base::HashType HashType;
             typedef typename Base::ValueType ValueType;
 
-            StaticAssert((IsSame<T, uint32_t>::Value || IsSame<T, uint64_t>::Value), "Only 32 and 64-bit types are supported");
+            WSTL_STATIC_ASSERT((IsSame<T, uint32_t>::Value || IsSame<T, uint64_t>::Value), "Only 32 and 64-bit types are supported");
 
             /// @brief Default constructor
             /// @param seed Initial seed value for the hash, defaults to 0
@@ -42,7 +42,7 @@ namespace wstl {
             /// @param seed Initial seed value for the hash, defaults to 0
             template<typename Iterator>
             __WSTL_CONSTEXPR14__ Murmur3(Iterator first, Iterator last, HashType seed = 0) : m_Seed(seed) {
-                StaticAssert(sizeof(typename IteratorTraits<Iterator>::ValueType) == sizeof(ValueType), "Type not supported");
+                WSTL_STATIC_ASSERT(sizeof(typename IteratorTraits<Iterator>::ValueType) == sizeof(ValueType), "Type not supported");
                 Reset();
                 this->Append(first, last);
             }

@@ -108,7 +108,7 @@ namespace wstl {
                 ? Result(-N) : Result(N);
             static const __WSTL_CONSTEXPR__ bool Fallback = (AbsoluteValue != (N < 0 ? -N : N));
 
-            StaticAssert(!Fallback, "Cannot represent the absolute value in the provided result type");
+            WSTL_STATIC_ASSERT(!Fallback, "Cannot represent the absolute value in the provided result type");
 
         public:
             static const __WSTL_CONSTEXPR__ Result Value = AbsoluteValue;

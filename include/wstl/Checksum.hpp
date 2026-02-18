@@ -41,7 +41,7 @@ namespace wstl {
         /// @param last The end of the range
         template<typename Iterator>
         __WSTL_CONSTEXPR14__ Checksum(Iterator first, Iterator last) {
-            StaticAssert(sizeof(typename IteratorTraits<Iterator>::ValueType) == sizeof(ValueType), "Type not supported");
+            WSTL_STATIC_ASSERT(sizeof(typename IteratorTraits<Iterator>::ValueType) == sizeof(ValueType), "Type not supported");
             Reset();
             this->Append(first, last);
         }
@@ -88,7 +88,7 @@ namespace wstl {
         /// @param last The end of the range
         template<typename Iterator>
         __WSTL_CONSTEXPR14__ BSDChecksum(Iterator first, Iterator last) {
-            StaticAssert(sizeof(typename IteratorTraits<Iterator>::ValueType) == sizeof(ValueType), "Type not supported");
+            WSTL_STATIC_ASSERT(sizeof(typename IteratorTraits<Iterator>::ValueType) == sizeof(ValueType), "Type not supported");
             Reset();
             this->Append(first, last);
         }
@@ -135,7 +135,7 @@ namespace wstl {
         /// @param last The end of the range
         template<typename Iterator>
         __WSTL_CONSTEXPR14__ XORChecksum(Iterator first, Iterator last) {
-            StaticAssert(sizeof(typename IteratorTraits<Iterator>::ValueType) == sizeof(ValueType), "Type not supported");
+            WSTL_STATIC_ASSERT(sizeof(typename IteratorTraits<Iterator>::ValueType) == sizeof(ValueType), "Type not supported");
             Reset();
             this->Append(first, last);
         }
@@ -182,7 +182,7 @@ namespace wstl {
         /// @param last The end of the range
         template<typename Iterator>
         __WSTL_CONSTEXPR14__ XORRotateChecksum(Iterator first, Iterator last) {
-            StaticAssert(sizeof(typename IteratorTraits<Iterator>::ValueType) == sizeof(ValueType), "Type not supported");
+            WSTL_STATIC_ASSERT(sizeof(typename IteratorTraits<Iterator>::ValueType) == sizeof(ValueType), "Type not supported");
             Reset();
             this->Append(first, last);
         }
@@ -229,7 +229,7 @@ namespace wstl {
         /// @param last The end of the range
         template<typename Iterator>
         __WSTL_CONSTEXPR14__ ParityChecksum(Iterator first, Iterator last) {
-            StaticAssert(sizeof(typename IteratorTraits<Iterator>::ValueType) == sizeof(ValueType), "Type not supported");
+            WSTL_STATIC_ASSERT(sizeof(typename IteratorTraits<Iterator>::ValueType) == sizeof(ValueType), "Type not supported");
             Reset();
             this->Append(first, last);
         }

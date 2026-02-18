@@ -214,7 +214,7 @@ namespace wstl {
 
     template<size_t Index, typename T1, typename T2>
     struct TupleElement<Index, Pair<T1, T2> > {
-        StaticAssert((Index < 2), "wstl::Pair has only 2 elements!");
+        WSTL_STATIC_ASSERT((Index < 2), "wstl::Pair has only 2 elements!");
     };
 
     template<typename T1, typename T2>
@@ -364,7 +364,7 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/utility/integer_sequence
     template<typename T, T... Integers>
     struct IntegerSequence {
-        StaticAssert(IsIntegral<T>::Value, "Integral types only!");
+        WSTL_STATIC_ASSERT(IsIntegral<T>::Value, "Integral types only!");
 
         typedef T ValueType;
 

@@ -88,7 +88,7 @@
 
 //         template<typename Iterator>
 //         __WSTL_CONSTEXPR14__ CRCType(Iterator first, Iterator last) {
-//             StaticAssert(sizeof(typename IteratorTraits<Iterator>::ValueType) == sizeof(ValueType), "Type not supported");
+//             WSTL_STATIC_ASSERT(sizeof(typename IteratorTraits<Iterator>::ValueType) == sizeof(ValueType), "Type not supported");
 //             Reset();
 //             this->Append(first, last);
 //         }

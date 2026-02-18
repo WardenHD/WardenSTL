@@ -14,7 +14,7 @@
 
 namespace wstl {
     #ifdef __WSTL_CXX11__
-    #define StaticAssert static_assert
+    #define WSTL_STATIC_ASSERT static_assert
     #else
     namespace __private {
         template<bool Condition>
@@ -24,7 +24,7 @@ namespace wstl {
         class __StaticAssert<true> {};    
     }
     
-    #define StaticAssert(condition, ...) \
+    #define WSTL_STATIC_ASSERT(condition, ...) \
         enum { __StaticAssertion = sizeof(__private::__StaticAssert<static_cast<bool>( (condition) )>) }
     #endif
 }

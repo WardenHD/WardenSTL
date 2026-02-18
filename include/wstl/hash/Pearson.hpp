@@ -33,7 +33,7 @@ namespace wstl {
             /// @param last The end of the range
             template<typename Iterator>
             __WSTL_CONSTEXPR14__ Pearson(Iterator first, Iterator last) {
-                StaticAssert(sizeof(typename IteratorTraits<Iterator>::ValueType) == sizeof(ValueType), "Type not supported");
+                WSTL_STATIC_ASSERT(sizeof(typename IteratorTraits<Iterator>::ValueType) == sizeof(ValueType), "Type not supported");
                 Reset();
                 this->Append(first, last);
             }

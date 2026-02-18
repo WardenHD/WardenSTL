@@ -8,6 +8,8 @@
 
 #include "../private/Platform.hpp"
 #include "../HasherBase.hpp"
+#include "../private/Error.hpp"
+#include "../StandardExceptions.hpp"
 #include <stdint.h>
 
 
@@ -33,7 +35,7 @@ namespace wstl {
             /// @param last The end of the range
             template<typename Iterator>
             __WSTL_CONSTEXPR14__ Jenkins(Iterator first, Iterator last) : m_IsFinalized(false) {
-                StaticAssert(sizeof(typename IteratorTraits<Iterator>::ValueType) == sizeof(ValueType), "Type not supported");
+                WSTL_STATIC_ASSERT(sizeof(typename IteratorTraits<Iterator>::ValueType) == sizeof(ValueType), "Type not supported");
                 m_Hash = 0;
                 this->Append(first, last);
             }

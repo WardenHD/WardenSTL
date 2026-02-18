@@ -2585,7 +2585,7 @@ namespace wstl {
             /// @return Reference to the data
             template<typename T>
             operator T&() {
-                StaticAssert((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
+                WSTL_STATIC_ASSERT((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
                 return *reinterpret_cast<T*>(Data);
             }
             
@@ -2594,7 +2594,7 @@ namespace wstl {
             /// @return Const reference to the data
             template<typename T>
             operator const T&() const {
-                StaticAssert((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
+                WSTL_STATIC_ASSERT((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
                 return *reinterpret_cast<const T*>(Data);
             }
 
@@ -2603,7 +2603,7 @@ namespace wstl {
             /// @return Pointer to the data
             template<typename T>
             operator T*() {
-                StaticAssert((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
+                WSTL_STATIC_ASSERT((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
                 return reinterpret_cast<T*>(Data);
             }
 
@@ -2612,7 +2612,7 @@ namespace wstl {
             /// @return Const pointer to the data
             template<typename T>
             operator const T*() const {
-                StaticAssert((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
+                WSTL_STATIC_ASSERT((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
                 return reinterpret_cast<const T*>(Data);
             }
 
@@ -2621,7 +2621,7 @@ namespace wstl {
             /// @return Pointer to the data
             template<typename T>
             T* GetPointer() {
-                StaticAssert((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
+                WSTL_STATIC_ASSERT((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
                 return reinterpret_cast<T*>(Data);
             }
 
@@ -2630,7 +2630,7 @@ namespace wstl {
             /// @return Const pointer to the data
             template<typename T>
             const T* GetPointer() const {
-                StaticAssert((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
+                WSTL_STATIC_ASSERT((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
                 return reinterpret_cast<const T*>(Data);
             }
 
@@ -2639,7 +2639,7 @@ namespace wstl {
             /// @return Reference to the data
             template<typename T>
             T& GetReference() {
-                StaticAssert((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
+                WSTL_STATIC_ASSERT((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
                 return *reinterpret_cast<T*>(Data);
             }
 
@@ -2648,7 +2648,7 @@ namespace wstl {
             /// @return Const reference to the data
             template<typename T>
             const T& GetReference() const {
-                StaticAssert((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
+                WSTL_STATIC_ASSERT((IsSame<T*, void*>::Value || IsTypeAligned<T, Alignment>::Value), "Incompatible alignment");
                 return *reinterpret_cast<const T*>(Data);
             }
 

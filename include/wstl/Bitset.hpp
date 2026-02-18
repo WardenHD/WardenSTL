@@ -728,7 +728,7 @@ namespace wstl {
         using Base::ActualSize;
 
     public:
-        StaticAssert(IsUnsigned<T>::Value, "Type must be unsigned");
+        WSTL_STATIC_ASSERT(IsUnsigned<T>::Value, "Type must be unsigned");
 
         typedef typename Base::SizeType SizeType;
         typedef typename Base::ElementType ElementType;
@@ -885,7 +885,7 @@ namespace wstl {
         /// @tparam Position Position of the bit to access
         template<size_t Position>
         __WSTL_CONSTEXPR14__ bool Test() const {
-            StaticAssert(Position < N, "Test position out of bounds");
+            WSTL_STATIC_ASSERT(Position < N, "Test position out of bounds");
             return Base::template Test<Position>(m_Bits);
         }
 
@@ -932,7 +932,7 @@ namespace wstl {
         /// @tparam Position Position of the bit to set
         template<size_t Position>
         __WSTL_CONSTEXPR14__ Bitset& Set() {
-            StaticAssert(Position < N, "Set position out of bounds");
+            WSTL_STATIC_ASSERT(Position < N, "Set position out of bounds");
             Base::template Set<Position>(m_Bits);
             return *this;
         }
@@ -951,7 +951,7 @@ namespace wstl {
         /// @param value Value to set the bit to
         template<size_t Position>
         __WSTL_CONSTEXPR14__ Bitset& Set(bool value) {
-            StaticAssert(Position < N, "Set position out of bounds");
+            WSTL_STATIC_ASSERT(Position < N, "Set position out of bounds");
             Base::template Set<Position>(m_Bits, value);
             return *this;
         }
@@ -961,7 +961,7 @@ namespace wstl {
         /// @tparam Value Value to set the bit to
         template<size_t Position, bool Value>
         __WSTL_CONSTEXPR14__ Bitset& Set() {
-            StaticAssert(Position < N, "Set position out of bounds");
+            WSTL_STATIC_ASSERT(Position < N, "Set position out of bounds");
             Base::template Set<Position, Value>(m_Bits);
             return *this;
         }
@@ -1016,7 +1016,7 @@ namespace wstl {
         /// @tparam Position Position of the bit to reset
         template<size_t Position>
         __WSTL_CONSTEXPR14__ Bitset& Reset() {
-            StaticAssert(Position < N, "Reset position out of bounds");
+            WSTL_STATIC_ASSERT(Position < N, "Reset position out of bounds");
             Base::template Reset<Position>(m_Bits);
             return *this;
         }
@@ -1039,7 +1039,7 @@ namespace wstl {
         /// @tparam Position Position of the bit to flip
         template<size_t Position>
         __WSTL_CONSTEXPR14__ Bitset& Flip() {
-            StaticAssert(Position < N, "Flip position out of bounds");
+            WSTL_STATIC_ASSERT(Position < N, "Flip position out of bounds");
             Base::template Flip<Position>(m_Bits);
             return *this;
         }
@@ -1066,13 +1066,13 @@ namespace wstl {
         
         /// @brief Converts the bitset to an unsigned long if it fits
         __WSTL_CONSTEXPR14__ unsigned long ToUnsignedLong() const __WSTL_NOEXCEPT__ {
-            StaticAssert(sizeof(unsigned long) * 8 >= ActualSize, "Bitset can't be converted to unsigned long");
+            WSTL_STATIC_ASSERT(sizeof(unsigned long) * 8 >= ActualSize, "Bitset can't be converted to unsigned long");
             return Base::template Value<unsigned long>(m_Bits);
         }
 
         /// @brief Converts the bitset to an unsigned long long if it fits
         __WSTL_CONSTEXPR14__ unsigned long long ToUnsignedLongLong() const __WSTL_NOEXCEPT__ {
-            StaticAssert(sizeof(unsigned long long) * 8 >= ActualSize, "Bitset can't be converted to unsigned long long");
+            WSTL_STATIC_ASSERT(sizeof(unsigned long long) * 8 >= ActualSize, "Bitset can't be converted to unsigned long long");
             return Base::template Value<unsigned long long>(m_Bits);
         }
 
@@ -1119,8 +1119,8 @@ namespace wstl {
         /// @return Integral representation of the bitset
         template<typename U>
         __WSTL_CONSTEXPR14__ U Value() const __WSTL_NOEXCEPT__ {
-            StaticAssert(IsIntegral<U>::Value, "Only integral types are supported");
-            StaticAssert((sizeof(U) * 8) >= ActualSize, "Type is too small");
+            WSTL_STATIC_ASSERT(IsIntegral<U>::Value, "Only integral types are supported");
+            WSTL_STATIC_ASSERT((sizeof(U) * 8) >= ActualSize, "Type is too small");
 
             return Base::template Value<U>(m_Bits);
         }
@@ -1260,7 +1260,7 @@ namespace wstl {
             using Base::ActualSize;
 
         public:
-            StaticAssert(IsUnsigned<T>::Value, "Type must be unsigned");
+            WSTL_STATIC_ASSERT(IsUnsigned<T>::Value, "Type must be unsigned");
 
             typedef typename Base::SizeType SizeType;
             typedef typename Base::ElementType ElementType;
@@ -1508,7 +1508,7 @@ namespace wstl {
             /// @tparam Position Position of the bit to access
             template<size_t Position>
             __WSTL_CONSTEXPR14__ bool Test() const {
-                StaticAssert(Position < N, "Test position out of bounds");
+                WSTL_STATIC_ASSERT(Position < N, "Test position out of bounds");
                 return Base::template Test<Position>(m_Bits);
             }
 
@@ -1555,7 +1555,7 @@ namespace wstl {
             /// @tparam Position Position of the bit to set
             template<size_t Position>
             __WSTL_CONSTEXPR14__ Bitset& Set() {
-                StaticAssert(Position < N, "Set position out of bounds");
+                WSTL_STATIC_ASSERT(Position < N, "Set position out of bounds");
                 Base::template Set<Position>(m_Bits);
                 return *this;
             }
@@ -1574,7 +1574,7 @@ namespace wstl {
             /// @param value Value to set the bit to
             template<size_t Position>
             __WSTL_CONSTEXPR14__ Bitset& Set(bool value) {
-                StaticAssert(Position < N, "Set position out of bounds");
+                WSTL_STATIC_ASSERT(Position < N, "Set position out of bounds");
                 Base::template Set<Position>(m_Bits, value);
                 return *this;
             }
@@ -1584,7 +1584,7 @@ namespace wstl {
             /// @tparam Value Value to set the bit to
             template<size_t Position, bool Value>
             __WSTL_CONSTEXPR14__ Bitset& Set() {
-                StaticAssert(Position < N, "Set position out of bounds");
+                WSTL_STATIC_ASSERT(Position < N, "Set position out of bounds");
                 Base::template Set<Position, Value>(m_Bits);
                 return *this;
             }
@@ -1639,7 +1639,7 @@ namespace wstl {
             /// @tparam Position Position of the bit to reset
             template<size_t Position>
             __WSTL_CONSTEXPR14__ Bitset& Reset() {
-                StaticAssert(Position < N, "Reset position out of bounds");
+                WSTL_STATIC_ASSERT(Position < N, "Reset position out of bounds");
                 Base::template Reset<Position>(m_Bits);
                 return *this;
             }
@@ -1662,7 +1662,7 @@ namespace wstl {
             /// @tparam Position Position of the bit to flip
             template<size_t Position>
             __WSTL_CONSTEXPR14__ Bitset& Flip() {
-                StaticAssert(Position < N, "Flip position out of bounds");
+                WSTL_STATIC_ASSERT(Position < N, "Flip position out of bounds");
                 Base::template Flip<Position>(m_Bits);
                 return *this;
             }
@@ -1689,13 +1689,13 @@ namespace wstl {
             
             /// @brief Converts the bitset to an unsigned long if it fits
             __WSTL_CONSTEXPR14__ unsigned long ToUnsignedLong() const __WSTL_NOEXCEPT__ {
-                StaticAssert(sizeof(unsigned long) * 8 >= ActualSize, "Bitset can't be converted to unsigned long");
+                WSTL_STATIC_ASSERT(sizeof(unsigned long) * 8 >= ActualSize, "Bitset can't be converted to unsigned long");
                 return Base::template Value<unsigned long>(m_Bits);
             }
 
             /// @brief Converts the bitset to an unsigned long long if it fits
             __WSTL_CONSTEXPR14__ unsigned long long ToUnsignedLongLong() const __WSTL_NOEXCEPT__ {
-                StaticAssert(sizeof(unsigned long long) * 8 >= ActualSize, "Bitset can't be converted to unsigned long long");
+                WSTL_STATIC_ASSERT(sizeof(unsigned long long) * 8 >= ActualSize, "Bitset can't be converted to unsigned long long");
                 return Base::template Value<unsigned long long>(m_Bits);
             }
 
@@ -1742,8 +1742,8 @@ namespace wstl {
             /// @return Integral representation of the bitset
             template<typename U>
             __WSTL_CONSTEXPR14__ U Value() const __WSTL_NOEXCEPT__ {
-                StaticAssert(IsIntegral<U>::Value, "Only integral types are supported");
-                StaticAssert((sizeof(U) * 8) >= ActualSize, "Type is too small");
+                WSTL_STATIC_ASSERT(IsIntegral<U>::Value, "Only integral types are supported");
+                WSTL_STATIC_ASSERT((sizeof(U) * 8) >= ActualSize, "Type is too small");
 
                 return Base::template Value<U>(m_Bits);
             }

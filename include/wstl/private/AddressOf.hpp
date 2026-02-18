@@ -42,7 +42,7 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/memory/to_address
     template<typename T>
     __WSTL_CONSTEXPR__ T* ToAddress(T* pointer) {
-        StaticAssert(!IsFunction<T>::Value, "Function pointers are not allowed");
+        WSTL_STATIC_ASSERT(!IsFunction<T>::Value, "Function pointers are not allowed");
         return pointer;
     }
 

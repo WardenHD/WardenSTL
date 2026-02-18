@@ -47,7 +47,7 @@ namespace wstl {
             typedef typename Base::HashType HashType;
             typedef typename Base::ValueType ValueType;
 
-            StaticAssert((IsSame<T, uint32_t>::Value || IsSame<T, uint64_t>::Value), "Only 32 and 64-bit types are supported");
+            WSTL_STATIC_ASSERT((IsSame<T, uint32_t>::Value || IsSame<T, uint64_t>::Value), "Only 32 and 64-bit types are supported");
 
             /// @brief Default constructor
             __WSTL_CONSTEXPR14__ FNV1() {
@@ -59,7 +59,7 @@ namespace wstl {
             /// @param last The end of the range
             template<typename Iterator>
             __WSTL_CONSTEXPR14__ FNV1(Iterator first, Iterator last) {
-                StaticAssert(sizeof(typename IteratorTraits<Iterator>::ValueType) == sizeof(ValueType), "Type not supported");
+                WSTL_STATIC_ASSERT(sizeof(typename IteratorTraits<Iterator>::ValueType) == sizeof(ValueType), "Type not supported");
                 Reset();
                 this->Append(first, last);
             }
@@ -106,7 +106,7 @@ namespace wstl {
             typedef typename Base::HashType HashType;
             typedef typename Base::ValueType ValueType;
 
-            StaticAssert((IsSame<T, uint32_t>::Value || IsSame<T, uint64_t>::Value), "Only 32 and 64-bit types are supported");
+            WSTL_STATIC_ASSERT((IsSame<T, uint32_t>::Value || IsSame<T, uint64_t>::Value), "Only 32 and 64-bit types are supported");
 
             /// @brief Default constructor
             __WSTL_CONSTEXPR14__ FNV1a() {
@@ -118,7 +118,7 @@ namespace wstl {
             /// @param last The end of the range
             template<typename Iterator>
             __WSTL_CONSTEXPR14__ FNV1a(Iterator first, Iterator last) {
-                StaticAssert(sizeof(typename IteratorTraits<Iterator>::ValueType) == sizeof(ValueType), "Type not supported");
+                WSTL_STATIC_ASSERT(sizeof(typename IteratorTraits<Iterator>::ValueType) == sizeof(ValueType), "Type not supported");
                 Reset();
                 this->Append(first, last);
             }

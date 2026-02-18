@@ -206,7 +206,7 @@ namespace wstl {
     template<typename T>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ 
     typename EnableIf<IsUnsigned<T>::Value, T>::Type GCD(T a, T b) __WSTL_NOEXCEPT__ {
-        StaticAssert(IsIntegral<T>::Value, "Integral type required!");
+        WSTL_STATIC_ASSERT(IsIntegral<T>::Value, "Integral type required!");
 
         if((a == 0) || (b == 0)) return (a + b);
 
@@ -228,7 +228,7 @@ namespace wstl {
     template<typename T>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ 
     typename EnableIf<IsSigned<T>::Value, T>::Type GCD(T a, T b) __WSTL_NOEXCEPT__ {
-        StaticAssert(IsIntegral<T>::Value, "Integral type required!");
+        WSTL_STATIC_ASSERT(IsIntegral<T>::Value, "Integral type required!");
 
         typedef typename MakeUnsigned<T>::Type U;
         U ua = AbsoluteUnsigned(a);
@@ -288,7 +288,7 @@ namespace wstl {
     template<typename T>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ 
     typename EnableIf<IsUnsigned<T>::Value, T>::Type LCM(T a, T b) __WSTL_NOEXCEPT__ {
-        StaticAssert(IsIntegral<T>::Value, "Integral type required!");
+        WSTL_STATIC_ASSERT(IsIntegral<T>::Value, "Integral type required!");
 
         if((a == 0) || (b == 0)) return 0;
         else return a * (b / GCD(a, b));
@@ -303,7 +303,7 @@ namespace wstl {
     template<typename T>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ 
     typename EnableIf<IsSigned<T>::Value, T>::Type LCM(T a, T b) __WSTL_NOEXCEPT__ {
-        StaticAssert(IsIntegral<T>::Value, "Integral type required!");
+        WSTL_STATIC_ASSERT(IsIntegral<T>::Value, "Integral type required!");
 
         typedef typename MakeUnsigned<T>::Type U;
         U ua = AbsoluteUnsigned(a);
@@ -363,7 +363,7 @@ namespace wstl {
     template<typename T>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__
     inline T Midpoint(T a, T b) __WSTL_NOEXCEPT__ {
-        StaticAssert(IsArithmetic<T>::Value, "Arithmetic type required!");
+        WSTL_STATIC_ASSERT(IsArithmetic<T>::Value, "Arithmetic type required!");
         return (a / 2) + (b / 2) + ((a % 2 + b % 2) / 2);
     }
 
@@ -376,7 +376,7 @@ namespace wstl {
     template<typename T>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__
     inline T* Midpoint(T* a, T* b) {
-        StaticAssert(IsArithmetic<T>::Value, "Arithmetic type required!");
+        WSTL_STATIC_ASSERT(IsArithmetic<T>::Value, "Arithmetic type required!");
         return a + (b - a) / 2;
     }
 

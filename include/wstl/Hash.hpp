@@ -67,7 +67,7 @@ namespace wstl {
     #define __WSTL_HASH_TRIVIAL_1BYTE__(T) \
     template<> \
     struct Hash<T> { \
-        StaticAssert(sizeof(size_t) >= sizeof(T), "size_t is smaller than hashed type"); \
+        WSTL_STATIC_ASSERT(sizeof(size_t) >= sizeof(T), "size_t is smaller than hashed type"); \
         \
         __WSTL_CONSTEXPR14__ size_t operator()(T value) const { \
             return static_cast<size_t>(value); \

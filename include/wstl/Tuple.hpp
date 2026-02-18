@@ -219,7 +219,7 @@ namespace wstl {
     template<size_t Index, typename Head, typename... Tail>
     __WSTL_CONSTEXPR14__
     inline EnableIfType<(Index > 0), TupleElementType<Index, Tuple<Head, Tail...>>> Get(Tuple<Head, Tail...>& tuple) __WSTL_NOEXCEPT__ {
-        StaticAssert(Index < sizeof...(Tail) + 1, "Index out of bounds");
+        WSTL_STATIC_ASSERT(Index < sizeof...(Tail) + 1, "Index out of bounds");
         return Get<Index - 1>(tuple.__GetTail());
     }
 
@@ -232,7 +232,7 @@ namespace wstl {
     template<size_t Index, typename Head, typename... Tail>
     __WSTL_CONSTEXPR14__
     inline EnableIfType<(Index > 0), const TupleElementType<Index, Tuple<Head, Tail...>>> Get(const Tuple<Head, Tail...>& tuple) __WSTL_NOEXCEPT__ {
-        StaticAssert(Index < sizeof...(Tail) + 1, "Index out of bounds");
+        WSTL_STATIC_ASSERT(Index < sizeof...(Tail) + 1, "Index out of bounds");
         return Get<Index - 1>(tuple.__GetTail());
     }
 
@@ -245,7 +245,7 @@ namespace wstl {
     template<size_t Index, typename Head, typename... Tail>
     __WSTL_CONSTEXPR14__
     inline EnableIfType<(Index > 0), TupleElementType<Index, Tuple<Head, Tail...>>&&> Get(Tuple<Head, Tail...>&& tuple) __WSTL_NOEXCEPT__ {
-        StaticAssert(Index < sizeof...(Tail) + 1, "Index out of bounds");
+        WSTL_STATIC_ASSERT(Index < sizeof...(Tail) + 1, "Index out of bounds");
         return Get<Index - 1>(Move(tuple.__GetTail()));
     }
 
@@ -258,7 +258,7 @@ namespace wstl {
     template<size_t Index, typename Head, typename... Tail>
     __WSTL_CONSTEXPR14__
     inline EnableIfType<(Index > 0), const TupleElementType<Index, Tuple<Head, Tail...>>&&> Get(const Tuple<Head, Tail...>&& tuple) __WSTL_NOEXCEPT__ {
-        StaticAssert(Index < sizeof...(Tail) + 1, "Index out of bounds");
+        WSTL_STATIC_ASSERT(Index < sizeof...(Tail) + 1, "Index out of bounds");
         return Get<Index - 1>(Move(tuple.__GetTail()));
     }
 

@@ -23,7 +23,7 @@ namespace wstl {
         typedef THash HashType;
         typedef TValue ValueType;
 
-        StaticAssert(IsUnsigned<ValueType>::Value && IsUnsigned<HashType>::Value, "Unsigned types in derived class are not supported");
+        WSTL_STATIC_ASSERT(IsUnsigned<ValueType>::Value && IsUnsigned<HashType>::Value, "Unsigned types in derived class are not supported");
         
         /// @brief Pushes a value into the hasher
         /// @details This method must be implemented by the derived class

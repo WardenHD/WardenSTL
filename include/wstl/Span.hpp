@@ -267,7 +267,7 @@ namespace wstl {
         /// @return A new span with fixed extent containing the first N elements
         template<size_t Count>
         __WSTL_NODISCARD__ __WSTL_CONSTEXPR__ Span<ElementType, Count> First() const __WSTL_NOEXCEPT__ {
-            StaticAssert(Count <= Extent, "Original span does not contain 'Count' elements");
+            WSTL_STATIC_ASSERT(Count <= Extent, "Original span does not contain 'Count' elements");
 
             return Span<ElementType, Count>(m_Begin, m_Begin + Count);
         }
@@ -284,7 +284,7 @@ namespace wstl {
         /// @return A new span with fixed extent containing the last N elements
         template<size_t Count>
         __WSTL_NODISCARD__ __WSTL_CONSTEXPR__ Span<ElementType, Count> Last() const __WSTL_NOEXCEPT__ {
-            StaticAssert(Count <= Extent, "Original span does not contain Count elements");
+            WSTL_STATIC_ASSERT(Count <= Extent, "Original span does not contain Count elements");
 
             return Span<ElementType, Count>(m_Begin + Extent - Count, m_Begin + Extent);
         }
@@ -303,8 +303,8 @@ namespace wstl {
         /// @return A new span starting from the specified offset
         template<size_t Offset, size_t Count = DynamicExtent>
         __WSTL_NODISCARD__ constexpr Span<ElementType, (Count != DynamicExtent) ? Count : (Extent - Offset)> Subspan() const {
-            StaticAssert(Offset <= Extent, "Offset is not within the original span");
-            StaticAssert((Count != DynamicExtent) ? Count <= Extent - Offset : true, "Offset + Count is not within the original span");
+            WSTL_STATIC_ASSERT(Offset <= Extent, "Offset is not within the original span");
+            WSTL_STATIC_ASSERT((Count != DynamicExtent) ? Count <= Extent - Offset : true, "Offset + Count is not within the original span");
 
             return (Count != DynamicExtent) ? Span<ElementType, Count != DynamicExtent ? Count : Extent - Offset>(m_Begin + Offset, m_Begin + Offset + Count) :
                 Span<ElementType, Count != DynamicExtent ? Count : Extent - Offset>(m_Begin + Offset, m_Begin + Extent);
@@ -316,8 +316,8 @@ namespace wstl {
         /// @return A new span starting from the specified offset
         template<size_t Offset, size_t Count>
         Span<ElementType, (Count != DynamicExtent) ? Count : (Extent - Offset)> Subspan() const {
-            StaticAssert(Offset <= Extent, "Offset is not within the original span");
-            StaticAssert((Count != DynamicExtent) ? Count <= Extent - Offset : true, "Offset + Count is not within the original span");
+            WSTL_STATIC_ASSERT(Offset <= Extent, "Offset is not within the original span");
+            WSTL_STATIC_ASSERT((Count != DynamicExtent) ? Count <= Extent - Offset : true, "Offset + Count is not within the original span");
 
             return (Count != DynamicExtent) ? Span<ElementType, (Count != DynamicExtent ? Count : Extent - Offset)>(m_Begin + Offset, m_Begin + Offset + Count) :
                 Span<ElementType, (Count != DynamicExtent ? Count : Extent - Offset)>(m_Begin + Offset, m_Begin + Extent);
@@ -726,7 +726,7 @@ namespace wstl {
     template<typename T, size_t N>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR__ 
     Span<Byte, (N == DynamicExtent) ? DynamicExtent : (N * sizeof(T))> AsWritableBytes(Span<T, N> span) __WSTL_NOEXCEPT__ {
-        StaticAssert(!IsConst<T>::Value, "Span<T> must be of non-const type");
+        WSTL_STATIC_ASSERT(!IsConst<T>::Value, "Span<T> must be of non-const type");
         return Span<Byte, (N == DynamicExtent) ? DynamicExtent : (N * sizeof(T))>(reinterpret_cast<Byte*>(span.Data()), span.SizeBytes());
     }
 }
