@@ -40,6 +40,71 @@
 namespace wstl {
     // Pointer traits
 
+    namespace __private {
+        template<typename T, typename U>
+        static long __TestRebind(typename T::template Rebind<U>* = 0);
+
+        template<typename T, typename U>
+        static char __TestRebind(...);
+
+        template<typename T, typename U, bool = (sizeof(__TestRebind<T, U>(0)) == sizeof(long))>
+        struct __Rebind {
+            typedef typename T::template Rebind<U>::Other Type;
+        };
+
+        #ifdef __WSTL_CXX11__
+        template<template<class, class...> class P, typename T, typename U, typename... Args>
+        struct __Rebind<P<T, Args...>, U, true> {
+            typedef typename P<T, Args...>::template Rebind<U>::Other Type;
+        };
+
+        template<template<class, class...> class P, typename T, typename U, typename... Args>
+        struct __Rebind<P<T, Args...>, U, false> {
+            typedef P<U, Args...> Type;
+        };
+        #else
+        template<template<typename> class P, typename T, typename U>
+        struct __Rebind<P<T>, U, true> {
+            typedef typename P<T>::template Rebind<U>::Other Type;
+        };
+
+        template<template<typename, typename> class P, typename T, typename U, typename Arg>
+        struct __Rebind<P<T, Arg>, U, true> {
+            typedef typename P<T, Arg>::template Rebind<U>::Other Type;
+        };
+
+        template<template<typename, typename, typename> class P, typename T, typename U, typename Arg1, typename Arg2>
+        struct __Rebind<P<T, Arg1, Arg2>, U, true> {
+            typedef typename P<T, Arg1, Arg2>::template Rebind<U>::Other Type;
+        };
+
+        template<template<typename, typename, typename, typename> class P, typename T, typename U, typename Arg1, typename Arg2, typename Arg3>
+        struct __Rebind<P<T, Arg1, Arg2, Arg3>, U, true> {
+            typedef typename P<T, Arg1, Arg2, Arg3>::template Rebind<U>::Other Type;
+        };
+
+        template<template<typename> class P, typename T, typename U>
+        struct __Rebind<P<T>, U, false> {
+            typedef P<U> Type;
+        };
+
+        template<template<typename, typename> class P, typename T, typename U, typename Arg>
+        struct __Rebind<P<T, Arg>, U, false> {
+            typedef P<U, Arg> Type;
+        };
+
+        template<template<typename, typename, typename> class P, typename T, typename U, typename Arg1, typename Arg2>
+        struct __Rebind<P<T, Arg1, Arg2>, U, false> {
+            typedef P<U, Arg1, Arg2> Type;
+        };
+
+        template<template<typename, typename, typename, typename> class P, typename T, typename U, typename Arg1, typename Arg2, typename Arg3>
+        struct __Rebind<P<T, Arg1, Arg2, Arg3>, U, false> {
+            typedef P<U, Arg1, Arg2, Arg3> Type;
+        };
+        #endif
+    }
+
     /// @brief Provides uniform interface for accessing properties of a pointer
     /// @tparam Pointer Type of the pointer
     /// @ingroup memory
@@ -56,7 +121,7 @@ namespace wstl {
         /// @brief Rebinds the pointer to a different type
         /// @tparam U The new type to bind to
         template<typename U>
-        struct Rebind { typedef typename Pointer::Rebind<U>::Other Other; };
+        struct Rebind { typedef typename __private::__Rebind<Pointer, U>::Type Other; };
 
         /// @brief Returns a pointer to the given reference
         static __WSTL_CONSTEXPR14__ PointerType PointerTo(ElementType& reference) {
