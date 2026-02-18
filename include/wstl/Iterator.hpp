@@ -149,20 +149,20 @@ namespace wstl {
         template<typename Iterator, typename Distance>
         __WSTL_CONSTEXPR14__ 
         inline void __Advance(Iterator& iterator, Distance count, OutputIteratorTag) {
-            while(--count) ++iterator;
+            while(count--) ++iterator;
         }
 
         template<typename Iterator, typename Distance>
         __WSTL_CONSTEXPR14__ 
         inline void __Advance(Iterator& iterator, Distance count, ForwardIteratorTag) {
-            while(--count) ++iterator;
+            while(count--) ++iterator;
         }
 
         template<typename Iterator, typename Distance>
         __WSTL_CONSTEXPR14__ 
         inline void __Advance(Iterator& iterator, Distance count, BidirectionalIteratorTag) {
-            if(count > 0) while(--count) ++iterator;
-            else while(++count) --iterator;
+            if(count > 0) while(count--) ++iterator;
+            else while(count++) --iterator;
         }
 
         template<typename Iterator, typename Distance>
