@@ -98,31 +98,11 @@ namespace wstl {
 
     template<typename U>
     __WSTL_CONSTEXPR14__ inline bool operator==(const ForwardBoundedIterator<U>& a, const ForwardBoundedIterator<U>& b) {
-        return U(a) == U(b);
-    }
-
-    template<typename U>
-    __WSTL_CONSTEXPR14__ inline bool operator==(const ForwardBoundedIterator<U>& a, U b) {
-        return U(a) == b;
-    }
-
-    template<typename U>
-    __WSTL_CONSTEXPR14__ inline bool operator==(U a, const ForwardBoundedIterator<U>& b) {
-        return a == U(b);
+        return a.m_Current == b.m_Current && a.m_End == b.m_End;
     }
 
     template<typename U>
     __WSTL_CONSTEXPR14__ inline bool operator!=(const ForwardBoundedIterator<U>& a, const ForwardBoundedIterator<U>& b) {
-        return !(a == b);
-    }
-
-    template<typename U>
-    __WSTL_CONSTEXPR14__ inline bool operator!=(const ForwardBoundedIterator<U>& a, U b) {
-        return !(a == b);
-    }
-
-    template<typename U>
-    __WSTL_CONSTEXPR14__ inline bool operator!=(U a, const ForwardBoundedIterator<U>& b) {
         return !(a == b);
     }
 }
