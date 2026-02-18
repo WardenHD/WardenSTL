@@ -104,8 +104,8 @@ namespace wstl {
 
         template<typename T, typename Category = typename IteratorTraits<T>::IteratorCategory>
         class __CircularIterator {
-            StaticAssert((IsSame<Category, InputIteratorTag>::Value), "InputIteratorCategory is not supported by CircularIterator");
-            StaticAssert((IsSame<Category, OutputIteratorTag>::Value), "OutputIteratorCategory is not supported by CircularIterator");
+            WSTL_STATIC_ASSERT((IsSame<Category, InputIteratorTag>::Value), "InputIteratorCategory is not supported by CircularIterator");
+            WSTL_STATIC_ASSERT((IsSame<Category, OutputIteratorTag>::Value), "OutputIteratorCategory is not supported by CircularIterator");
         };
 
         // Specialization for ForwardIterator
@@ -405,10 +405,10 @@ namespace wstl {
     /// @param offset The offset to add (negative for backward movement)    
     /// @return A new circular iterator advanced by `offset` positions
     /// @ingroup iterator
-    template<typename U>
+    template<typename T>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ 
-    CircularIterator<U> operator+(const CircularIterator<U>& x, typename IteratorTraits<U>::DifferenceType offset) {
-        CircularIterator<U> result(x);
+    CircularIterator<T> operator+(const CircularIterator<T>& x, typename IteratorTraits<T>::DifferenceType offset) {
+        CircularIterator<T> result(x);
         result += offset;
         return result;
     }
@@ -418,10 +418,10 @@ namespace wstl {
     /// @param x Circular iterator to add offset to  
     /// @return A new circular iterator advanced by `offset` positions
     /// @ingroup iterator
-    template<typename U>
+    template<typename T>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ 
-    CircularIterator<U> operator+(typename IteratorTraits<U>::DifferenceType offset, const CircularIterator<U>& x) {
-        CircularIterator<U> result(x);
+    CircularIterator<T> operator+(typename IteratorTraits<T>::DifferenceType offset, const CircularIterator<T>& x) {
+        CircularIterator<T> result(x);
         result += offset;
         return result;
     }
@@ -433,10 +433,10 @@ namespace wstl {
     /// @param offset The offset to subtract (negative for forward movement)
     /// @return A new circular iterator moved by `offset` positions
     /// @ingroup iterator
-    template<typename U>
+    template<typename T>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ 
-    CircularIterator<U> operator-(const CircularIterator<U>& x, typename IteratorTraits<U>::DifferenceType offset) {
-        CircularIterator<U> result(x);
+    CircularIterator<T> operator-(const CircularIterator<T>& x, typename IteratorTraits<T>::DifferenceType offset) {
+        CircularIterator<T> result(x);
         result -= offset;
         return result;
     }
@@ -448,45 +448,41 @@ namespace wstl {
     /// @param b Second circular iterator
     /// @return The difference between the two iterators, or undefined value if the iterators do not belong to the same range
     /// @ingroup iterator
-    template<typename U>
+    template<typename T>
     __WSTL_NODISCARD__ __WSTL_CONSTEXPR14__ 
-    typename IteratorTraits<U>::DifferenceType operator-(CircularIterator<U>& a, CircularIterator<U>& b) {
-        typedef typename IteratorTraits<U>::DifferenceType DifferenceType;
-        
-        DifferenceType indexA = (a.Current() - a.Begin() + a.Size()) % a.Size();
-        DifferenceType indexB = (b.Current() - b.Begin() + b.Size()) % b.Size();
-        return indexA - indexB;
+    typename IteratorTraits<T>::DifferenceType operator-(CircularIterator<T>& a, CircularIterator<T>& b) {
+        return T(a) - T(b);
     }
 
     // Comparison operators
 
-    template<typename U>
-    __WSTL_CONSTEXPR14__ inline bool operator==(const CircularIterator<U>& a, const CircularIterator<U>& b) {
-        return U(a) == U(b);
+    template<typename T>
+    __WSTL_CONSTEXPR14__ inline bool operator==(const CircularIterator<T>& a, const CircularIterator<T>& b) {
+        return T(a) == T(b);
     }
 
-    template<typename U>
-    __WSTL_CONSTEXPR14__ inline bool operator==(const CircularIterator<U>& a, U b) {
-        return U(a) == b;
+    template<typename T>
+    __WSTL_CONSTEXPR14__ inline bool operator==(const CircularIterator<T>& a, T b) {
+        return T(a) == b;
     }
 
-    template<typename U>
-    __WSTL_CONSTEXPR14__ inline bool operator==(U a, const CircularIterator<U>& b) {
-        return a == U(b);
+    template<typename T>
+    __WSTL_CONSTEXPR14__ inline bool operator==(T a, const CircularIterator<T>& b) {
+        return a == T(b);
     }
 
-    template<typename U>
-    __WSTL_CONSTEXPR14__ inline bool operator!=(const CircularIterator<U>& a, const CircularIterator<U>& b) {
+    template<typename T>
+    __WSTL_CONSTEXPR14__ inline bool operator!=(const CircularIterator<T>& a, const CircularIterator<T>& b) {
         return !(a == b);
     }
 
-    template<typename U>
-    __WSTL_CONSTEXPR14__ inline bool operator!=(const CircularIterator<U>& a, U b) {
+    template<typename T>
+    __WSTL_CONSTEXPR14__ inline bool operator!=(const CircularIterator<T>& a, T b) {
         return !(a == b);
     }
 
-    template<typename U>
-    __WSTL_CONSTEXPR14__ inline bool operator!=(U a, const CircularIterator<U>& b) {
+    template<typename T>
+    __WSTL_CONSTEXPR14__ inline bool operator!=(T a, const CircularIterator<T>& b) {
         return !(a == b);
     }
 
@@ -495,9 +491,9 @@ namespace wstl {
     /// @param b Iterator to check against
     /// @return True if the iterators are equal, false otherwise
     /// @ingroup iterator
-    template<typename U>
-    __WSTL_CONSTEXPR14__ inline bool operator<(const CircularIterator<U>& a, const CircularIterator<U>& b) {
-        return ((a.Current() - a.Begin() + a.Size()) % a.Size()) < ((b.Current() - b.Begin() + b.Size()) % b.Size());
+    template<typename T>
+    __WSTL_CONSTEXPR14__ inline bool operator<(const CircularIterator<T>& a, const CircularIterator<T>& b) {
+        return T(a) < T(b);
     }
 
     /// @brief Checks if one iterator is less than or equal to another, only makes sense when iterators belong to the same range
@@ -505,8 +501,8 @@ namespace wstl {
     /// @param b Iterator to check against
     /// @return True if the first iterator is less than or equal to the second, false otherwise
     /// @ingroup iterator
-    template<typename U>
-    __WSTL_CONSTEXPR14__ inline bool operator<=(const CircularIterator<U>& a, const CircularIterator<U>& b) {
+    template<typename T>
+    __WSTL_CONSTEXPR14__ inline bool operator<=(const CircularIterator<T>& a, const CircularIterator<T>& b) {
         return !(b < a);
     }
 
@@ -515,8 +511,8 @@ namespace wstl {
     /// @param b Iterator to check against
     /// @return True if the first iterator is greater than the second, false otherwise
     /// @ingroup iterator
-    template<typename U>
-    __WSTL_CONSTEXPR14__ inline bool operator>(const CircularIterator<U>& a, const CircularIterator<U>& b) {
+    template<typename T>
+    __WSTL_CONSTEXPR14__ inline bool operator>(const CircularIterator<T>& a, const CircularIterator<T>& b) {
         return b < a;
     }
 
@@ -525,8 +521,8 @@ namespace wstl {
     /// @param b Iterator to check against
     /// @return True if the first iterator is greater than or equal to the second, false otherwise
     /// @ingroup iterator
-    template<typename U>
-    __WSTL_CONSTEXPR14__ inline bool operator>=(const CircularIterator<U>& a, const CircularIterator<U>& b) {
+    template<typename T>
+    __WSTL_CONSTEXPR14__ inline bool operator>=(const CircularIterator<T>& a, const CircularIterator<T>& b) {
         return !(a < b);
     }
 }
