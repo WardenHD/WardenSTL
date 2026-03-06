@@ -6,9 +6,8 @@
 #ifndef __WSTL_TUPLE_HPP__
 #define __WSTL_TUPLE_HPP__
 
-#include "private/TupleProperties.hpp"
+#include "private/TupleUtils.hpp"
 #include "private/Swap.hpp"
-#include "Utility.hpp"
 
 
 /// @defgroup tuple Tuple
@@ -17,16 +16,88 @@
 /// @since C++11
 
 namespace wstl {
-    // Tuple
-    /// TODO: Implementation for C++98
-
     #ifdef __WSTL_CXX11__
+    // Tuple
+
     /// @brief Fixed size container that holds elements of different types
     /// @tparam ...Types 
     /// @ingroup tuple
     /// @see https://en.cppreference.com/w/cpp/utility/tuple
     template<typename... Types>
     class Tuple;
+
+    // Forward declaration for Pair
+
+    template<typename T1, typename T2>
+    struct Pair;
+
+    namespace __private {
+        template<size_t Index>
+        struct __TupleGet {
+            template<typename... Types>
+            static inline __WSTL_CONSTEXPR14__ 
+            TupleElementType<Index, Tuple<Types...>>& Get(Tuple<Types...>& tuple) __WSTL_NOEXCEPT__ {
+                return __TupleGet<Index - 1>::Get(tuple.m_Tail);
+            }
+
+            template<typename... Types>
+            static inline __WSTL_CONSTEXPR14__ 
+            const TupleElementType<Index, Tuple<Types...>>& Get(const Tuple<Types...>& tuple) __WSTL_NOEXCEPT__ {
+                return __TupleGet<Index - 1>::Get(tuple.m_Tail);
+            }
+
+            template<typename... Types>
+            static inline __WSTL_CONSTEXPR14__ 
+            TupleElementType<Index, Tuple<Types...>>&& Get(Tuple<Types...>&& tuple) __WSTL_NOEXCEPT__ {
+                return __TupleGet<Index - 1>::Get(Move(tuple.m_Tail));
+            }
+
+            template<typename... Types>
+            static inline __WSTL_CONSTEXPR14__ 
+            const TupleElementType<Index, Tuple<Types...>>&& Get(const Tuple<Types...>&& tuple) __WSTL_NOEXCEPT__ {
+                return __TupleGet<Index - 1>::Get(Move(tuple.m_Tail));
+            }
+        };
+
+        template<>
+        struct __TupleGet<0> {
+            template<typename Head, typename... Tail>
+            static inline __WSTL_CONSTEXPR14__ Head& Get(Tuple<Head, Tail...>& tuple) __WSTL_NOEXCEPT__ {
+                return tuple.m_Head;
+            }
+
+            template<typename Head, typename... Tail>
+            static inline __WSTL_CONSTEXPR14__ const Head& Get(const Tuple<Head, Tail...>& tuple) __WSTL_NOEXCEPT__ {
+                return tuple.m_Head;
+            }
+
+            template<typename Head, typename... Tail>
+            static inline __WSTL_CONSTEXPR14__ Head&& Get(Tuple<Head, Tail...>&& tuple) __WSTL_NOEXCEPT__ {
+                return Move(tuple.m_Head);
+            }
+
+            template<typename Head, typename... Tail>
+            static inline __WSTL_CONSTEXPR14__ const Head&& Get(const Tuple<Head, Tail...>&& tuple) __WSTL_NOEXCEPT__ {
+                return Move(tuple.m_Head);
+            }
+        };
+
+        template<typename T>
+        struct __IsTuple : FalseType {};
+
+        template<typename... Types>
+        struct __IsTuple<Tuple<Types...>> {};
+
+        template<typename...>
+        struct __TupleTailFirst {
+            using Type = void;
+        };
+
+        template<typename T, typename... Rest>
+        struct __TupleTailFirst<T, Rest...> {
+            using Type = T;
+        };
+    }
 
     template<>
     class Tuple<> {
@@ -39,71 +110,175 @@ namespace wstl {
     class Tuple<Head, Tail...> {
     public:
         /// @brief Default constructor
-        constexpr Tuple() = default;
+        template<template<typename> class __Default = IsDefaultConstructible, template<typename> class __Implicit = IsImplicitlyDefaultConstructible,
+        EnableIfType<Conjunction<__Implicit<Head>, __Implicit<Tail>...>::Value && Conjunction<__Default<Head>, __Default<Tail>...>::Value, int> = 0>
+        __WSTL_CONSTEXPR14__ Tuple() {};
+
+        /// @brief Default constructor
+        template<template<typename> class __Default = IsDefaultConstructible, template<typename> class __Implicit = IsImplicitlyDefaultConstructible,
+        EnableIfType<!Conjunction<__Implicit<Head>, __Implicit<Tail>...>::Value && Conjunction<__Default<Head>, __Default<Tail>...>::Value, int> = 0>
+        explicit __WSTL_CONSTEXPR14__ Tuple() {};
+
+        /// @brief Copy constructor - copies from tuple of the same types
+        /// @param other Tuple to copy from
+        __WSTL_CONSTEXPR14__ Tuple(const Tuple& other) = default;
+
+        /// @brief Move constructor - moves from tuple with the same types
+        /// @param other Tuple to move from
+        __WSTL_CONSTEXPR14__ Tuple(Tuple&& other) = default;
 
         /// @brief Parameterized constructor - initializes head and recursively the rest
         /// with the same types
         /// @param head Value of the head element
         /// @param ...tail Remaining values to initialize recursively
-        constexpr Tuple(const Head& head, const Tail&... tail) : m_Head(head), m_Tail(tail...) {}
+        template<template<typename> class __Copy = IsCopyConstructible, template<typename, typename> class __Convertible = IsConvertible,
+        EnableIfType<Conjunction<__Copy<Head>, __Copy<Tail>...>::Value && Conjunction<__Convertible<const Head&, Head>, __Convertible<const Tail&, Tail>...>::Value, int> = 0>
+        __WSTL_CONSTEXPR14__ Tuple(const Head& head, const Tail&... tail) : m_Head(head), m_Tail(tail...) {}
+
+        /// @brief Parameterized constructor - initializes head and recursively the rest
+        /// with the same types
+        /// @param head Value of the head element
+        /// @param ...tail Remaining values to initialize recursively
+        template<template<typename> class __Copy = IsCopyConstructible, template<typename, typename> class __Convertible = IsConvertible,
+        EnableIfType<Conjunction<__Copy<Head>, __Copy<Tail>...>::Value && !Conjunction<__Convertible<const Head&, Head>, __Convertible<const Tail&, Tail>...>::Value, int> = 0>
+        explicit __WSTL_CONSTEXPR14__ Tuple(const Head& head, const Tail&... tail) : m_Head(head), m_Tail(tail...) {}
+
+        /// @brief Templated copy constructor - copies from tuple of potentially different types
+        /// @param other Tuple to copy from
+        template<typename UHead, typename... UTail, EnableIfType<(sizeof...(Tail) == sizeof...(UTail)) && 
+        Conjunction<IsConvertible<UHead, Head>, IsConvertible<UTail, Tail>...>::Value, int> = 0>
+        __WSTL_CONSTEXPR14__ Tuple(Tuple<UHead, UTail...>& other) : m_Head(other.m_Head), m_Tail(other.m_Tail) {}
+
+        /// @brief Templated copy constructor - copies from tuple of potentially different types
+        /// @param other Tuple to copy from
+        template<typename UHead, typename... UTail, EnableIfType<(sizeof...(Tail) == sizeof...(UTail)) && 
+        !Conjunction<IsConvertible<UHead, Head>, IsConvertible<UTail, Tail>...>::Value, int> = 0>
+        explicit __WSTL_CONSTEXPR14__ Tuple(Tuple<UHead, UTail...>& other) : m_Head(other.m_Head), m_Tail(other.m_Tail) {}
         
+        /// @brief Templated copy constructor - copies from tuple of potentially different types
+        /// @param other Tuple to copy from
+        template<typename UHead, typename... UTail, EnableIfType<(sizeof...(Tail) == sizeof...(UTail)) && 
+        Conjunction<IsConvertible<UHead, Head>, IsConvertible<UTail, Tail>...>::Value, int> = 0>
+        __WSTL_CONSTEXPR14__ Tuple(const Tuple<UHead, UTail...>& other) : m_Head(other.m_Head), m_Tail(other.m_Tail) {}
+
+        /// @brief Templated copy constructor - copies from tuple of potentially different types
+        /// @param other Tuple to copy from
+        template<typename UHead, typename... UTail, EnableIfType<(sizeof...(Tail) == sizeof...(UTail)) && 
+        !Conjunction<IsConvertible<UHead, Head>, IsConvertible<UTail, Tail>...>::Value, int> = 0>
+        explicit __WSTL_CONSTEXPR14__ Tuple(const Tuple<UHead, UTail...>& other) : m_Head(other.m_Head), m_Tail(other.m_Tail) {}
+
+        /// @brief Templated move constructor - moves from tuple with potentially different types 
+        /// @param other Tuple to move from
+        template<typename UHead, typename... UTail, EnableIfType<(sizeof...(Tail) == sizeof...(UTail)) && 
+        Conjunction<IsConvertible<UHead, Head>, IsConvertible<UTail, Tail>...>::Value, int> = 0>
+        __WSTL_CONSTEXPR14__ Tuple(Tuple<UHead, UTail...>&& other) : m_Head(Forward<UHead>(other.m_Head)), m_Tail(Forward<Tuple<UTail...>>(other.m_Tail)) {}
+
+        /// @brief Templated move constructor - moves from tuple with potentially different types 
+        /// @param other Tuple to move from
+        template<typename UHead, typename... UTail, EnableIfType<(sizeof...(Tail) == sizeof...(UTail)) && 
+        !Conjunction<IsConvertible<UHead, Head>, IsConvertible<UTail, Tail>...>::Value, int> = 0>
+        explicit __WSTL_CONSTEXPR14__ Tuple(Tuple<UHead, UTail...>&& other) : m_Head(Forward<UHead>(other.m_Head)), m_Tail(Forward<Tuple<UTail...>>(other.m_Tail)) {}
+
+        /// @brief Templated converting constructor - copies from tuple with potentially different types 
+        /// @param other Tuple to copy from
+        template<typename UHead, typename... UTail, EnableIfType<(sizeof...(Tail) == sizeof...(UTail)) && 
+        Conjunction<IsConvertible<UHead, Head>, IsConvertible<UTail, Tail>...>::Value, int> = 0>
+        __WSTL_CONSTEXPR14__ Tuple(const Tuple<UHead, UTail...>&& other) : m_Head(other.m_Head), m_Tail(other.m_Tail) {}
+
+        /// @brief Templated converting constructor - copies from tuple with potentially different types 
+        /// @param other Tuple to copy from
+        template<typename UHead, typename... UTail, EnableIfType<(sizeof...(Tail) == sizeof...(UTail)) && 
+        !Conjunction<IsConvertible<UHead, Head>, IsConvertible<UTail, Tail>...>::Value, int> = 0>
+        explicit __WSTL_CONSTEXPR14__ Tuple(const Tuple<UHead, UTail...>&& other) : m_Head(other.m_Head), m_Tail(other.m_Tail) {}
+
         /// @brief Templated parameterized constructor - initializes head and recursively the rest 
         /// with potentially different types
         /// @param head Value of the head element
         /// @param ...tail Remaining values to initialize recursively
-        template<typename UHead, typename... UTail, typename = EnableIfType<
-        IsConstructible<Head, UHead>::Value && IsConstructible<Tuple<UTail...>, UTail...>::Value>>
-        constexpr Tuple(UHead&& head, UTail&&... tail) : m_Head(Forward<UHead>(head)), 
+        template<typename UHead, typename... UTail, EnableIfType<!__private::__IsTuple<RemoveReferenceType<UHead>>::Value && 
+        (sizeof...(Tail) == sizeof...(UTail)) && Conjunction<IsConstructible<Head, UHead>, IsConstructible<Tail, UTail>...>::Value &&
+        Conjunction<IsConvertible<UHead, Head>, IsConvertible<UTail, Tail>...>::Value, int> = 0>
+        __WSTL_CONSTEXPR14__ Tuple(UHead&& head, UTail&&... tail) : m_Head(Forward<UHead>(head)), 
             m_Tail(Forward<UTail>(tail)...) {}
 
-        /// @brief Copy constructor - copies from tuple of the same types
-        /// @param other Tuple to copy from
-        constexpr Tuple(const Tuple& other) : m_Head(other.m_Head), m_Tail(other.m_Tail) {}
+        /// @brief Templated parameterized constructor - initializes head and recursively the rest 
+        /// with potentially different types
+        /// @param head Value of the head element
+        /// @param ...tail Remaining values to initialize recursively
+        template<typename UHead, typename... UTail, EnableIfType<!__private::__IsTuple<RemoveReferenceType<UHead>>::Value && 
+        (sizeof...(Tail) == sizeof...(UTail)) && Conjunction<IsConstructible<Head, UHead>, IsConstructible<Tail, UTail>...>::Value &&
+        !Conjunction<IsConvertible<UHead, Head>, IsConvertible<UTail, Tail>...>::Value, int> = 0>
+        explicit __WSTL_CONSTEXPR14__ Tuple(UHead&& head, UTail&&... tail) : m_Head(Forward<UHead>(head)), 
+            m_Tail(Forward<UTail>(tail)...) {}
 
-        /// @brief Templated copy constructor - copies from tuple of potentially different types
-        /// @param other Tuple to copy from
-        template<typename UHead, typename... UTail, typename = EnableIfType<
-        IsConstructible<Head, const UHead&>::Value && IsConstructible<Tuple<UTail...>, const UTail&...>::Value>>
-        constexpr Tuple(const Tuple<UHead, UTail...>& other) : m_Head(other.__GetHead()),
-            m_Tail(other.__GetTail()) {}
+        /// @brief Pair lvalue converting constructor
+        /// @param pair Pair to construct from
+        template<typename U1, typename U2, EnableIfType<(sizeof...(Tail) == 1) && IsConstructible<Head, U1>::Value && 
+        IsConstructible<typename __private::__TupleTailFirst<Tail...>::Type, U2>::Value && IsConvertible<U1, Head>::Value && 
+        IsConvertible<U2, typename __private::__TupleTailFirst<Tail...>::Type>::Value, int> = 0>
+        __WSTL_CONSTEXPR14__ Tuple(Pair<U1, U2>& pair) : m_Head(pair.First), m_Tail(pair.Second) {}
 
-        /// @brief Move constructor - moves from tuple with the same types
-        /// @param other Tuple to move from
-        constexpr Tuple(Tuple&& other) : m_Head(Move(other.m_Head)), m_Tail(Move(other.m_Tail)) {}
+        /// @brief Pair lvalue converting constructor
+        /// @param pair Pair to construct from
+        template<typename U1, typename U2, EnableIfType<(sizeof...(Tail) == 1) && IsConstructible<Head, U1>::Value && 
+        IsConstructible<typename __private::__TupleTailFirst<Tail...>::Type, U2>::Value && (!IsConvertible<U1, Head>::Value || 
+        !IsConvertible<U2, typename __private::__TupleTailFirst<Tail...>::Type>::Value), int> = 0>
+        explicit __WSTL_CONSTEXPR14__ Tuple(Pair<U1, U2>& pair) : m_Head(pair.First), m_Tail(pair.Second) {}
 
-        /// @brief Templated move constructor - moves from tuple with potentially different types 
-        /// @param other Tuple to move from
-        template<typename UHead, typename... UTail, typename = EnableIfType<
-        IsConstructible<Head, UHead>::Value && IsConstructible<Tuple<Tail...>, UTail...>::Value>>
-        constexpr Tuple(Tuple<UHead, UTail...>&& other) : m_Head(Move(other.__GetHead())),
-            m_Tail(Move(other.__GetTail())) {}
+        /// @brief Pair const lvalue converting constructor
+        /// @param pair Pair to construct from
+        template<typename U1, typename U2, EnableIfType<(sizeof...(Tail) == 1) && IsConstructible<Head, U1>::Value && 
+        IsConstructible<typename __private::__TupleTailFirst<Tail...>::Type, U2>::Value && IsConvertible<U1, Head>::Value && 
+        IsConvertible<U2, typename __private::__TupleTailFirst<Tail...>::Type>::Value, int> = 0>
+        __WSTL_CONSTEXPR14__ Tuple(const Pair<U1, U2>& pair) : m_Head(pair.First), m_Tail(pair.Second) {}
 
-        /// @brief Copy constructor for pair
-        /// @param pair Pair to copy from
-        template<typename U1, typename U2>
-        constexpr Tuple(const Pair<U1, U2>& pair) : m_Head(pair.First), m_Tail(pair.Second) {}
+        /// @brief Pair const lvalue converting constructor
+        /// @param pair Pair to construct from
+        template<typename U1, typename U2, EnableIfType<(sizeof...(Tail) == 1) && IsConstructible<Head, U1>::Value && 
+        IsConstructible<typename __private::__TupleTailFirst<Tail...>::Type, U2>::Value && (!IsConvertible<U1, Head>::Value || 
+        !IsConvertible<U2, typename __private::__TupleTailFirst<Tail...>::Type>::Value), int> = 0>
+        explicit __WSTL_CONSTEXPR14__ Tuple(const Pair<U1, U2>& pair) : m_Head(pair.First), m_Tail(pair.Second) {}
 
-        /// @brief Move constructor for pair
+        /// @brief Pair rvalue converting constructor
         /// @param pair Pair to move from
-        template<typename U1, typename U2>
-        constexpr Tuple(Pair<U1, U2>&& pair) : m_Head(Move(pair.First)), 
-            m_Tail(Move(pair.Second)) {}
+        template<typename U1, typename U2, EnableIfType<(sizeof...(Tail) == 1) && IsConstructible<Head, U1>::Value && 
+        IsConstructible<typename __private::__TupleTailFirst<Tail...>::Type, U2>::Value && IsConvertible<U1, Head>::Value && 
+        IsConvertible<U2, typename __private::__TupleTailFirst<Tail...>::Type>::Value, int> = 0>
+        __WSTL_CONSTEXPR14__ Tuple(Pair<U1, U2>&& pair) : m_Head(Forward<U1>(pair.First)), m_Tail(Forward<U2>(pair.Second)) {}
+
+        /// @brief Pair rvalue converting constructor
+        /// @param pair Pair to forward from
+        template<typename U1, typename U2, EnableIfType<(sizeof...(Tail) == 1) && IsConstructible<Head, U1>::Value && 
+        IsConstructible<typename __private::__TupleTailFirst<Tail...>::Type, U2>::Value && (!IsConvertible<U1, Head>::Value || 
+        !IsConvertible<U2, typename __private::__TupleTailFirst<Tail...>::Type>::Value), int> = 0>
+        explicit __WSTL_CONSTEXPR14__ Tuple(Pair<U1, U2>&& pair) : m_Head(Forward<U1>(pair.First)), m_Tail(Forward<U2>(pair.Second)) {}
+
+        /// @brief Pair const rvalue converting constructor
+        /// @param pair Pair to forward from
+        template<typename U1, typename U2, EnableIfType<(sizeof...(Tail) == 1) && IsConstructible<Head, U1>::Value && 
+        IsConstructible<typename __private::__TupleTailFirst<Tail...>::Type, U2>::Value && IsConvertible<U1, Head>::Value && 
+        IsConvertible<U2, typename __private::__TupleTailFirst<Tail...>::Type>::Value, int> = 0>
+        __WSTL_CONSTEXPR14__ Tuple(const Pair<U1, U2>&& pair) : m_Head(Forward<U1>(pair.First)), m_Tail(Forward<U2>(pair.Second)) {}
+
+        /// @brief Pair const rvalue converting constructor
+        /// @param pair Pair to forward from
+        template<typename U1, typename U2, EnableIfType<(sizeof...(Tail) == 1) && IsConstructible<Head, U1>::Value && 
+        IsConstructible<typename __private::__TupleTailFirst<Tail...>::Type, U2>::Value && (!IsConvertible<U1, Head>::Value || 
+        !IsConvertible<U2, typename __private::__TupleTailFirst<Tail...>::Type>::Value), int> = 0>
+        explicit __WSTL_CONSTEXPR14__ Tuple(const Pair<U1, U2>&& pair) : m_Head(Forward<U1>(pair.First)), m_Tail(Forward<U2>(pair.Second)) {}
 
         /// @brief Assignment operator - assigns with the same types
         /// @param other Tuple to assign from
-        __WSTL_CONSTEXPR14__ Tuple& operator=(const Tuple& other) {
-            if(this != &other) {
-                m_Head = other.m_Head;
-                m_Tail = other.m_Tail;
-            }
+        __WSTL_CONSTEXPR14__ Tuple& operator=(const Tuple& other) = default;
 
-            return *this;
-        }
+        /// @brief Move assignment operator - assigns using move semantics with the same types
+        /// @param other Tuple to move from
+        __WSTL_CONSTEXPR14__ Tuple& operator=(Tuple&& other) = default;
         
         /// @brief Templated assignment operator - assigns with potentially different types
         /// @param other Tuple to assign from
-        template<typename UHead, typename... UTail, typename = EnableIfType<
-        IsAssignable<Head, UHead>::Value && IsAssignable<Tuple<Tail...>, Tuple<UTail...>>::Value>>
+        template<typename UHead, typename... UTail, EnableIfType<sizeof...(Tail) == sizeof...(UTail) && 
+        Conjunction<IsAssignable<Head&, const UHead&>, IsAssignable<Tail&, const UTail&>...>::Value, int> = 0>
         __WSTL_CONSTEXPR14__ Tuple& operator=(const Tuple<UHead, UTail...>& other) {
             m_Head = other.m_Head;
             m_Tail = other.m_Tail;
@@ -111,44 +286,34 @@ namespace wstl {
             return *this;
         }
 
-        /// @brief Move assignment operator - assigns using move semantics with the same types
-        /// @param other Tuple to move from
-        __WSTL_CONSTEXPR14__ Tuple& operator=(Tuple&& other) __WSTL_NOEXCEPT__ {
-            if(this != &other) {
-                m_Head = Move(other.m_Head);
-                m_Tail = Move(other.m_Tail);
-            }
-
-            return *this;
-        }
-
         /// @brief Templated move assignment operator - assigns using move semantics 
         /// with potentially different types
         /// @param other Tuple to move from
-        template<typename UHead, typename... UTail, typename = EnableIfType<
-        IsAssignable<Head, UHead>::Value && IsAssignable<Tuple<Tail...>, Tuple<UTail...>>::Value>>
+        template<typename UHead, typename... UTail, EnableIfType<sizeof...(Tail) == sizeof...(UTail) && 
+        Conjunction<IsAssignable<Head&, UHead>, IsAssignable<Tail&, UTail>...>::Value, int> = 0>
         __WSTL_CONSTEXPR14__ Tuple& operator=(Tuple<UHead, UTail...>&& other) __WSTL_NOEXCEPT__ {
-            m_Head = Move(other.m_Head);
-            m_Tail = Move(other.m_Tail);
-
+            m_Head = Forward<UHead>(other.m_Head);
+            m_Tail = Forward<UTail...>(other.m_Tail);
             return *this;
         }
         
         /// @brief Assignment operator - assigns from pair 
         /// @param pair Pair to assign from
-        template<typename E1, typename E2>
+        template<typename E1, typename E2, EnableIfType<sizeof...(Tail) == 1 && IsAssignable<const Head&, const E1&>::Value &&
+        IsAssignable<AddLValueReferenceType<typename __private::__TupleTailFirst<Tail...>::Type>, const E2&>::Value, int> = 0>
         __WSTL_CONSTEXPR14__ Tuple& operator=(const Pair<E1, E2>& pair) {
             m_Head = pair.First;
-            m_Tail = pair.Second;
+            m_Tail.m_Head = pair.Second;
             return *this;
         }
         
         /// @brief Move assignment operator - assigns from pair using move semantics
         /// @param pair Pair to move from
-        template<typename E1, typename E2>
+        template<typename E1, typename E2, EnableIfType<sizeof...(Tail) == 1 && IsAssignable<const Head&, const E1&>::Value &&
+        IsAssignable<AddLValueReferenceType<typename __private::__TupleTailFirst<Tail...>::Type>, const E2&>::Value, int> = 0>
         __WSTL_CONSTEXPR14__ Tuple& operator=(Pair<E1, E2>&& pair) {
-            m_Head = Move(pair.First);
-            m_Tail = Move(pair.Second);
+            m_Head = Forward<E1>(pair.First);
+            m_Tail.m_Head = Forward<E2>(pair.Second);
             return *this;
         }
 
@@ -158,32 +323,24 @@ namespace wstl {
             wstl::Swap(m_Head, other.m_Head);
             m_Tail.Swap(other.m_Tail);
         }
-
-        /// @brief Getter for the head of the tuple
-        /// @note Private function. DO NOT use directly in code!
-        constexpr Head& __GetHead() {
-            return m_Head;
-        }
-
-        /// @copydoc __GetHead()
-        constexpr const Head& __GetHead() const {
-            return m_Head;
-        }
-
-        /// @brief Getter for the tail (rest elements) of the tuple
-        /// @note Private function. DO NOT use directly in code!
-        constexpr Tuple<Tail...>& __GetTail() {
-            return m_Tail;
-        }
-
-        /// @copydoc __GetTail()
-        constexpr const Tuple<Tail...>& __GetTail() const {
-            return m_Tail;
-        }
     
     private:
         Head m_Head;
         Tuple<Tail...> m_Tail;
+
+        template<typename...>
+        friend class Tuple;
+
+        template<size_t>
+        friend struct __private::__TupleGet;
+
+        template<typename... TTypes, typename... UTypes>
+        friend __WSTL_CONSTEXPR14__
+        inline bool operator==(const Tuple<TTypes...>&, const Tuple<UTypes...>&);
+
+        template<typename... TTypes, typename... UTypes>
+        friend __WSTL_CONSTEXPR14__
+        inline bool operator<(const Tuple<TTypes...>& a, const Tuple<UTypes...>& b);
     };
 
     // Template deduction guide
@@ -191,6 +348,9 @@ namespace wstl {
     #ifdef __WSTL_CXX17__
     template<typename... T>
     Tuple(T...) -> Tuple<T...>;
+
+    template<typename T1, typename T2>
+    Tuple(Pair<T1, T2>) -> Tuple<T1, T2>;
     #endif
 
     // Tuple element specialization
@@ -216,64 +376,45 @@ namespace wstl {
     /// @return The element at the specified index
     /// @ingroup tuple
     /// @see https://en.cppreference.com/w/cpp/utility/tuple/get
-    template<size_t Index, typename Head, typename... Tail>
-    __WSTL_CONSTEXPR14__
-    inline EnableIfType<(Index > 0), TupleElementType<Index, Tuple<Head, Tail...>>> Get(Tuple<Head, Tail...>& tuple) __WSTL_NOEXCEPT__ {
-        WSTL_STATIC_ASSERT(Index < sizeof...(Tail) + 1, "Index out of bounds");
-        return Get<Index - 1>(tuple.__GetTail());
+    template<size_t Index, typename... Types>
+    __WSTL_CONSTEXPR14__ inline TupleElementType<Index, Tuple<Types...>>& Get(Tuple<Types...>& tuple) __WSTL_NOEXCEPT__ {
+        WSTL_STATIC_ASSERT(Index < sizeof...(Types), "Index out of bounds");
+        return __private::__TupleGet<Index>::Get(tuple);
     }
 
-    template<size_t Index, typename Head, typename... Tail>
-    __WSTL_CONSTEXPR14__
-    inline EnableIfType<(Index == 0), Head> Get(Tuple<Head, Tail...>& tuple) __WSTL_NOEXCEPT__ {
-        return tuple.__GetHead();
+    /// @copydoc Get(Tuple<Types...>&)
+    template<size_t Index, typename... Types>
+    __WSTL_CONSTEXPR14__ inline TupleElementType<Index, Tuple<Types...>>& Get(const Tuple<Types...>& tuple) __WSTL_NOEXCEPT__ {
+        WSTL_STATIC_ASSERT(Index < sizeof...(Types), "Index out of bounds");
+        return __private::__TupleGet<Index>::Get(tuple);
     }
 
-    template<size_t Index, typename Head, typename... Tail>
-    __WSTL_CONSTEXPR14__
-    inline EnableIfType<(Index > 0), const TupleElementType<Index, Tuple<Head, Tail...>>> Get(const Tuple<Head, Tail...>& tuple) __WSTL_NOEXCEPT__ {
-        WSTL_STATIC_ASSERT(Index < sizeof...(Tail) + 1, "Index out of bounds");
-        return Get<Index - 1>(tuple.__GetTail());
+    /// @copydoc Get(Tuple<Types...>&)
+    template<size_t Index, typename... Types>
+    __WSTL_CONSTEXPR14__ inline TupleElementType<Index, Tuple<Types...>>&& Get(Tuple<Types...>&& tuple) __WSTL_NOEXCEPT__ {
+        WSTL_STATIC_ASSERT(Index < sizeof...(Types), "Index out of bounds");
+        return __private::__TupleGet<Index>::Get(Move(tuple));
     }
 
-    template<size_t Index, typename Head, typename... Tail>
-    __WSTL_CONSTEXPR14__
-    inline EnableIfType<(Index == 0), const Head> Get(const Tuple<Head, Tail...>& tuple) __WSTL_NOEXCEPT__ {
-        return tuple.__GetHead();
-    }
-
-    template<size_t Index, typename Head, typename... Tail>
-    __WSTL_CONSTEXPR14__
-    inline EnableIfType<(Index > 0), TupleElementType<Index, Tuple<Head, Tail...>>&&> Get(Tuple<Head, Tail...>&& tuple) __WSTL_NOEXCEPT__ {
-        WSTL_STATIC_ASSERT(Index < sizeof...(Tail) + 1, "Index out of bounds");
-        return Get<Index - 1>(Move(tuple.__GetTail()));
-    }
-
-    template<size_t Index, typename Head, typename... Tail>
-    __WSTL_CONSTEXPR14__
-    inline EnableIfType<(Index == 0), TupleElementType<Index, Tuple<Head, Tail...>>&&> Get(Tuple<Head, Tail...>&& tuple) __WSTL_NOEXCEPT__ {
-        return Move(tuple.__GetHead());
-    }
-
-    template<size_t Index, typename Head, typename... Tail>
-    __WSTL_CONSTEXPR14__
-    inline EnableIfType<(Index > 0), const TupleElementType<Index, Tuple<Head, Tail...>>&&> Get(const Tuple<Head, Tail...>&& tuple) __WSTL_NOEXCEPT__ {
-        WSTL_STATIC_ASSERT(Index < sizeof...(Tail) + 1, "Index out of bounds");
-        return Get<Index - 1>(Move(tuple.__GetTail()));
-    }
-
-    template<size_t Index, typename Head, typename... Tail>
-    __WSTL_CONSTEXPR14__
-    inline EnableIfType<(Index == 0), const TupleElementType<Index, Tuple<Head, Tail...>>&&> Get(const Tuple<Head, Tail...>&& tuple) __WSTL_NOEXCEPT__ {
-        return Move(tuple.__GetHead());
+    /// @copydoc Get(Tuple<Types...>&)
+    template<size_t Index, typename... Types>
+    __WSTL_CONSTEXPR14__ inline const TupleElementType<Index, Tuple<Types...>>&& Get(const Tuple<Types...>&& tuple) __WSTL_NOEXCEPT__ {
+        WSTL_STATIC_ASSERT(Index < sizeof...(Types), "Index out of bounds");
+        return __private::__TupleGet<Index>::Get(Move(tuple));
     }
 
     // Comparison operators
 
+    __WSTL_CONSTEXPR14__
+    inline bool operator==(const Tuple<>&, const Tuple<>&) {
+        return true;
+    }
+
     template<typename... TTypes, typename... UTypes>
     __WSTL_CONSTEXPR14__
     inline bool operator==(const Tuple<TTypes...>& a, const Tuple<UTypes...>& b) {
-        return (a.__GetHead() == b.__GetHead()) && (a.__GetTail() == b.__GetTail());
+        WSTL_STATIC_ASSERT(sizeof...(TTypes) == sizeof...(UTypes), "Tuple sizes must match");
+        return (a.m_Head == b.m_Head) && (a.m_Tail == b.m_Tail);
     }
 
     template<typename... TTypes, typename... UTypes>
@@ -282,11 +423,16 @@ namespace wstl {
         return !(a == b);
     }
 
+    __WSTL_CONSTEXPR14__
+    inline bool operator<(const Tuple<>&, const Tuple<>&) {
+        return false;
+    }
+
     template<typename... TTypes, typename... UTypes>
     __WSTL_CONSTEXPR14__
     inline bool operator<(const Tuple<TTypes...>& a, const Tuple<UTypes...>& b) {
-        return (a.__GetHead() < b.__GetHead()) || 
-            (!(b.__GetHead() < a.__GetHead()) && a.__GetTail() < b.__GetTail());
+        WSTL_STATIC_ASSERT(sizeof...(TTypes) == sizeof...(UTypes), "Tuple sizes must match");
+        return (a.m_Head < b.m_Head) || (!(b.m_Head < a.m_Head) && a.m_Tail < b.m_Tail);
     }
 
     template<typename... TTypes, typename... UTypes>
@@ -305,18 +451,6 @@ namespace wstl {
     __WSTL_CONSTEXPR14__
     inline bool operator>=(const Tuple<TTypes...>& a, const Tuple<UTypes...>& b) {
         return !(a < b);
-    }
-
-    // Base cases for empty tuples
-
-    __WSTL_CONSTEXPR14__
-    inline bool operator==(const Tuple<>&, const Tuple<>&) {
-        return true;
-    }
-
-    __WSTL_CONSTEXPR14__
-    inline bool operator<(const Tuple<>&, const Tuple<>&) {
-        return false;
     }
 
     // Make tuple
@@ -372,10 +506,15 @@ namespace wstl {
     /// @brief Placeholder to skip an element when unpack a tuple using `Tie()`
     /// @ingroup tuple
     /// @see https://en.cppreference.com/w/cpp/utility/tuple/ignore
-    inline const __WSTL_CONSTEXPR14__ __private::__IgnoreType Ignore;
+    __WSTL_INLINE_VARIABLE__ const __WSTL_CONSTEXPR14__ __private::__IgnoreType Ignore;
 
     // Tuple concatenate
 
+    /// @brief Constructs a tuple that is a concatenation of other tuples
+    /// @param tuple Tuple to concatenate
+    /// @return The same tuple
+    /// @ingroup tuple
+    /// @see https://en.cppreference.com/w/cpp/utility/tuple/tuple_cat
     template<typename Tuple>
     __WSTL_CONSTEXPR14__
     Tuple TupleConcatenate(Tuple&& tuple) {
@@ -539,7 +678,7 @@ namespace wstl {
     template<typename Callable, typename... Types>
     inline ResultOfType<Callable(Types...)> Apply(Callable&& callable, Tuple<Types...>& tuple) {
         return __private::__Apply(Forward<Callable>(callable), Forward<Tuple<Types...>>(tuple), 
-            MakeIndexSequence<TupleSize<DecayType<Tuple<Types...>>>::Value>{});
+            IndexSequenceFor<Types...>::Value>{});
     }
     #endif
 

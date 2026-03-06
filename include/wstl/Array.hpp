@@ -10,7 +10,6 @@
 #define __WSTL_ARRAY_HPP__
 
 #include "private/Platform.hpp"
-#include "private/TupleProperties.hpp"
 #include "Iterator.hpp"
 #include "Algorithm.hpp"
 #include "private/Error.hpp"
