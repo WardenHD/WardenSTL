@@ -677,7 +677,7 @@ namespace wstl {
     struct Conjunction;
 
     template<typename...>
-    struct Conjunction : FalseType {};
+    struct Conjunction : TrueType {};
 
     template<typename T>
     struct Conjunction<T> : T {};
@@ -1335,25 +1335,38 @@ namespace wstl {
         template<typename>
         static char __TestReturnable(...);
 
+        #ifdef __WSTL_CXX11__
         template<typename From, typename To>
-        static long __TestImplicitlyConvertible(To(*)(From));
+        static auto __TestImplicitlyConvertible(int) -> decltype(void(DeclareValue<void(&)(To)>()(DeclareValue<From>())), TrueType{});
 
         template<typename, typename>
+        static auto __TestImplicitlyConvertible(...) -> FalseType;
+        #else
+        template<typename To>
+        static long __TestImplicitlyConvertible(To);
+
+        template<typename>
         static char __TestImplicitlyConvertible(...);
 
-        template<typename T>
-        static T __TestConvert(T);
+        template<typename From>
+        static From& __TestConvertFrom();
+        #endif
     }
 
     /// @brief Checks whether implicit conversion can be done between types
+    /// @details In C++98 may not work well with explicit
     /// @tparam From Initial type
     /// @tparam To Type to convert to
     /// @ingroup type_traits
     /// @see https://en.cppreference.com/w/cpp/types/is_convertible
     template<typename From, typename To>
     struct IsConvertible : BoolConstant<
-        sizeof(__private::__TestReturnable<To>(static_cast<To(*)()>(0))) == sizeof(long) && 
-        sizeof(__private::__TestImplicitlyConvertible<From, To>(&__private::__TestConvert)) == sizeof(long) || 
+        (sizeof(__private::__TestReturnable<To>(static_cast<To(*)()>(0))) == sizeof(long) && 
+        #ifdef __WSTL_CXX11__
+        decltype(__private::__TestImplicitlyConvertible<From, To>(0))::Value) ||
+        #else
+        sizeof(__private::__TestImplicitlyConvertible<To>(__private::__TestConvertFrom<From>())) == sizeof(long)) ||
+        #endif
         (IsVoid<From>::Value && IsVoid<To>::Value)
     > {};
 
@@ -1650,6 +1663,27 @@ namespace wstl {
     /// @since C++17
     template<typename T>
     inline constexpr bool IsDefaultConstructibleVariable = IsDefaultConstructible<T>::Value;
+    #endif
+
+    // Is implicitly default constructible
+
+    #ifdef __WSTL_CXX11__
+    namespace __private {
+        template<typename T>
+        void __TestImplicit(T);
+
+        template<typename T>
+        static auto __TestImplicitConstructible(int) -> decltype(__TestImplicit<const T&>({}), TrueType{});
+
+        template<typename>
+        static FalseType __TestImplicitConstructible(...);
+    } 
+
+    /// @brief Checks whether type can be implicitly constructed without arguments
+    /// @tparam T Constructor type
+    /// @ingroup type_traits
+    template<typename T>
+    struct IsImplicitlyDefaultConstructible : decltype(__private::__TestImplicitConstructible<T>(0)) {};
     #endif
 
     // Is trivially default constructible
@@ -2697,6 +2731,39 @@ namespace wstl {
     inline __WSTL_CONSTEXPR__ bool IsAligned(void* pointer) {
         return IsAligned<AlignmentOf<T>::Value>(pointer);
     }
+
+    // Nth type
+
+    #ifdef __WSTL_CXX11__
+    namespace __private {
+        template<size_t Index, typename T, typename... Ts>
+        struct __NthType {
+            typedef typename __NthType<Index - 1, Ts...>::Type Type;
+        };
+
+        template<typename T, typename... Ts>
+        struct __NthType<0, T, Ts...> {
+            typedef T Type;
+        };
+    }
+
+    /// @brief Extracts the N-th type from a parameter pack
+    /// @tparam Index Zero-based index of the type to extract
+    /// @tparam Types Parameter pack to extract from
+    /// @ingroup type_traits
+    /// @since C++11
+    template<size_t Index, typename... Types>
+    struct NthType {
+        WSTL_STATIC_ASSERT((Index < sizeof...(Types)), "Index out of bounds");
+
+        typedef typename __private::__NthType<Index, Types...>::Type Type;
+    };
+
+    /// @copydoc NthType
+    /// @since C++11
+    template<size_t Index, typename... Types>
+    using NthTypeType = typename NthType<Index, Types...>::Type;
+    #endif
 }
 
 #endif
