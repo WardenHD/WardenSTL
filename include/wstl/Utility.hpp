@@ -16,7 +16,7 @@
 #include "StaticAssert.hpp"
 #include "private/Platform.hpp"
 #include "private/Swap.hpp"
-#include "private/TupleProperties.hpp"
+#include "Tuple.hpp"
 
 
 /// @defgroup utility Utility
@@ -84,6 +84,24 @@ namespace wstl {
     }
     #endif
 
+    // Piecewise construct
+
+    #ifdef __WSTL_CXX11__
+    /// @brief Tag type that is used to disambiguate between different functions that take two tuple arguments
+    /// @ingroup utility
+    /// @see https://en.cppreference.com/w/cpp/utility/piecewise_construct
+    /// @since C++11
+    struct PiecewiseConstructType {
+        explicit PiecewiseConstructType() = default;
+    };
+
+    /// @brief Tag object used to disambiguate between different functions that take two tuple arguments
+    /// @ingroup utility
+    /// @see https://en.cppreference.com/w/cpp/utility/piecewise_construct
+    /// @since C++11
+    constexpr PiecewiseConstructType PiecewiseConstruct{};
+    #endif
+
     // Pair
 
     /// @brief Stores two objects as a single unit
@@ -101,8 +119,8 @@ namespace wstl {
         FirstType First;
         SecondType Second;
 
-        /// @brief Default constructor - initializes both objects to their default-constructed values    
-        __WSTL_CONSTEXPR__ Pair() : First(FirstType()), Second(SecondType()) {}
+        /// @brief Default constructor - initializes both objects to their default-constructed values 
+        __WSTL_CONSTEXPR__ Pair() : First(), Second() {}
 
         /// @brief Parameterized constructor
         /// @param first Value of the first object
@@ -137,8 +155,16 @@ namespace wstl {
         /// @param other Pair to move from
         /// @since C++11
         template<typename U1, typename U2>
-        __WSTL_CONSTEXPR14__ Pair(Pair<U1, U2>&& other) : First(Move(other.First)), 
-            Second(Move(other.Second)) {}
+        __WSTL_CONSTEXPR14__ Pair(Pair<U1, U2>&& other) : First(Forward<U1>(other.First)), 
+            Second(Forward<U2>(other.Second)) {}
+
+        /// @brief Piecewise constructor - constructs members from tuples of arguments
+        /// @param firstArgs Tuple of arguments for the first member
+        /// @param secondArgs Tuple of arguments for the second member
+        /// @since C++11
+        template<typename... Args1, typename... Args2>
+        __WSTL_CONSTEXPR14__ Pair(PiecewiseConstructType, Tuple<Args1...> firstArgs, Tuple<Args2...> secondArgs) : 
+            Pair(firstArgs, secondArgs, IndexSequenceFor<Args1...>{}, IndexSequenceFor<Args2...>{}) {}
         #endif
 
         /// @brief Swaps content of two pairs
@@ -196,6 +222,11 @@ namespace wstl {
             return *this;
         }
         #endif
+    
+    private:
+        template<typename... Args1, size_t... Indices1, typename... Args2, size_t... Indices2>
+        __WSTL_CONSTEXPR14__ Pair(Tuple<Args1...>& firstArgs, Tuple<Args2...>& secondArgs, 
+            IndexSequence<Indices1...>, IndexSequence<Indices2...>) : First(Forward<Args1>(Get<Indices1>(firstArgs))...), Second(Forward<Args2>(Get<Indices2>(secondArgs))...) {}
     };
 
     // Template deduction guide
@@ -353,88 +384,29 @@ namespace wstl {
     }
     #endif
 
-    // Integer sequence
-
-    #ifdef __WSTL_CXX11__
-    /// @brief Creates compile-time sequence of integers
-    /// @tparam T Integer type
-    /// @tparam ...Integers Sequence of integers
-    /// @ingroup utility
-    /// @since C++11
-    /// @see https://en.cppreference.com/w/cpp/utility/integer_sequence
-    template<typename T, T... Integers>
-    struct IntegerSequence {
-        WSTL_STATIC_ASSERT(IsIntegral<T>::Value, "Integral types only!");
-
-        typedef T ValueType;
-
-        static constexpr size_t Size() __WSTL_NOEXCEPT__ {
-            return sizeof...(Integers);
-        }
-    };
-
-    /// @brief Helper alias for IntegerSequence with `size_t` as type
-    /// @tparam ...Indices Sequence of indices
-    /// @ingroup utility
-    /// @see https://en.cppreference.com/w/cpp/utility/integer_sequence
-    template<size_t... Indices>
-    using IndexSequence = IntegerSequence<size_t, Indices...>;
-
-    namespace __private {
-        template<size_t N, size_t... Indices>
-        struct __MakeIndexSequence {
-            typedef typename __MakeIndexSequence<N - 1, N - 1, Indices...>::Type Type;
-        };
-
-        template<size_t... Indices>
-        struct __MakeIndexSequence<0, Indices...> {
-            typedef IndexSequence<Indices...> Type;
-        };
-
-        template<typename T, size_t... Indices>
-        static constexpr IntegerSequence<T, static_cast<T>(Indices)...> __Generate(IndexSequence<Indices...>);
-    }
-
-    /// @brief Makes compile-time sequence of indices (from 0 to N - 1)
-    /// @tparam N Number of indices to generate
-    /// @ingroup utility
-    /// @see https://en.cppreference.com/w/cpp/utility/integer_sequence
-    template<size_t N>
-    using MakeIndexSequence = typename __private::__MakeIndexSequence<N>::Type;
-    
-    /// @brief Makes compile-time sequence of integers (from 0 to N - 1)
-    /// @tparam T Integer type
-    /// @tparam N Number of integers to generate
-    /// @ingroup utility
-    /// @see https://en.cppreference.com/w/cpp/utility/integer_sequence
-    template<typename T, T N>
-    using MakeIntegerSequence = decltype(__private::__Generate<T>(MakeIndexSequence<N>()));
-
-    /// @brief Makes compile-time sequence of integers (from 0 to N - 1) of the length of T
-    /// @tparam T... Parameter pack to use
-    /// @ingroup utility
-    /// @see https://en.cppreference.com/w/cpp/utility/integer_sequence
-    template<typename... T>
-    using IndexSequenceFor = MakeIndexSequence<sizeof...(T)>;
-    #endif
-
     // In place
 
-    /// @brief Tag type for in-place construction
+    /// @brief Tag type that is used for in-place construction
     /// @ingroup utility
     /// @see https://en.cppreference.com/w/cpp/utility/in_place
     struct InPlaceType {
         explicit __WSTL_CONSTEXPR__ InPlaceType() {};
     };
 
-    #ifdef __WSTL_CXX17__
-    /// @copydoc InPlaceType
-    /// @since C++17
-    inline constexpr InPlaceType InPlace {};
+    #ifdef __WSTL_CXX11__
+    /// @brief Tag object that is used for in-place construction
+    /// @ingroup utility
+    /// @see https://en.cppreference.com/w/cpp/utility/in_place
+    __WSTL_INLINE_VARIABLE__  constexpr InPlaceType InPlace {};
+    #else
+    /// @brief Tag object that is used for in-place construction
+    /// @ingroup utility
+    /// @see https://en.cppreference.com/w/cpp/utility/in_place
+    static const InPlaceType InPlace = InPlaceType();
     #endif
 
-    /// @brief Tag type for in-place construction with type
-    /// @tparam T Type to use
+    /// @brief Tag type that is used for in-place construction for specified type
+    /// @tparam T Type to construct
     /// @ingroup utility
     /// @see https://en.cppreference.com/w/cpp/utility/in_place
     template<typename T>
@@ -442,15 +414,24 @@ namespace wstl {
         explicit __WSTL_CONSTEXPR__ InPlaceForTypeType() {};
     };
 
-    #ifdef __WSTL_CXX17__
-    /// @copydoc InPlaceForTypeType
-    /// @since C++17
+    #ifdef __WSTL_CXX11__
+    /// @brief Tag object that is used for in-place construction for specified type
+    /// @tparam T Type to construct
+    /// @ingroup utility
+    /// @see https://en.cppreference.com/w/cpp/utility/in_place
     template<typename T>
-    inline constexpr InPlaceForTypeType<T> InPlaceForType {};
+    __WSTL_INLINE_VARIABLE__ constexpr InPlaceForTypeType<T> InPlaceForType {};
+    #else
+    /// @brief Tag object that is used for in-place construction for specified type
+    /// @tparam T Type to construct
+    /// @ingroup utility
+    /// @see https://en.cppreference.com/w/cpp/utility/in_place
+    template<typename T>
+    static const InPlaceForTypeType<T> InPlaceForType = InPlaceForTypeType<T>();
     #endif
 
-    /// @brief Tag type for in-place construction with index
-    /// @tparam I Index to use
+    /// @brief Tag type that is used for in-place construction for specified index
+    /// @tparam Index Index to construct
     /// @ingroup utility
     /// @see https://en.cppreference.com/w/cpp/utility/in_place
     template<size_t Index>
@@ -458,11 +439,20 @@ namespace wstl {
         explicit __WSTL_CONSTEXPR__ InPlaceForIndexType() {};
     };
 
-    #ifdef __WSTL_CXX17__
-    /// @copydoc InPlaceForIndexType
-    /// @since C++17
+    #ifdef __WSTL_CXX11__
+    /// @brief Tag object that is used for in-place construction for specified index
+    /// @tparam Index Index to construct
+    /// @ingroup utility
+    /// @see https://en.cppreference.com/w/cpp/utility/in_place
     template<size_t Index>
-    inline constexpr InPlaceForIndexType<Index> InPlaceForIndex {};
+    __WSTL_INLINE_VARIABLE__ constexpr InPlaceForIndexType<Index> InPlaceForIndex {};
+    #else
+    /// @brief Tag object that is used for in-place construction for specified index
+    /// @tparam Index Index to construct
+    /// @ingroup utility
+    /// @see https://en.cppreference.com/w/cpp/utility/in_place
+    template<size_t Index>
+    static const InPlaceForIndexType<Index> InPlaceForIndex = InPlaceForIndexType<Index>();
     #endif
 }
 
