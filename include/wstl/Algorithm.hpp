@@ -2005,7 +2005,7 @@ namespace wstl {
             __MergeSort(first, middle, temp, compare);
             __MergeSort(middle, last, temp, compare);
 
-            Merge(first, middle, middle, last, temp);
+            Merge(first, middle, middle, last, temp, compare);
             for(RandomAccessIterator l = first; l != last; ++l, ++temp) *l = *temp;
         }
     }
