@@ -410,7 +410,7 @@ namespace wstl {
             return *this;
         }
 
-        virtual Return operator()(const Arg1& arg1, const Arg2& arg2) const {
+        virtual Return operator()(Arg1 arg1, Arg2 arg2) const {
             __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), WSTL_MAKE_EXCEPTION(BadFunctionCall), static_cast<Return>(-1));
             return (*m_Function)(arg1, arg2);
         }
@@ -460,7 +460,7 @@ namespace wstl {
             return *this;
         }
 
-        virtual Return operator()(const Arg1& arg1, const Arg2& arg2) const {
+        virtual Return operator()(Arg1 arg1, Arg2 arg2) const {
             __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), WSTL_MAKE_EXCEPTION(BadFunctionCall), static_cast<Return>(-1));
             return (m_Object->*m_Function)(arg1, arg2);
         }
@@ -511,7 +511,7 @@ namespace wstl {
             return *this;
         }
 
-        virtual Return operator()(const Arg1& arg1, const Arg2& arg2) const {
+        virtual Return operator()(Arg1 arg1, Arg2 arg2) const {
             __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), WSTL_MAKE_EXCEPTION(BadFunctionCall), static_cast<Return>(-1));
             return (m_Object->*m_Function)(arg1, arg2);
         }
@@ -597,7 +597,7 @@ namespace wstl {
             return *this;
         }
 
-        virtual Return operator()(const Arg& arg) const {
+        virtual Return operator()(Arg arg) const {
             __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), WSTL_MAKE_EXCEPTION(BadFunctionCall), static_cast<Return>(-1));
             return (*m_Function)(arg);
         }
@@ -648,7 +648,7 @@ namespace wstl {
             return *this;
         }
 
-        virtual Return operator()(const Arg& arg) const override {
+        virtual Return operator()(Arg arg) const override {
             __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), WSTL_MAKE_EXCEPTION(BadFunctionCall), static_cast<Return>(-1));
             return (m_Object->*m_Function)(arg);
         }
@@ -700,7 +700,7 @@ namespace wstl {
             return *this;
         }
 
-        virtual Return operator()(const Arg& arg) const override {
+        virtual Return operator()(Arg arg) const override {
             __WSTL_ASSERT_RETURNVALUE__(this->operator bool(), WSTL_MAKE_EXCEPTION(BadFunctionCall), static_cast<Return>(-1));
             return (m_Object->*m_Function)(arg);
         }
@@ -1007,7 +1007,7 @@ namespace wstl {
         /// @param arg2 Value of the second argument
         /// @return The result of calling the referenced object
         template<typename Arg1, typename Arg2>
-        typename ResultOf<T&(const Arg1&, const Arg2&)>::Type operator()(const Arg1& arg1, const Arg2& arg2) const {
+        typename ResultOf<T&(const Arg1&, const Arg2&)>::Type operator()(Arg1 arg1, Arg2 arg2) const {
             return (*m_Pointer)(arg1, arg2);
         }
 
@@ -1015,7 +1015,7 @@ namespace wstl {
         /// @param arg Value of the argument
         /// @return The result of calling the referenced object
         template<typename Arg>
-        typename ResultOf<T&(const Arg&)>::Type operator()(const Arg& arg) const {
+        typename ResultOf<T&(const Arg&)>::Type operator()(Arg arg) const {
             return (*m_Pointer)(arg);
         }
 
@@ -1084,7 +1084,7 @@ namespace wstl {
         /// @param arg2 Value of the second argument
         /// @return The result of calling the referenced object
         template<typename Arg1, typename Arg2>
-        typename ResultOf<volatile T&(const Arg1&, const Arg2&)>::Type operator()(const Arg1& arg1, const Arg2& arg2) const volatile {
+        typename ResultOf<volatile T&(const Arg1&, const Arg2&)>::Type operator()(Arg1 arg1, Arg2 arg2) const volatile {
             return (*m_Pointer)(arg1, arg2);
         }
 
@@ -1092,7 +1092,7 @@ namespace wstl {
         /// @param arg Value of the argument
         /// @return The result of calling the referenced object
         template<typename Arg>
-        typename ResultOf<volatile T&(const Arg&)>::Type operator()(const Arg& arg) const volatile {
+        typename ResultOf<volatile T&(const Arg&)>::Type operator()(Arg arg) const volatile {
             return (*m_Pointer)(arg);
         }
 
@@ -1161,7 +1161,7 @@ namespace wstl {
         /// @param arg2 Value of the second argument
         /// @return The result of calling the referenced object
         template<typename Arg1, typename Arg2>
-        typename ResultOf<const volatile T&(const Arg1&, const Arg2&)>::Type operator()(const Arg1& arg1, const Arg2& arg2) const volatile {
+        typename ResultOf<const volatile T&(const Arg1&, const Arg2&)>::Type operator()(Arg1 arg1, Arg2 arg2) const volatile {
             return (*m_Pointer)(arg1, arg2);
         }
 
@@ -1169,7 +1169,7 @@ namespace wstl {
         /// @param arg Value of the argument
         /// @return The result of calling the referenced object
         template<typename Arg>
-        typename ResultOf<const volatile T&(const Arg&)>::Type operator()(const Arg& arg) const volatile {
+        typename ResultOf<const volatile T&(const Arg&)>::Type operator()(Arg arg) const volatile {
             return (*m_Pointer)(arg);
         }
 
@@ -2258,12 +2258,12 @@ namespace wstl {
             }
 
             template<typename Arg>
-            typename ResultOf<Function>::Type operator()(const Arg& arg) const {
+            typename ResultOf<Function>::Type operator()(Arg arg) const {
                 return !m_Function(arg);
             }
 
             template<typename Arg1, typename Arg2>
-            typename ResultOf<Function>::Type operator()(const Arg1& arg1, const Arg2& arg2) const {
+            typename ResultOf<Function>::Type operator()(Arg1 arg1, Arg2 arg2) const {
                 return !m_Function(arg1, arg2);
             }
 
