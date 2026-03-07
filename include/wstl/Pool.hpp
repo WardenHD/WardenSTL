@@ -23,134 +23,39 @@
 /// @ingroup containers
 
 namespace wstl {
-    // Pool interface
+    // Basic intrusive pool
 
-    /// @brief Interface for pool containers
-    /// @tparam T Object type to store
-    /// @tparam Derived Derived class type
+    /// @brief Basic intrusive pool class that stores objects and free list in-place
+    /// @tparam Storage Storage type for the pool
     /// @ingroup pool
-    template<typename T, typename Derived>
-    class PoolInterface : public TypedContainerBase<T> { 
+    template<typename Storage>
+    class BasicIntrusivePool : public TypedContainerBase<Storage> {
     public:
-        typedef typename TypedContainerBase<T>::ValueType ValueType;
-        typedef typename TypedContainerBase<T>::SizeType SizeType;
-        typedef typename TypedContainerBase<T>::DifferenceType DifferenceType;
-        typedef typename TypedContainerBase<T>::ReferenceType ReferenceType;
-        typedef typename TypedContainerBase<T>::ConstReferenceType ConstReferenceType;
-        typedef typename TypedContainerBase<T>::PointerType PointerType;
-        typedef typename TypedContainerBase<T>::ConstPointerType ConstPointerType;
-        
-        /// @brief Allocates new object from the pool
-        /// @return Pointer to the object
-        PointerType Allocate() {
-            return static_cast<Derived*>(this)->Allocate();
-        }
+        WSTL_STATIC_ASSERT(!IsVoid<Storage>::Value, "Storage must be non-void");
 
-        #ifdef __WSTL_CXX11__
-        /// @brief Allocates and constructs new object in the pool with given arguments
-        /// @param ...args Arguments to forward to the constructor of the object
-        /// @return Pointer to the object
-        template<typename... Args>
-        PointerType Create(Args&&... args) {
-            return static_cast<Derived*>(this)->Create(Forward<Args>(args)...);
-        }
+        typedef typename TypedContainerBase<Storage>::ValueType ValueType;
+        typedef typename TypedContainerBase<Storage>::SizeType SizeType;
+        typedef typename TypedContainerBase<Storage>::DifferenceType DifferenceType;
+        typedef typename TypedContainerBase<Storage>::ReferenceType ReferenceType;
+        typedef typename TypedContainerBase<Storage>::ConstReferenceType ConstReferenceType;
+        typedef typename TypedContainerBase<Storage>::PointerType PointerType;
+        typedef typename TypedContainerBase<Storage>::ConstPointerType ConstPointerType;
 
-        #else
-        /// @brief Allocates and constructs new object in the pool
-        /// @return Pointer to the object
-        PointerType Create() {
-            return static_cast<Derived*>(this)->Create();
-        }
+        typedef typename TypedContainerBase<Storage>::StorageType StorageType;
 
-        /// @brief Allocates and constructs new object in the pool
-        /// @param arg Argument to forward to the constructor of the object
-        /// @return Pointer to the object
-        template<typename Arg>
-        PointerType Create(const Arg& arg) {
-            return static_cast<Derived*>(this)->Create(arg);
-        }
-
-        /// @brief Allocates and constructs new object in the pool with two arguments
-        /// @param arg1 First argument to forward to the constructor of the object
-        /// @param arg2 Second argument to forward to the constructor of the object
-        /// @return Pointer to the object
-        template<typename Arg1, typename Arg2>
-        PointerType Create(const Arg1& arg1, const Arg2& arg2) {
-            return static_cast<Derived*>(this)->Create(arg1, arg2);
-        }
-
-        /// @brief Allocates and constructs new object in the pool with three arguments
-        /// @param arg1 First argument to forward to the constructor of the object
-        /// @param arg2 Second argument to forward to the constructor of the object
-        /// @param arg3 Third argument to forward to the constructor of the object
-        template<typename Arg1, typename Arg2, typename Arg3>
-        PointerType Create(const Arg1& arg1, const Arg2& arg2, const Arg3& arg3) {
-            return static_cast<Derived*>(this)->Create(arg1, arg2, arg3);
-        }
-        #endif
-
-        /// @brief Releases object back to the pool
-        /// @param value Pointer to the object
-        void Release(ConstPointerType const value) {
-            static_cast<Derived*>(this)->Release(value);
-        }
-
-        /// @brief Destroys object and releases it back to the pool
-        /// @param value Pointer to the object
-        void Destroy(ConstPointerType const value) {
-            static_cast<Derived*>(this)->Destroy(value);
-        }
-
-        /// @brief Clears the pool, destroying all objects
-        void Clear() {
-            static_cast<Derived*>(this)->Clear();
-        }
-
-        /// @brief Checks whether the pool contains the given pointer inside
-        bool Contains(ConstPointerType const value) const {
-            return static_cast<Derived*>(this)->Contains(value);
-        }
-    
-    protected:
-        PoolInterface(SizeType capacity) : TypedContainerBase<T>(capacity) {}
-        ~PoolInterface() __WSTL_DEFAULT__;
-    };
-
-    // Intrusive pool
-
-    /// @brief Intrusive pool that stores objects and free list in-place
-    /// @tparam T Object type to store
-    /// @tparam N Maximum number of objects in the pool
-    /// @ingroup pool
-    template<typename T, size_t N>
-    class IntrusivePool : public PoolInterface<T, IntrusivePool<T, N> > {
-    private:
-        typedef PoolInterface<T, IntrusivePool<T, N> > Base;
-    public:
-        StaticAssert(sizeof(T) >= sizeof(T*), "Type is too small to be used with intrusive pool");
-
-        typedef typename Base::ValueType ValueType;
-        typedef typename Base::SizeType SizeType;
-        typedef typename Base::DifferenceType DifferenceType;
-        typedef typename Base::ReferenceType ReferenceType;
-        typedef typename Base::ConstReferenceType ConstReferenceType;
-        typedef typename Base::PointerType PointerType;
-        typedef typename Base::ConstPointerType ConstPointerType;
-
-        /// @brief The static size of the stack, needed for metaprogramming
-        static const __WSTL_CONSTEXPR__ SizeType StaticSize = N;
+        WSTL_STATIC_ASSERT(sizeof(ValueType) >= sizeof(PointerType), "Type is too small to be used with intrusive pool");
         
     private:
         template<bool IsConst>
         class IntrusivePoolIterator {
         public:
-            typedef typename Conditional<IsConst, const T, T>::Type ValueType;
+            typedef typename Conditional<IsConst, const BasicIntrusivePool::ValueType, BasicIntrusivePool::ValueType>::Type ValueType;
             typedef ForwardIteratorTag IteratorCategory;
-            typedef typename Conditional<IsConst, const T&, T&>::Type ReferenceType;
-            typedef typename Conditional<IsConst, const T*, T*>::Type PointerType;
+            typedef typename Conditional<IsConst, BasicIntrusivePool::ConstReferenceType, BasicIntrusivePool::ReferenceType>::Type ReferenceType;
+            typedef typename Conditional<IsConst, BasicIntrusivePool::ConstPointerType, BasicIntrusivePool::PointerType>::Type PointerType;
             typedef ptrdiff_t DifferenceType;
 
-            friend class IntrusivePool;
+            friend class BasicIntrusivePool;
 
             IntrusivePoolIterator(const IntrusivePoolIterator& other) : m_Current(other.m_Current), m_Pool(other.m_Pool) {}
 
@@ -189,15 +94,17 @@ namespace wstl {
             }
  
         private:
-            PointerType m_Current;
-            IntrusivePool* m_Pool;
+            typedef typename Conditional<IsConst, const BasicIntrusivePool*, BasicIntrusivePool*>::Type PoolType;
 
-            IntrusivePoolIterator(IntrusivePool* pool, PointerType start) : m_Current(start), m_Pool(pool) {
+            PointerType m_Current;
+            PoolType m_Pool;
+
+            IntrusivePoolIterator(PoolType pool, PointerType start) : m_Current(start), m_Pool(pool) {
                 FindAllocated();
             }
 
             void FindAllocated() {
-                while(m_Current < m_Pool->m_Buffer + m_Pool->m_Capacity && m_Pool->IsFree(m_Current)) ++m_Current;
+                while(m_Current < m_Pool->m_Storage.Data + m_Pool->Capacity() && m_Pool->IsFree(m_Current)) ++m_Current;
             }
         };
 
@@ -206,43 +113,49 @@ namespace wstl {
         typedef IntrusivePoolIterator<true> ConstIterator;
 
         /// @brief Default constructor
-        IntrusivePool() : Base(N), m_Buffer(), m_Next(m_Buffer) {
-            Initialize();
+        BasicIntrusivePool() : TypedContainerBase<Storage>(), m_Next(this->m_Storage.Data) {
+            Initialize<ValueType>();
+        }
+
+        /// @brief Constructor with storage, only for non-default-constructible storage
+        /// @param storage Storage to use for the pool
+        explicit BasicIntrusivePool(const Storage& storage) : TypedContainerBase<Storage>(storage), m_Next(this->m_Storage.Data) {
+            Initialize<ValueType>();
         }
 
         /// @brief Destructor
-        ~IntrusivePool() {
-            for(Iterator it = Begin(); it != End(); ++it) it->~T();
+        ~BasicIntrusivePool() {
+            Initialize<ValueType>();
         }
 
         /// @brief Gets iterator to the beginning of the pool that iterates only allocated objects
         Iterator Begin() {
-            return Iterator(this, m_Buffer);
+            return Iterator(this, this->m_Storage.Data);
         }
 
         /// @brief Gets const iterator to the beginning of the pool that iterates only allocated objects
         ConstIterator Begin() const {
-            return ConstIterator(this, m_Buffer);
+            return ConstIterator(this, this->m_Storage.Data);
         }
 
         /// @brief Gets const iterator to the beginning of the pool that iterates only allocated objects
         ConstIterator ConstBegin() const {
-            return ConstIterator(this, m_Buffer);
+            return ConstIterator(this, this->m_Storage.Data);
         }
 
         /// @brief Gets iterator to the end of the pool
         Iterator End() {
-            return Iterator(this, m_Buffer + this->m_Capacity);
+            return Iterator(this, this->m_Storage.Data + this->Capacity());
         }
 
         /// @brief Gets const iterator to the end of the pool
         ConstIterator End() const {
-            return ConstIterator(this, m_Buffer + this->m_Capacity);
+            return ConstIterator(this, this->m_Storage.Data + this->Capacity());
         }
 
         /// @brief Gets const iterator to the end of the pool
         ConstIterator ConstEnd() const {
-            return ConstIterator(this, m_Buffer + this->m_Capacity);
+            return ConstIterator(this, this->m_Storage.Data + this->Capacity());
         }
 
         /// @brief Allocates new object from the pool
@@ -264,7 +177,7 @@ namespace wstl {
         template<typename... Args>
         PointerType Create(Args&&... args) {
             PointerType item = Allocate();
-            if(item) ::new(item) T(Forward<Args>(args)...);
+            if(item) ::new(item) ValueType(Forward<Args>(args)...);
             return item;
         }
         #else
@@ -272,7 +185,7 @@ namespace wstl {
         /// @return Pointer to the object
         PointerType Create() {
             PointerType item = Allocate();
-            if(item) ::new(item) T();
+            if(item) ::new(item) ValueType();
             return item;
         }
 
@@ -282,7 +195,7 @@ namespace wstl {
         template<typename Arg>
         PointerType Create(const Arg& arg) {
             PointerType item = Allocate();
-            if(item) ::new(item) T(arg);
+            if(item) ::new(item) ValueType(arg);
             return item;
         }
 
@@ -293,7 +206,7 @@ namespace wstl {
         template<typename Arg1, typename Arg2>
         PointerType Create(const Arg1& arg1, const Arg2& arg2) {
             PointerType item = Allocate();
-            if(item) ::new(item) T(arg1, arg2);
+            if(item) ::new(item) ValueType(arg1, arg2);
             return item;
         }
 
@@ -305,7 +218,7 @@ namespace wstl {
         template<typename Arg1, typename Arg2, typename Arg3>
         PointerType Create(const Arg1& arg1, const Arg2& arg2, const Arg3& arg3) {
             PointerType item = Allocate();
-            if(item) ::new(item) T(arg1, arg2, arg3);
+            if(item) ::new(item) ValueType(arg1, arg2, arg3);
             return item;
         }
         #endif
@@ -324,37 +237,49 @@ namespace wstl {
         /// @brief Destroys object and releases it back to the pool
         /// @param value Pointer to the object
         void Destroy(ConstPointerType const value) {
-            value->~T();
+            value->~ValueType();
             Release(value);
         }
 
-        /// @brief Clears the pool, destroying all objects
+        /// @brief Reinitializes the pool, destroying all objects
         void Clear() {
-            for(Iterator it = Begin(); it != End(); ++it) it->~T();
-            this->m_CurrentSize = 0;
-            Initialize();
+            Initialize<ValueType>();
         }
 
         /// @brief Checks whether the pool contains the given pointer inside
         bool Contains(ConstPointerType const value) const {
-            return (value - m_Buffer) >= 0 && (value - m_Buffer) <= this->m_Capacity;
+            return (value - this->m_Storage.Data) >= 0 && (value - this->m_Storage.Data) <= this->Capacity();
         }
     
     private:
-        T m_Buffer[N];
         PointerType m_Next;
 
-        // Disable copy constructor and assignment operator
-        
-        IntrusivePool(const IntrusivePool&) __WSTL_DELETE__;
-        IntrusivePool& operator=(const IntrusivePool&) __WSTL_DELETE__;
+        /// @brief Deleted copy constructor
+        BasicIntrusivePool(const BasicIntrusivePool&) __WSTL_DELETE__;
 
-        /// @brief Initializes the free list
-        void Initialize() {
-            m_Next = m_Buffer;
+        /// @brief Deleted copy assignment operator
+        BasicIntrusivePool& operator=(const BasicIntrusivePool&) __WSTL_DELETE__;
 
-            for (size_t i = 0; i < this->m_Capacity - 1; ++i) *reinterpret_cast<PointerType*>(m_Buffer + i) = m_Buffer + i + 1;
-            *reinterpret_cast<PointerType*>(m_Buffer + this->m_Capacity - 1) = NullPointer; // last points to null
+        /// @brief Initializes the pool: does not call destructors
+        template<typename U>
+        typename EnableIf<IsTriviallyDestructible<U>::Value, void>::Type Initialize() {
+            m_Next = this->m_Storage.Data;
+            for(size_t i = 0; i < this->Capacity() - 1; ++i) *reinterpret_cast<PointerType*>(this->m_Storage.Data + i) = this->m_Storage.Data + i + 1;
+            *reinterpret_cast<PointerType*>(this->m_Storage.Data + this->Capacity() - 1) = NullPointer; // last points to null
+
+            this->m_CurrentSize = 0;
+        }
+
+        /// @brief Initializes the pool: calls destructors
+        template<typename U>
+        typename EnableIf<!IsTriviallyDestructible<U>::Value, void>::Type Initialize() {
+            for(Iterator it = this->Begin(); it != this->End(); ++it) it->~ValueType();
+
+            m_Next = this->m_Storage.Data;
+            for (size_t i = 0; i < this->m_Capacity - 1; ++i) *reinterpret_cast<PointerType*>(this->m_Storage.Data + i) = this->m_Storage.Data + i + 1;
+            *reinterpret_cast<PointerType*>(this->m_Storage.Data + this->Capacity() - 1) = NullPointer; // last points to null
+
+            this->m_CurrentSize = 0;
         }
 
         /// @brief Checks whether the given pointer is in the free list
@@ -362,15 +287,111 @@ namespace wstl {
             ConstPointerType i = m_Next;
             while(i != NullPointer) {
                 if(i == value) return true;
-                i = *reinterpret_cast<T* const*>(i);
+                i = *reinterpret_cast<ValueType* const*>(i);
             }
 
             return false;
         }
     };
 
+    // Fixed-size intrusive pool
+
+    /// @brief Fixed-size intrusive pool that stores objects and free list in-place
+    /// @tparam T Object type to store
+    /// @tparam N Maximum number of objects in the pool
+    /// @ingroup pool
+    template<typename T, size_t N>
+    class IntrusivePool : public BasicIntrusivePool<FixedStorage<T, N> > {
+    private:
+        typedef BasicIntrusivePool<FixedStorage<T, N> > Base;
+
+    public:
+        typedef typename Base::ValueType ValueType;
+        typedef typename Base::SizeType SizeType;
+        typedef typename Base::DifferenceType DifferenceType;
+        typedef typename Base::ReferenceType ReferenceType;
+        typedef typename Base::ConstReferenceType ConstReferenceType;
+        typedef typename Base::PointerType PointerType;
+        typedef typename Base::ConstPointerType ConstPointerType;
+
+        typedef typename Base::StorageType StorageType;
+
+        /// @brief The static size of the stack, needed for metaprogramming
+        static const __WSTL_CONSTEXPR__ SizeType StaticSize = N;
+
+        /// @brief Default constructor
+        IntrusivePool() : Base() {}
+    };
+
     template<typename T, size_t N>
     const __WSTL_CONSTEXPR__ typename IntrusivePool<T, N>::SizeType IntrusivePool<T, N>::StaticSize;
+
+    // External intrusive pool
+
+    namespace external {
+        /// @brief Version of intrusive pool that uses external storage
+        /// @tparam T Type of the elements
+        /// @ingroup pool
+        template<typename T>
+        class IntrusivePool : public BasicIntrusivePool<ExternalStorage<T> > {
+        private:
+            typedef BasicIntrusivePool<ExternalStorage<T> > Base;
+            
+        public:
+            typedef typename Base::ValueType ValueType;
+            typedef typename Base::SizeType SizeType;
+            typedef typename Base::DifferenceType DifferenceType;
+            typedef typename Base::ReferenceType ReferenceType;
+            typedef typename Base::ConstReferenceType ConstReferenceType;
+            typedef typename Base::PointerType PointerType;
+            typedef typename Base::ConstPointerType ConstPointerType;
+
+            typedef typename Base::StorageType StorageType;
+
+            /// @brief Constructor
+            /// @param buffer Pointer to the external buffer
+            /// @param capacity The capacity of the external buffer
+            IntrusivePool(T* buffer, SizeType capacity) : Base(ExternalStorage(buffer, capacity)) {}
+        };
+
+        /// @brief Version of intrusive pool that uses fixed external storage with compile-time know capacity
+        /// @tparam T Type of the elements
+        /// @tparam N Capacity of the pool
+        /// @ingroup pool
+        template<typename T, size_t N>
+        class FixedIntrusivePool : public BasicIntrusivePool<FixedExternalStorage<T, N> > {
+        private:
+            typedef BasicIntrusivePool<FixedExternalStorage<T, N> > Base;
+            
+        public:
+            typedef typename Base::ValueType ValueType;
+            typedef typename Base::SizeType SizeType;
+            typedef typename Base::DifferenceType DifferenceType;
+            typedef typename Base::ReferenceType ReferenceType;
+            typedef typename Base::ConstReferenceType ConstReferenceType;
+            typedef typename Base::PointerType PointerType;
+            typedef typename Base::ConstPointerType ConstPointerType;
+
+            typedef typename Base::StorageType StorageType;
+
+            /// @brief The static size, needed for metaprogramming
+            static const __WSTL_CONSTEXPR__ SizeType StaticSize = N;
+
+            /// @brief Constructor
+            /// @param buffer Pointer to the external buffer
+            explicit FixedIntrusivePool(T* buffer) : Base(FixedExternalStorage<T, N>(buffer)) {}
+        };
+
+        template<typename T, size_t N>
+        const __WSTL_CONSTEXPR__ typename FixedIntrusivePool<T, N>::SizeType FixedIntrusivePool<T, N>::StaticSize;
+
+        // Template deduction guide
+
+        #ifdef __WSTL_CXX17__
+        template<typename T, size_t N>
+        FixedIntrusivePool(T(&)[N]) -> FixedIntrusivePool<T, N>;
+        #endif
+    }
 
     // Indexed pool
 
@@ -379,9 +400,9 @@ namespace wstl {
     /// @tparam N Maximum number of objects in the pool
     /// @ingroup pool
     template<typename T, size_t N>
-    class IndexedPool : public PoolInterface<T, IndexedPool<T, N> > {
+    class IndexedPool : public TypedContainerBase<FixedStorage<T, N>> {
     private:
-        typedef PoolInterface<T, IndexedPool<T, N> > Base; 
+        typedef TypedContainerBase<FixedStorage<T, N>> Base; 
 
     public:
         typedef typename Base::ValueType ValueType;
@@ -399,10 +420,10 @@ namespace wstl {
         template<bool IsConst>
         class IndexedPoolIterator {
         public:
-            typedef typename Conditional<IsConst, const T, T>::Type ValueType;
+            typedef typename Conditional<IsConst, const IndexedPool::ValueType, IndexedPool::ValueType>::Type ValueType;
             typedef ForwardIteratorTag IteratorCategory;
-            typedef typename Conditional<IsConst, const T&, T&>::Type ReferenceType;
-            typedef typename Conditional<IsConst, const T*, T*>::Type PointerType;
+            typedef typename Conditional<IsConst, IndexedPool::ConstReferenceType, IndexedPool::ReferenceType>::Type ReferenceType;
+            typedef typename Conditional<IsConst, IndexedPool::ConstPointerType, IndexedPool::PointerType>::Type PointerType;
             typedef ptrdiff_t DifferenceType;
             
             friend class IndexedPool;
@@ -416,11 +437,11 @@ namespace wstl {
             }
 
             ReferenceType operator*() const {
-                return m_Pool->m_Buffer[m_CurrentIndex];
+                return m_Pool->m_Storage.Data[m_CurrentIndex];
             }
 
             PointerType operator->() const {
-                return (m_Pool->m_Buffer + m_CurrentIndex);
+                return (m_Pool->m_Storage.Data + m_CurrentIndex);
             }
 
             IndexedPoolIterator& operator++() {
@@ -443,10 +464,12 @@ namespace wstl {
             }
         
         private:
-            SizeType m_CurrentIndex;
-            IndexedPool* m_Pool;
+            typedef typename Conditional<IsConst, const IndexedPool*, IndexedPool*>::Type PoolType;
 
-            IndexedPoolIterator(IndexedPool* pool, SizeType start) : m_CurrentIndex(start), m_Pool(pool) {}
+            SizeType m_CurrentIndex;
+            PoolType m_Pool;
+
+            IndexedPoolIterator(PoolType pool, SizeType start) : m_CurrentIndex(start), m_Pool(pool) {}
         };
 
     public:
@@ -454,11 +477,11 @@ namespace wstl {
         typedef IndexedPoolIterator<true> ConstIterator;
 
         /// @brief Default constructor
-        IndexedPool() : Base(N), m_Indices(), m_Buffer() {}
+        IndexedPool() : Base(), m_Indices() {}
 
         /// @brief Destructor
         ~IndexedPool() {
-            for(Iterator it = Begin(); it != End(); ++it) it->~T();
+            Initialize<ValueType>();
         }
 
         /// @brief Gets iterator to the beginning of the pool that iterates only allocated objects
@@ -496,7 +519,7 @@ namespace wstl {
         PointerType Allocate() {
             __WSTL_ASSERT_RETURNVALUE__(!this->Full(), WSTL_MAKE_EXCEPTION(LengthError, "Indexed pool is full"), NullPointer);
 
-            PointerType result = (m_Buffer + this->m_CurrentSize);
+            PointerType result = (this->m_Storage.Data + this->m_CurrentSize);
             m_Indices.Set(this->m_CurrentSize);
             ++this->m_CurrentSize;
 
@@ -510,7 +533,7 @@ namespace wstl {
         template<typename... Args>
         PointerType Create(Args&&... args) {
             PointerType item = Allocate();
-            if(item) ::new(item) T(Forward<Args>(args)...);
+            if(item) ::new(item) ValueType(Forward<Args>(args)...);
             return item;
         }
         #else
@@ -518,7 +541,7 @@ namespace wstl {
         /// @return Pointer to the object
         PointerType Create() {
             PointerType item = Allocate();
-            if(item) ::new(item) T();
+            if(item) ::new(item) ValueType();
             return item;
         }
 
@@ -528,7 +551,7 @@ namespace wstl {
         template<typename Arg>
         PointerType Create(const Arg& arg) {
             PointerType item = Allocate();
-            if(item) ::new(item) T(arg);
+            if(item) ::new(item) ValueType(arg);
             return item;
         }
 
@@ -539,7 +562,7 @@ namespace wstl {
         template<typename Arg1, typename Arg2>
         PointerType Create(const Arg1& arg1, const Arg2& arg2) {
             PointerType item = Allocate();
-            if(item) ::new(item) T(arg1, arg2);
+            if(item) ::new(item) ValueType(arg1, arg2);
             return item;
         }
 
@@ -551,7 +574,7 @@ namespace wstl {
         template<typename Arg1, typename Arg2, typename Arg3>
         PointerType Create(const Arg1& arg1, const Arg2& arg2, const Arg3& arg3) {
             PointerType item = Allocate();
-            if(item) ::new(item) T(arg1, arg2, arg3);
+            if(item) ::new(item) ValueType(arg1, arg2, arg3);
             return item;
         }
         #endif
@@ -563,291 +586,47 @@ namespace wstl {
             __WSTL_ASSERT_RETURN__(!this->Empty(), WSTL_MAKE_EXCEPTION(LengthError, "Indexed pool is empty"));
           
             --this->m_CurrentSize;
-            m_Indices.Reset(value - m_Buffer);
+            m_Indices.Reset(value - this->m_Storage.Data);
         }
 
         /// @brief Destroys object and releases it back to the pool
         /// @param value Pointer to the object
         void Destroy(ConstPointerType const value) {
-            value->~T();
+            value->~ValueType();
             Release(value);
         }
 
-        /// @brief Clears the pool, destroying all objects
+        /// @brief Reinitializes the pool, destroying all objects
         void Clear() {
-            for(Iterator it = Begin(); it != End(); ++it) it->~T();
-            this->m_CurrentSize = 0;
-            m_Indices.Reset();
+            Initialize<ValueType>();
         }
 
         /// @brief Checks whether the pool contains the given pointer inside
         bool Contains(ConstPointerType const value) const {
-            return (value - m_Buffer) >= 0 && (value - m_Buffer) <= this->m_Capacity;
+            return (value - this->m_Storage.Data) >= 0 && (value - this->m_Storage.Data) <= this->Capacity();
         }
 
     private:
         Bitset<N> m_Indices;
-        T m_Buffer[N];
 
-        IndexedPool(const IndexedPool&) __WSTL_DELETE__;
-        IndexedPool& operator=(const IndexedPool&) __WSTL_DELETE__;
+        /// @brief Initializes the pool: does not call destructors
+        template<typename U>
+        typename EnableIf<IsTriviallyDestructible<U>::Value, void>::Type Initialize() {
+            m_Indices.Reset();
+            this->m_CurrentSize = 0;
+        }
+
+        /// @brief Initializes the pool: calls destructors
+        template<typename U>
+        typename EnableIf<!IsTriviallyDestructible<U>::Value, void>::Type Initialize() {
+            for(Iterator it = Begin(); it != End(); ++it) it->~ValueType();
+            m_Indices.Reset();
+            this->m_CurrentSize = 0;
+        }
     };
 
     template<typename T, size_t N>
     const __WSTL_CONSTEXPR__ typename IndexedPool<T, N>::SizeType IndexedPool<T, N>::StaticSize;
-
-    // Pool external
-
-    namespace external {
-        // Intrusive pool
-
-        /// @brief Intrusive pool that uses externally defined storage
-        /// @tparam T Object type to store
-        /// @ingroup pool
-        template<typename T>
-        class IntrusivePool : public PoolInterface<T, IntrusivePool<T> > {
-        private:
-            typedef PoolInterface<T, IntrusivePool<T> > Base;
-        public:
-            StaticAssert(sizeof(T) >= sizeof(T*), "Type is too small to be used with intrusive pool");
-
-            typedef typename Base::ValueType ValueType;
-            typedef typename Base::SizeType SizeType;
-            typedef typename Base::DifferenceType DifferenceType;
-            typedef typename Base::ReferenceType ReferenceType;
-            typedef typename Base::ConstReferenceType ConstReferenceType;
-            typedef typename Base::PointerType PointerType;
-            typedef typename Base::ConstPointerType ConstPointerType;
-            
-        private:
-            template<bool IsConst>
-            class IntrusivePoolIterator {
-            public:
-                typedef typename Conditional<IsConst, const T, T>::Type ValueType;
-                typedef ForwardIteratorTag IteratorCategory;
-                typedef typename Conditional<IsConst, const T&, T&>::Type ReferenceType;
-                typedef typename Conditional<IsConst, const T*, T*>::Type PointerType;
-                typedef ptrdiff_t DifferenceType;
-
-                friend class IntrusivePool;
-
-                IntrusivePoolIterator(const IntrusivePoolIterator& other) : m_Current(other.m_Current), m_Pool(other.m_Pool) {}
-
-                IntrusivePoolIterator& operator=(const IntrusivePoolIterator& other) {
-                    m_Current = other.m_Current;
-                    m_Pool = other.m_Pool;
-                    return *this;
-                }
-
-                ReferenceType operator*() const {
-                    return *m_Current;
-                }
-
-                PointerType operator->() const {
-                    return m_Current;
-                }
-
-                IntrusivePoolIterator& operator++() {
-                    ++m_Current;
-                    FindAllocated();
-                    return *this;
-                }
-
-                IntrusivePoolIterator operator++(int) {
-                    IntrusivePoolIterator original(*this);
-                    ++(*this);
-                    return original;
-                }
-
-                friend bool operator==(const IntrusivePoolIterator& a, const IntrusivePoolIterator& b) {
-                    return a.m_Current == b.m_Current;
-                }
-
-                friend bool operator!=(const IntrusivePoolIterator& a, const IntrusivePoolIterator& b) {
-                    return !(a == b);
-                }
-    
-            private:
-                PointerType m_Current;
-                IntrusivePool* m_Pool;
-
-                IntrusivePoolIterator(IntrusivePool* pool, PointerType start) : m_Current(start), m_Pool(pool) {
-                    FindAllocated();
-                }
-
-                void FindAllocated() {
-                    while(m_Current < m_Pool->m_Buffer + m_Pool->m_Capacity && m_Pool->IsFree(m_Current)) ++m_Current;
-                }
-            };
-
-        public:
-            typedef IntrusivePoolIterator<false> Iterator;
-            typedef IntrusivePoolIterator<true> ConstIterator;
-
-            /// @brief Default constructor
-            IntrusivePool(PointerType buffer, SizeType size) : Base(size), m_Buffer(buffer), m_Next(m_Buffer) {
-                Initialize();
-            }
-
-            /// @brief Destructor
-            ~IntrusivePool() {
-                for(Iterator it = Begin(); it != End(); ++it) it->~T();
-            }
-
-            /// @brief Gets iterator to the beginning of the pool that iterates only allocated objects
-            Iterator Begin() {
-                return Iterator(this, m_Buffer);
-            }
-
-            /// @brief Gets const iterator to the beginning of the pool that iterates only allocated objects
-            ConstIterator Begin() const {
-                return ConstIterator(this, m_Buffer);
-            }
-
-            /// @brief Gets const iterator to the beginning of the pool that iterates only allocated objects
-            ConstIterator ConstBegin() const {
-                return ConstIterator(this, m_Buffer);
-            }
-
-            /// @brief Gets iterator to the end of the pool
-            Iterator End() {
-                return Iterator(this, m_Buffer + this->m_Capacity);
-            }
-
-            /// @brief Gets const iterator to the end of the pool
-            ConstIterator End() const {
-                return ConstIterator(this, m_Buffer + this->m_Capacity);
-            }
-
-            /// @brief Gets const iterator to the end of the pool
-            ConstIterator ConstEnd() const {
-                return ConstIterator(this, m_Buffer + this->m_Capacity);
-            }
-
-            /// @brief Allocates new object from the pool
-            /// @return Pointer to the object
-            PointerType Allocate() {
-                __WSTL_ASSERT_RETURNVALUE__(m_Next != NullPointer, WSTL_MAKE_EXCEPTION(LengthError, "Intrusive pool is full"), NullPointer);
-
-                PointerType result = m_Next;
-                m_Next = *reinterpret_cast<PointerType*>(m_Next);
-                ++this->m_CurrentSize;
-
-                return result;
-            }
-
-            #ifdef __WSTL_CXX11__
-            /// @brief Allocates and constructs new object in the pool with given arguments
-            /// @param ...args Arguments to forward to the constructor of the object
-            /// @return Pointer to the object
-            template<typename... Args>
-            PointerType Create(Args&&... args) {
-                PointerType item = Allocate();
-                if(item) ::new(item) T(Forward<Args>(args)...);
-                return item;
-            }
-            #else
-            /// @brief Allocates and constructs new object in the pool
-            /// @return Pointer to the object
-            PointerType Create() {
-                PointerType item = Allocate();
-                if(item) ::new(item) T();
-                return item;
-            }
-
-            /// @brief Allocates and constructs new object in the pool
-            /// @param arg Argument to forward to the constructor of the object
-            /// @return Pointer to the object
-            template<typename Arg>
-            PointerType Create(const Arg& arg) {
-                PointerType item = Allocate();
-                if(item) ::new(item) T(arg);
-                return item;
-            }
-
-            /// @brief Allocates and constructs new object in the pool with two arguments
-            /// @param arg1 First argument to forward to the constructor of the object
-            /// @param arg2 Second argument to forward to the constructor of the object
-            /// @return Pointer to the object
-            template<typename Arg1, typename Arg2>
-            PointerType Create(const Arg1& arg1, const Arg2& arg2) {
-                PointerType item = Allocate();
-                if(item) ::new(item) T(arg1, arg2);
-                return item;
-            }
-
-            /// @brief Allocates and constructs new object in the pool with three arguments
-            /// @param arg1 First argument to forward to the constructor of the object
-            /// @param arg2 Second argument to forward to the constructor of the object
-            /// @param arg3 Third argument to forward to the constructor of the object
-            /// @return Pointer to the object
-            template<typename Arg1, typename Arg2, typename Arg3>
-            PointerType Create(const Arg1& arg1, const Arg2& arg2, const Arg3& arg3) {
-                PointerType item = Allocate();
-                if(item) ::new(item) T(arg1, arg2, arg3);
-                return item;
-            }
-            #endif
-
-            /// @brief Releases object back to the pool
-            /// @param value Pointer to the object
-            void Release(ConstPointerType const value) {
-                __WSTL_ASSERT_RETURN__(Contains(value), WSTL_MAKE_EXCEPTION(OutOfRange, "Pointer not in the intrusive pool range"));
-                __WSTL_ASSERT_RETURN__(!this->Empty(), WSTL_MAKE_EXCEPTION(LengthError, "Intrusive pool is empty"));
-            
-                --this->m_CurrentSize;
-                *reinterpret_cast<PointerType*>(const_cast<PointerType>(value)) = m_Next;
-                m_Next = const_cast<PointerType>(value);
-            }
-
-            /// @brief Destroys object and releases it back to the pool
-            /// @param value Pointer to the object
-            void Destroy(ConstPointerType const value) {
-                value->~T();
-                Release(value);
-            }
-
-            /// @brief Clears the pool, destroying all objects
-            void Clear() {
-                for(Iterator it = Begin(); it != End(); ++it) it->~T();
-                this->m_CurrentSize = 0;
-                Initialize();
-            }
-
-            /// @brief Checks whether the pool contains the given pointer inside
-            bool Contains(ConstPointerType const value) const {
-                return (value - m_Buffer) >= 0 && (value - m_Buffer) <= this->m_Capacity;
-            }
-        
-        private:
-            PointerType m_Buffer;
-            PointerType m_Next;
-            
-            /// @brief Deleted copy constructor
-            IntrusivePool(const IntrusivePool&) __WSTL_DELETE__;
-            /// @brief Deleted copy assignment operator
-            IntrusivePool& operator=(const IntrusivePool&) __WSTL_DELETE__;
-
-            /// @brief Initializes the free list
-            void Initialize() {
-                m_Next = m_Buffer;
-
-                for (size_t i = 0; i < this->m_Capacity - 1; ++i) *reinterpret_cast<PointerType*>(m_Buffer + i) = m_Buffer + i + 1;
-                *reinterpret_cast<PointerType*>(m_Buffer + this->m_Capacity - 1) = NullPointer; // last points to null
-            }
-
-            /// @brief Checks whether the given pointer is in the free list
-            bool IsFree(ConstPointerType value) const {
-                ConstPointerType i = m_Next;
-                while(i != NullPointer) {
-                    if(i == value) return true;
-                    i = *reinterpret_cast<T* const*>(i);
-                }
-
-                return false;
-            }
-        };
-    }
 }
 
 #endif

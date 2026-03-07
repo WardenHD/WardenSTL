@@ -71,10 +71,6 @@ namespace wstl {
     /// @brief Namespace that holds containers that use externally defined storage
     /// @ingroup containers
     namespace external {}
-
-    /// @brief Namespace that holds container adaptors
-    /// @ingroup containers
-    namespace adaptor {}
 }
 
 // C++ version defines
