@@ -92,17 +92,20 @@ namespace wstl {
     private:
         T m_Current;
         T m_End;
+
+        template<typename U>
+        friend __WSTL_CONSTEXPR14__ inline bool operator==(const ForwardBoundedIterator<U>&, const ForwardBoundedIterator<U>&);
     };
 
     // Comparison operators
 
-    template<typename U>
-    __WSTL_CONSTEXPR14__ inline bool operator==(const ForwardBoundedIterator<U>& a, const ForwardBoundedIterator<U>& b) {
+    template<typename T>
+    __WSTL_CONSTEXPR14__ inline bool operator==(const ForwardBoundedIterator<T>& a, const ForwardBoundedIterator<T>& b) {
         return a.m_Current == b.m_Current && a.m_End == b.m_End;
     }
 
-    template<typename U>
-    __WSTL_CONSTEXPR14__ inline bool operator!=(const ForwardBoundedIterator<U>& a, const ForwardBoundedIterator<U>& b) {
+    template<typename T>
+    __WSTL_CONSTEXPR14__ inline bool operator!=(const ForwardBoundedIterator<T>& a, const ForwardBoundedIterator<T>& b) {
         return !(a == b);
     }
 }
