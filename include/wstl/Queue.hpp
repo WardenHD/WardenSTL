@@ -234,7 +234,45 @@ namespace wstl {
     
     protected:
         Container m_Container;
+
+        template<typename UContainer>
+        friend inline bool operator==(const QueueAdaptor<UContainer>&, const QueueAdaptor<UContainer>&);
+
+        template<typename UContainer>
+        friend inline bool operator<(const QueueAdaptor<UContainer>&, const QueueAdaptor<UContainer>&);
     };
+
+    // Comparison operators
+
+    template<typename Container>
+    inline bool operator==(const QueueAdaptor<Container>& a, const QueueAdaptor<Container>& b) {
+        return a.m_Container == b.m_Container;
+    }
+
+    template<typename Container>
+    inline bool operator!=(const QueueAdaptor<Container>& a, const QueueAdaptor<Container>& b) {
+        return !(a == b);
+    }
+
+    template<typename Container>
+    inline bool operator<(const QueueAdaptor<Container>& a, const QueueAdaptor<Container>& b) {
+        return a.m_Container < b.m_Container;
+    }
+
+    template<typename Container>
+    inline bool operator<=(const QueueAdaptor<Container>& a, const QueueAdaptor<Container>& b) {
+        return !(b < a);
+    }
+
+    template<typename Container>
+    inline bool operator>(const QueueAdaptor<Container>& a, const QueueAdaptor<Container>& b) {
+        return b < a;
+    }
+
+    template<typename Container>
+    inline bool operator>=(const QueueAdaptor<Container>& a, const QueueAdaptor<Container>& b) {
+        return !(a < b);
+    }
 
     // Convenience wrappers
 
