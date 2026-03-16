@@ -75,7 +75,7 @@ namespace wstl {
             friend class BasicList;
 
             /// @brief Default constructor
-            ConstIterator() : m_Current(NullPointer) {}
+            ConstIterator() : m_Current() {}
 
             /// @brief Copy constructor
             /// @param other Const iterator to copy from
@@ -85,31 +85,12 @@ namespace wstl {
             /// @param other Iterator to copy from
             ConstIterator(const typename BasicList::Iterator& other) : m_Current(other.m_Current) {}
 
-            #ifdef __WSTL_CXX11__
-            /// @brief Move constructor
-            /// @param other Const iterator to move from
-            ConstIterator(ConstIterator&& other) : m_Current(Move(other.m_Current)) {}
-
-            /// @brief Move constructor
-            /// @param other Iterator to move from
-            ConstIterator(typename BasicList::Iterator&& other) : m_Current(Move(other.m_Current)) {}
-            #endif
-
             /// @brief Copy assignment operator
             /// @param other Const iterator to assign from
             ConstIterator& operator=(const ConstIterator& other) {
                 m_Current = other.m_Current;
                 return *this;
             }
-
-            #ifdef __WSTL_CXX11__
-            /// @brief Move assignment operator
-            /// @param other Const iterator to move from
-            ConstIterator& operator=(ConstIterator&& other) {
-                m_Current = Move(other.m_Current);
-                return *this;
-            }
-            #endif
 
             /// @brief Const dereference operator
             /// @details If iterator points to the end (i.e. sentinel), behavior is undefined
@@ -189,17 +170,11 @@ namespace wstl {
             friend class ConstIterator;
 
             /// @brief Default constructor
-            Iterator() : m_Current(NullPointer) {}
+            Iterator() : m_Current() {}
 
             /// @brief Copy constructor
             /// @param other Iterator to copy from
             Iterator(const Iterator& other) : m_Current(other.m_Current) {}
-
-            #ifdef __WSTL_CXX11__
-            /// @brief Move constructor
-            /// @param other Iterator to move from
-            Iterator(Iterator&& other) : m_Current(Move(other.m_Current)) {}
-            #endif
 
             /// @brief Copy assignment operator
             /// @param other Iterator to assign from
@@ -207,15 +182,6 @@ namespace wstl {
                 m_Current = other.m_Current;
                 return *this;
             }
-
-            #ifdef __WSTL_CXX11__
-            /// @brief Move assignment operator
-            /// @param other Iterator to move from
-            Iterator& operator=(Iterator&& other) {
-                m_Current = Move(other.m_Current);
-                return *this;
-            }
-            #endif
 
             /// @brief Dereference operator
             /// @details If iterator points to the end (i.e sentinel), behavior is undefined
@@ -573,7 +539,7 @@ namespace wstl {
         }
 
         /// @brief Gets a const iterator to the beginning of the list
-        ConstIterator ConstBegin() {
+        ConstIterator ConstBegin() const {
             return ConstIterator(HeadNode());
         }
 
@@ -588,7 +554,7 @@ namespace wstl {
         }
 
         /// @brief Gets a const iterator to the end of the list
-        ConstIterator ConstEnd() {
+        ConstIterator ConstEnd() const {
             return ConstIterator(&m_Sentinel);
         }
 
