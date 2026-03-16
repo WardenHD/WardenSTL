@@ -16,7 +16,9 @@ env = Environment(
 env.Append(
     CPPDEFINES = [
         'DOCTEST_CONFIG_SUPER_FAST_ASSERTS',
-        '__WSTL_NO_INITIALIZERLIST__'
+        '__WSTL_NO_INITIALIZERLIST__',
+        '__WSTL_CHECK_PUSHPOP__',
+        '__WSTL_EXCEPTIONS__'
     ],
     CPPPATH = [
         env.Dir('doctest/doctest').srcnode(),

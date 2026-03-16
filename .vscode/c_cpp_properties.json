@@ -5,7 +5,11 @@
             "includePath": [
                 "${workspaceFolder}/**"
             ],
-            "defines": [],
+            "defines": [
+                "__WSTL_NO_INITIALIZERLIST__", 
+                "__WSTL_CHECK_PUSHPOP__",
+                "__WSTL_EXCEPTIONS__"
+            ],
             "cStandard": "c99",
             "cppStandard": "c++11",
             "intelliSenseMode": "macos-clang-arm64",
