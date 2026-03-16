@@ -995,10 +995,7 @@ namespace wstl {
     /// @brief Checks whether type is function
     /// @tparam T Type to check
     /// @ingroup type_traits
-    /// @see https://en.cppreference.com/w/cpp/types/is_function 
-    template<typename T>
-    struct IsFunction;
-
+    /// @see https://en.cppreference.com/w/cpp/types/is_function
     template<typename T>
     struct IsFunction : FalseType {};
 
@@ -1075,12 +1072,9 @@ namespace wstl {
     template<typename Return, typename... Args>
     struct IsFunction<Return(Args..., ...) const volatile&&> : TrueType {};
     
-    #ifdef __WSTL_EXCEPTIONS__
+    #if defined(__WSTL_EXCEPTIONS__) && defined(__WSTL_CXX17__)
     template<typename Return, typename... Args>
     struct IsFunction<Return(Args...) noexcept> : TrueType {};
-
-    template<typename Return, typename... Args>
-    struct IsFunction<Return(Args..., ...) noexcept> : TrueType {};
 
     template<typename Return, typename... Args>
     struct IsFunction<Return(Args...) const noexcept> : TrueType {};
@@ -1090,6 +1084,9 @@ namespace wstl {
 
     template<typename Return, typename... Args>
     struct IsFunction<Return(Args...) const volatile noexcept> : TrueType {};
+
+    template<typename Return, typename... Args>
+    struct IsFunction<Return(Args..., ...) noexcept> : TrueType {};
 
     template<typename Return, typename... Args>
     struct IsFunction<Return(Args..., ...) const noexcept> : TrueType {};
@@ -1135,7 +1132,7 @@ namespace wstl {
 
     template<typename Return, typename... Args>
     struct IsFunction<Return(Args...) const volatile&& noexcept> : TrueType {};
-
+    
     template<typename Return, typename... Args>
     struct IsFunction<Return(Args..., ...)&& noexcept> : TrueType {};
 
