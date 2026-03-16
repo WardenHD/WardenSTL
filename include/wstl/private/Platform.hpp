@@ -238,6 +238,26 @@ namespace wstl {
     #define __WSTL_EXPLICIT_EXPR__(...) explicit
 #endif
 
+// Pragma diagnostic macros
+
+#ifdef __WSTL_CLANG__
+    #define WSTL_DIAGNOSTIC_PUSH _Pragma("clang diagnostic push")
+    #define WSTL_DIAGNOSTIC_POP _Pragma("clang diagnostic pop")
+    #define WSTL_DIAGNOSTIC_IGNORE(w) _Pragma(WSTL_STRINGIFY(clang diagnostic ignored w))
+#elif defined(__WSTL_GCC__)
+    #define WSTL_DIAGNOSTIC_PUSH _Pragma("GCC diagnostic push")
+    #define WSTL_DIAGNOSTIC_POP _Pragma("GCC diagnostic pop")
+    #define WSTL_DIAGNOSTIC_IGNORE(w) _Pragma(WSTL_STRINGIFY(GCC diagnostic ignored w))
+#elif defined(__WSTL_MSVC__) || defined(__WSTL_ICC__)
+    #define WSTL_DIAGNOSTIC_PUSH _Pragma(warning(push))
+    #define WSTL_DIAGNOSTIC_POP _Pragma(warning(pop))
+    #define WSTL_DIAGNOSTIC_IGNORE(w) _Pragma(warning(disable: w))
+#else
+    #define WSTL_DIAGNOSTIC_PUSH
+    #define WSTL_DIAGNOSTIC_POP
+    #define WSTL_DIAGNOSTIC_IGNORE(w)
+#endif
+
 // General macro utilities
 
 #define __WSTL_STRINGIFY_IMPL__(s) #s
@@ -251,7 +271,10 @@ namespace wstl {
 #ifdef __WSTL_CXX20__
     #define WSTL_COUNT_ARGS(...) __WSTL_COUNT_ARGS_IMPL__(dummy __VA_OPT__(,) __VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
 #elif defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__)
+    WSTL_DIAGNOSTIC_PUSH
+    WSTL_DIAGNOSTIC_IGNORE("-Wgnu-zero-variadic-macro-arguments")
     #define WSTL_COUNT_ARGS(...) __WSTL_COUNT_ARGS_IMPL__(dummy, ##__VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+    WSTL_DIAGNOSTIC_POP
 #else
     #define WSTL_COMMA_IF_ARGS(...) __WSTL_COUNT_ARGS_IMPL__(dummy, __VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
 #endif
