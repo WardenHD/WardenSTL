@@ -110,11 +110,11 @@ namespace wstl {
 #if defined(_MSC_VER)
 #define __WSTL_MSVC__
 
-#elif defined(__GNUC__) || defined(__GNUG__)
-#define __WSTL_GCC__
-
 #elif defined(__clang__)
 #define __WSTL_CLANG__
+
+#elif defined(__GNUC__) || defined(__GNUG__)
+#define __WSTL_GCC__
 
 #elif defined(__INTEL_COMPILER)
 #define __WSTL_ICC__
@@ -236,6 +236,24 @@ namespace wstl {
     #define __WSTL_CONSTINIT__
     #define __WSTL_NO_UNIQUE_ADDRESS__
     #define __WSTL_EXPLICIT_EXPR__(...) explicit
+#endif
+
+// General macro utilities
+
+#define __WSTL_STRINGIFY_IMPL__(s) #s
+#define WSTL_STRINGIFY(s) __WSTL_STRINGIFY_IMPL__(s)
+
+#define __WSTL_CONCATENATE_IMPL__(a, b) a##b
+#define WSTL_CONCATENATE(a, b) __WSTL_CONCATENATE_IMPL__(a, b)
+
+#define __WSTL_COUNT_ARGS_IMPL__(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, N,...) N
+
+#ifdef __WSTL_CXX20__
+    #define WSTL_COUNT_ARGS(...) __WSTL_COUNT_ARGS_IMPL__(dummy __VA_OPT__(,) __VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+#elif defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__)
+    #define WSTL_COUNT_ARGS(...) __WSTL_COUNT_ARGS_IMPL__(dummy, ##__VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+#else
+    #define WSTL_COMMA_IF_ARGS(...) __WSTL_COUNT_ARGS_IMPL__(dummy, __VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
 #endif
 
 #endif
