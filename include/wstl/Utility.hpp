@@ -393,16 +393,11 @@ namespace wstl {
         explicit __WSTL_CONSTEXPR__ InPlaceType() {};
     };
 
-    #ifdef __WSTL_CXX11__
+    #ifdef __WSTL_CXX14__
     /// @brief Tag object that is used for in-place construction
     /// @ingroup utility
     /// @see https://en.cppreference.com/w/cpp/utility/in_place
     __WSTL_INLINE_VARIABLE__  constexpr InPlaceType InPlace {};
-    #else
-    /// @brief Tag object that is used for in-place construction
-    /// @ingroup utility
-    /// @see https://en.cppreference.com/w/cpp/utility/in_place
-    static const InPlaceType InPlace = InPlaceType();
     #endif
 
     /// @brief Tag type that is used for in-place construction for specified type
@@ -414,20 +409,13 @@ namespace wstl {
         explicit __WSTL_CONSTEXPR__ InPlaceForTypeType() {};
     };
 
-    #ifdef __WSTL_CXX11__
+    #ifdef __WSTL_CXX14__
     /// @brief Tag object that is used for in-place construction for specified type
     /// @tparam T Type to construct
     /// @ingroup utility
     /// @see https://en.cppreference.com/w/cpp/utility/in_place
     template<typename T>
     __WSTL_INLINE_VARIABLE__ constexpr InPlaceForTypeType<T> InPlaceForType {};
-    #else
-    /// @brief Tag object that is used for in-place construction for specified type
-    /// @tparam T Type to construct
-    /// @ingroup utility
-    /// @see https://en.cppreference.com/w/cpp/utility/in_place
-    template<typename T>
-    static const InPlaceForTypeType<T> InPlaceForType = InPlaceForTypeType<T>();
     #endif
 
     /// @brief Tag type that is used for in-place construction for specified index
@@ -439,20 +427,13 @@ namespace wstl {
         explicit __WSTL_CONSTEXPR__ InPlaceForIndexType() {};
     };
 
-    #ifdef __WSTL_CXX11__
+    #ifdef __WSTL_CXX14__
     /// @brief Tag object that is used for in-place construction for specified index
     /// @tparam Index Index to construct
     /// @ingroup utility
     /// @see https://en.cppreference.com/w/cpp/utility/in_place
     template<size_t Index>
     __WSTL_INLINE_VARIABLE__ constexpr InPlaceForIndexType<Index> InPlaceForIndex {};
-    #else
-    /// @brief Tag object that is used for in-place construction for specified index
-    /// @tparam Index Index to construct
-    /// @ingroup utility
-    /// @see https://en.cppreference.com/w/cpp/utility/in_place
-    template<size_t Index>
-    static const InPlaceForIndexType<Index> InPlaceForIndex = InPlaceForIndexType<Index>();
     #endif
 }
 

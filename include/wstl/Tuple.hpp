@@ -372,7 +372,7 @@ namespace wstl {
 
     /// @brief Gets an element from tuple
     /// @tparam Index Index of element
-    /// @param t Tuple from which to get element
+    /// @param tuple Tuple from which to get element
     /// @return The element at the specified index
     /// @ingroup tuple
     /// @see https://en.cppreference.com/w/cpp/utility/tuple/get
@@ -462,7 +462,7 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/utility/tuple/make_tuple
     template<typename... Types>
     __WSTL_CONSTEXPR14__
-    inline auto MakeTuple(Types&&... args) {
+    inline Tuple<UnwrapReferenceDecayType<Types>...> MakeTuple(Types&&... args) {
         return Tuple<UnwrapReferenceDecayType<Types>...>(Forward<Types>(args)...);
     }
 
@@ -678,7 +678,7 @@ namespace wstl {
     template<typename Callable, typename... Types>
     inline ResultOfType<Callable(Types...)> Apply(Callable&& callable, Tuple<Types...>& tuple) {
         return __private::__Apply(Forward<Callable>(callable), Forward<Tuple<Types...>>(tuple), 
-            IndexSequenceFor<Types...>::Value>{});
+            IndexSequenceFor<Types...>{});
     }
     #endif
 

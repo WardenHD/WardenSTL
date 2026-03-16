@@ -31,7 +31,7 @@ namespace wstl {
         inline bool operator!=(NullPointerType) const { return false; }
 
     private:
-        void operator&() const __WSTL_DELETE__;
+        void operator&() const;
     };
 
     #define __WSTL_NULLPTR__ NullPointerType()

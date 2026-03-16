@@ -58,7 +58,7 @@ namespace wstl {
         }
 
         /// @brief Sets function that will be called when an exception occurs
-        /// @param function Function pointer that takes `const Exception&` as a parameter
+        /// @tparam Function Function pointer that takes `const Exception&` as a parameter
         template<void(*Function)(const Exception&)>
         static void SetCallback() {
             Create(Function);

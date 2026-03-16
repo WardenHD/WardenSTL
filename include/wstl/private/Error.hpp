@@ -33,12 +33,13 @@
     #define __WSTL_ASSERT_PUSHPOP__ 
 #endif
 
+#ifdef __WSTL_HANDLE_ERRORS__
 namespace wstl {
     namespace __private {
         static void __ErrorHandlerError(const Exception&);
     }
 }
-
+#endif
 
 #ifdef __WSTL_EXCEPTIONS__
     #ifdef __WSTL_HANDLE_ERRORS__

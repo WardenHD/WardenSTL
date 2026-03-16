@@ -160,13 +160,11 @@ namespace wstl {
     /// @ingroup memory
     /// @see https://en.cppreference.com/w/cpp/memory/default_delete
     template<typename T>
-    class DefaultDelete {
-    public:
+    struct DefaultDelete {
         /// @brief Constructor
         __WSTL_CONSTEXPR__ DefaultDelete() __WSTL_NOEXCEPT__ {}
 
         /// @brief Templated copy constructor
-        /// @param other Another `DefaultDelete` object to copy from
         template<typename U>
         __WSTL_CONSTEXPR__ DefaultDelete(const DefaultDelete<U>&) __WSTL_NOEXCEPT__ {}
 

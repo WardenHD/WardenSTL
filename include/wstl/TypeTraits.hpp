@@ -7,6 +7,7 @@
 #define __WSTL_TYPETRAITS_HPP__
 
 #include <stddef.h>
+#include <stdint.h>
 #include "NullPointer.hpp"
 #include "StaticAssert.hpp"
 #include "private/Platform.hpp"
@@ -2105,17 +2106,23 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/types/is_destructible
     template<typename T>
     struct IsTriviallyDestructible : BoolConstant<
-    #if defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || defined(__WSTL_ICC__)
-        __has_trivial_destructor(T)
-    #elif defined(__WSTL_MSVC__)
-        #ifdef __WSTL_CXX11__
-        __is_trivially_destructible(T)
+        #ifdef __has_builtin
+            #if __has_builtin(__is_trivially_destructible)
+                __is_trivially_destructible(T)
+            #elif __has_builtin(__has_trivial_destructor)
+                __has_trivial_destructor(T)
+            #else
+                false
+            #endif
+        #elif defined(__WSTL_MSVC__)
+            #ifdef __WSTL_CXX11__
+                __is_trivially_destructible(T)
+            #else
+                __is_pod(T)
+            #endif
         #else
-        __is_pod(T)
+            false
         #endif
-    #else
-        false
-    #endif
     > {};
 
     #ifdef __WSTL_CXX17__
@@ -2169,10 +2176,20 @@ namespace wstl {
     /// @see https://en.cppreference.com/w/cpp/types/is_trivially_copyable
     template<typename T>
     struct IsTriviallyCopyable : BoolConstant<
-        #if defined(__WSTL_GCC__) || defined(__WSTL_CLANG__) || (defined(__WSTL_MSVC__) && defined(__WSTL_CXX11__)) || defined(__WSTL_ICC__)
-        __has_trivial_constructor(T) && __has_trivial_assign(T) && __has_trivial_destructor(T) 
+        #ifdef __has_builtin
+            #if __has_builtin(__is_trivially_copyable)
+                __is_trivially_copyable(T)
+            #elif __has_builtin(__has_trivial_constructor)
+                __has_trivial_constructor(T) && __has_trivial_assign(T) && __has_trivial_destructor(T) 
+            #else
+                false
+            #endif
         #elif defined(__WSTL_MSVC__)
-        __is_pod(T)
+            #ifdef __WSTL_CXX11__
+                __is_trivially_copyable(T)
+            #else
+                __is_pod(T)
+            #endif
         #else
         false
         #endif
@@ -2710,8 +2727,8 @@ namespace wstl {
     /// @param pointer Pointer to check
     /// @param alignment Alignment in bytes
     /// @ingroup type_traits
-    inline __WSTL_CONSTEXPR__ bool IsAligned(void* pointer, size_t alignment) {
-        return (reinterpret_cast<size_t>(pointer) % alignment) == 0;
+    inline bool IsAligned(const void* pointer, size_t alignment) {
+        return (reinterpret_cast<uintptr_t>(pointer) % alignment) == 0;
     }
 
     /// @brief Checks whether pointer is aligned to specified alignment
@@ -2719,8 +2736,8 @@ namespace wstl {
     /// @param pointer Pointer to check
     /// @ingroup type_traits
     template<size_t Alignment>
-    inline __WSTL_CONSTEXPR__ bool IsAligned(void* pointer) {
-        return (reinterpret_cast<size_t>(pointer) % Alignment) == 0;
+    inline bool IsAligned(const void* pointer) {
+        return (reinterpret_cast<uintptr_t>(pointer) % Alignment) == 0;
     }
 
     /// @brief Checks whether pointer has the same alignment as specified type
@@ -2728,7 +2745,7 @@ namespace wstl {
     /// @param pointer Pointer to check
     /// @ingroup type_traits
     template<typename T>
-    inline __WSTL_CONSTEXPR__ bool IsAligned(void* pointer) {
+    inline bool IsAligned(const void* pointer) {
         return IsAligned<AlignmentOf<T>::Value>(pointer);
     }
 

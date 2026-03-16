@@ -80,7 +80,7 @@
 
 /// @def __WSTL_NAN_SUPPORT__
 /// @brief If defined, the library will use math.h NaN functions where necessary
-/// @ingroup math
+/// @ingroup maths
 #ifdef __DOXYGEN__
     #define __WSTL_NAN_SUPPORT__ 
 #endif

@@ -1544,7 +1544,7 @@ namespace wstl {
         typedef int IsTransparent;
 
         /// @brief Applies the functor to an argument
-        /// @param a Value of the argument
+        /// @param x Value of the argument
         /// @return The negation of the argument
         template<typename T>
         constexpr auto operator()(T&& x) const -> decltype(Forward<T>(x)) {
@@ -1629,7 +1629,7 @@ namespace wstl {
     /// @brief Functor that represents inequality comparison between two objects 
     /// with transparent forwarding for any types
     /// @since C++11
-    /// @ingroup
+    /// @ingroup functional
     /// @see https://en.cppreference.com/w/cpp/utility/functional/not_equal_to_void
     template<>
     struct NotEqualTo<void> : BinaryFunction<void, void, void> {
@@ -1965,7 +1965,7 @@ namespace wstl {
         typedef int IsTransparent;
 
         /// @brief Applies the functor to an argument
-        /// @param a Value of the argument
+        /// @param x Value of the argument
         /// @return True if the argument is false, false otherwise
         template<typename T>
         constexpr auto operator()(T&& x) const -> decltype(!Forward<T>(x)) {
@@ -2205,7 +2205,7 @@ namespace wstl {
         /// @param x Value of the argument
         /// @return The argument itself
         template<typename T>
-        constexpr T&& operator()(T&& x) {
+        constexpr T&& operator()(T&& x) const __WSTL_NOEXCEPT__ {
             return Forward<T>(x);
         } 
     };
@@ -2378,7 +2378,7 @@ namespace wstl {
             using ResultType = decltype(DeclareValue<Function>()(DeclareValue<__ResultType<Args, Tuple<CallArgs...>>>()...));
 
             template<typename... CallArgs, size_t... Indices>
-            constexpr ResultType<CallArgs...> Invoke(IndexSequence<Indices...>, CallArgs&&... callArgs) {
+            constexpr ResultType<CallArgs...> Invoke(IndexSequence<Indices...>, CallArgs&&... callArgs) const {
                 return m_Function(__ReplacePlaceholder(Get<Indices>(m_Args), ForwardAsTuple(callArgs...))...);
             }
 
@@ -2387,7 +2387,7 @@ namespace wstl {
                 : m_Function(Forward<Function>(function)), m_Args(Forward<Args>(args)...) {} 
 
             template<typename... CallArgs>
-            constexpr ResultType<CallArgs...> operator()(CallArgs&&... callArgs) {
+            constexpr ResultType<CallArgs...> operator()(CallArgs&&... callArgs) const {
                 return Invoke(IndexSequenceFor<Args...>{}, Forward<CallArgs>(callArgs)...);
             }
         };

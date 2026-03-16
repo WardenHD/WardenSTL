@@ -1126,7 +1126,7 @@ namespace wstl {
     /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/size
     template<typename T, size_t N>
-    __WSTL_CONSTEXPR__ inline size_t Size(T (&array)[N]) {
+    __WSTL_CONSTEXPR__ inline size_t Size(T (&)[N]) {
         return N;
     }
 
@@ -1158,7 +1158,7 @@ namespace wstl {
     /// @return Always false, as fixed-size arrays are never empty
     /// @ingroup containers
     /// @see https://en.cppreference.com/w/cpp/iterator/empty
-    __WSTL_CONSTEXPR__ inline bool Empty(T (&array)[N]) {
+    __WSTL_CONSTEXPR__ inline bool Empty(T (&)[N]) {
         return false;
     }
 
